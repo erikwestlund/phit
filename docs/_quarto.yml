@@ -5,6 +5,7 @@ project:
   render:
     - "**/*.qmd"
   resources:
+    - figures/
     - verifications/v01-validation.json
     - verifications/reference-manifest.json
     - benchmarks/v01-preservation-results.json
@@ -66,6 +67,8 @@ website:
       - index.qmd
       - section: "Project"
         contents:
+          - visualization.qmd
+          - licensing.qmd
           - v0.1.qmd
           - design-philosophy.qmd
           - contracts.qmd

@@ -195,6 +195,18 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Figure conventions and reproducibility</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../licensing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Licensing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../v0.1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">v0.1 stabilization and release assessment</span></a>
   </div>
@@ -527,36 +539,39 @@ s_i\mid b_{g(i)}\sim\operatorname{Binomial}(m_i,p_i),\qquad
 \eta_i=o_i+x_i^\top\beta+b_{g(i)},\qquad p_i=\frac{1}{1+e^{-\eta_i}}.
 \]</span></p>
 <p>Here s is the observed number of new cases and m the number of animals at risk. The API takes <code>y=s/m</code> and <code>weights=m</code>; m=1 gives ordinary binary observations. The known offset o is zero in this example. The fixed columns are ones and indicators for observed periods 2, 3 and 4. These are data/prepared predictors, not guesses at coefficients.</p>
-<div id="1043b0de" class="cell" data-execution_count="1">
+<div id="dcecedf8" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json,sys</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> expit,logsumexp</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> brentq</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.integrate <span class="im">import</span> quad</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.linalg <span class="im">import</span> cho_factor,cho_solve</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display,Math</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>ROOT<span class="op">=</span><span class="bu">next</span>(p <span class="cf">for</span> p <span class="kw">in</span> [Path.cwd(),<span class="op">*</span>Path.cwd().parents] <span class="cf">if</span> (p<span class="op">/</span><span class="st">'Cargo.toml'</span>).exists())</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>,<span class="bu">str</span>(ROOT<span class="op">/</span><span class="st">'docs/verifications'</span>))</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> compare_logistic_mixed <span class="im">import</span> evaluator</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>fixture<span class="op">=</span>json.loads((ROOT<span class="op">/</span><span class="st">'tests/fixtures/logistic-mixed-r.json'</span>).read_text())</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>report<span class="op">=</span>json.loads((ROOT<span class="op">/</span><span class="st">'docs/verifications/logistic-mixed-results.json'</span>).read_text())</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>c<span class="op">=</span><span class="bu">next</span>(c <span class="cf">for</span> c <span class="kw">in</span> fixture[<span class="st">'cases'</span>] <span class="cf">if</span> c[<span class="st">'name'</span>]<span class="op">==</span><span class="st">'cbpp_61'</span>)</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>fit<span class="op">=</span><span class="bu">next</span>(r[<span class="st">'PHP'</span>] <span class="cf">for</span> r <span class="kw">in</span> report[<span class="st">'results'</span>] <span class="cf">if</span> r[<span class="st">'name'</span>]<span class="op">==</span>c[<span class="st">'name'</span>])</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>raw<span class="op">=</span>pd.read_csv(ROOT<span class="op">/</span><span class="st">'docs/data/cbpp.csv'</span>)<span class="op">;</span>display(raw.head(<span class="dv">8</span>))</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>x<span class="op">=</span>np.array(c[<span class="st">'x'</span>])<span class="op">;</span>y<span class="op">=</span>np.array(c[<span class="st">'y'</span>])<span class="op">;</span>m<span class="op">=</span>np.array(c[<span class="st">'weights'</span>])<span class="op">;</span>s<span class="op">=</span>np.<span class="bu">round</span>(y<span class="op">*</span>m)<span class="op">;</span>groups<span class="op">=</span>np.array(c[<span class="st">'groups'</span>])</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>beta<span class="op">=</span>np.array(fit[<span class="st">'coefficients'</span>])<span class="op">;</span>tau<span class="op">=</span>fit[<span class="st">'random_intercept_sd'</span>]</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> matrix(a,name):</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    a<span class="op">=</span>np.atleast_2d(a)</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    body<span class="op">=</span><span class="vs">r' </span><span class="ch">\\</span><span class="vs"> '</span>.join(<span class="st">' &amp; '</span>.join(<span class="ss">f'</span><span class="sc">{</span>v<span class="sc">:.6g}</span><span class="ss">'</span> <span class="cf">for</span> v <span class="kw">in</span> row) <span class="cf">for</span> row <span class="kw">in</span> a)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    display(Math(name<span class="op">+</span><span class="vs">r'=</span><span class="dv">\b</span><span class="vs">egin{bmatrix}'</span><span class="op">+</span>body<span class="op">+</span><span class="vs">r'</span><span class="er">\</span><span class="vs">end{bmatrix}'</span>))</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>ids<span class="op">=</span>np.flatnonzero(groups<span class="op">==</span>groups[<span class="dv">0</span>])<span class="op">;</span>display(raw.iloc[ids])</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>matrix(x[ids],<span class="vs">r'X_{</span><span class="dv">\m</span><span class="vs">athrm{first</span><span class="ch">\ </span><span class="vs">herd}}'</span>)</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>matrix(beta[:,<span class="va">None</span>],<span class="vs">r'</span><span class="er">\</span><span class="vs">hat</span><span class="dv">\b</span><span class="vs">eta'</span>)</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>matrix((x[ids]<span class="op">@</span>beta)[:,<span class="va">None</span>],<span class="vs">r'X_g</span><span class="er">\</span><span class="vs">hat</span><span class="dv">\b</span><span class="vs">eta'</span>)</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'X shape:'</span>,x.shape,<span class="st">'group count:'</span>,<span class="bu">len</span>(<span class="bu">set</span>(groups)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>,<span class="bu">str</span>(ROOT<span class="op">/</span><span class="st">'docs/figures'</span>))</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bridge <span class="im">import</span> render_figure</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>,<span class="bu">str</span>(ROOT<span class="op">/</span><span class="st">'docs/verifications'</span>))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> compare_logistic_mixed <span class="im">import</span> evaluator</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>fixture<span class="op">=</span>json.loads((ROOT<span class="op">/</span><span class="st">'tests/fixtures/logistic-mixed-r.json'</span>).read_text())</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>report<span class="op">=</span>json.loads((ROOT<span class="op">/</span><span class="st">'docs/verifications/logistic-mixed-results.json'</span>).read_text())</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>c<span class="op">=</span><span class="bu">next</span>(c <span class="cf">for</span> c <span class="kw">in</span> fixture[<span class="st">'cases'</span>] <span class="cf">if</span> c[<span class="st">'name'</span>]<span class="op">==</span><span class="st">'cbpp_61'</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>fit<span class="op">=</span><span class="bu">next</span>(r[<span class="st">'PHP'</span>] <span class="cf">for</span> r <span class="kw">in</span> report[<span class="st">'results'</span>] <span class="cf">if</span> r[<span class="st">'name'</span>]<span class="op">==</span>c[<span class="st">'name'</span>])</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>raw<span class="op">=</span>pd.read_csv(ROOT<span class="op">/</span><span class="st">'docs/data/cbpp.csv'</span>)<span class="op">;</span>display(raw.head(<span class="dv">8</span>))</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>x<span class="op">=</span>np.array(c[<span class="st">'x'</span>])<span class="op">;</span>y<span class="op">=</span>np.array(c[<span class="st">'y'</span>])<span class="op">;</span>m<span class="op">=</span>np.array(c[<span class="st">'weights'</span>])<span class="op">;</span>s<span class="op">=</span>np.<span class="bu">round</span>(y<span class="op">*</span>m)<span class="op">;</span>groups<span class="op">=</span>np.array(c[<span class="st">'groups'</span>])</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>beta<span class="op">=</span>np.array(fit[<span class="st">'coefficients'</span>])<span class="op">;</span>tau<span class="op">=</span>fit[<span class="st">'random_intercept_sd'</span>]</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> matrix(a,name):</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    a<span class="op">=</span>np.atleast_2d(a)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    body<span class="op">=</span><span class="vs">r' </span><span class="ch">\\</span><span class="vs"> '</span>.join(<span class="st">' &amp; '</span>.join(<span class="ss">f'</span><span class="sc">{</span>v<span class="sc">:.6g}</span><span class="ss">'</span> <span class="cf">for</span> v <span class="kw">in</span> row) <span class="cf">for</span> row <span class="kw">in</span> a)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    display(Math(name<span class="op">+</span><span class="vs">r'=</span><span class="dv">\b</span><span class="vs">egin{bmatrix}'</span><span class="op">+</span>body<span class="op">+</span><span class="vs">r'</span><span class="er">\</span><span class="vs">end{bmatrix}'</span>))</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>ids<span class="op">=</span>np.flatnonzero(groups<span class="op">==</span>groups[<span class="dv">0</span>])<span class="op">;</span>display(raw.iloc[ids])</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>matrix(x[ids],<span class="vs">r'X_{</span><span class="dv">\m</span><span class="vs">athrm{first</span><span class="ch">\ </span><span class="vs">herd}}'</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>matrix(beta[:,<span class="va">None</span>],<span class="vs">r'</span><span class="er">\</span><span class="vs">hat</span><span class="dv">\b</span><span class="vs">eta'</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>matrix((x[ids]<span class="op">@</span>beta)[:,<span class="va">None</span>],<span class="vs">r'X_g</span><span class="er">\</span><span class="vs">hat</span><span class="dv">\b</span><span class="vs">eta'</span>)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'X shape:'</span>,x.shape,<span class="st">'group count:'</span>,<span class="bu">len</span>(<span class="bu">set</span>(groups)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -723,7 +738,7 @@ k'_g(u)=\tau\sum_{i\in g}(s_i-m_ip_i)-u,\qquad
 h_g(u)=-k''_g(u)=1+\tau^2\sum_{i\in g}m_ip_i(1-p_i).
 \]</span></p>
 <p>The prior contributes the 1, making the log integrand strictly concave: every group has a unique conditional mode, even when all its outcomes are failures or successes. Safeguarded Newton updates use <code>u + score/h</code>; a bracket prevents an oversized step from escaping the root.</p>
-<div id="366fcb57" class="cell" data-execution_count="2">
+<div id="e006117c" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>e<span class="op">=</span>x[ids]<span class="op">@</span>beta<span class="op">;</span>yg<span class="op">=</span>y[ids]<span class="op">;</span>mg<span class="op">=</span>m[ids]</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> kernel(u):</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    eta<span class="op">=</span>e<span class="op">+</span>tau<span class="op">*</span>u</span>
@@ -834,7 +849,7 @@ L_g\approx\left\{\prod_{i\in g}{m_i\choose s_i}\right\}
 \exp\{k_g(u_j)+z_j^2/2\}.
 \]</span></p>
 <p>For one node z=0,w=1, this is exactly Laplace. More nodes examine the shape away from the peak. We evaluate the sum with log-sum-exp to avoid underflow.</p>
-<div id="1712340a" class="cell" data-execution_count="3">
+<div id="fde216f4" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>z,w<span class="op">=</span>np.polynomial.hermite_e.hermegauss(<span class="dv">9</span>)<span class="op">;</span>w<span class="op">/=</span>np.sqrt(<span class="dv">2</span><span class="op">*</span>np.pi)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>u<span class="op">=</span>mode<span class="op">+</span>z<span class="op">/</span>np.sqrt(h)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame(<span class="bu">dict</span>(normal_node<span class="op">=</span>z,normal_weight<span class="op">=</span>w,adaptive_node<span class="op">=</span>u,</span>
@@ -946,7 +961,7 @@ L_g\approx\left\{\prod_{i\in g}{m_i\choose s_i}\right\}
 <section id="fixed-effect-uncertainty-comes-from-the-marginal-objective" class="level2">
 <h2 class="anchored" data-anchor-id="fixed-effect-uncertainty-comes-from-the-marginal-objective">Fixed-effect uncertainty comes from the marginal objective</h2>
 <p>The optimizer searches beta and tau jointly. Each objective evaluation solves all conditional modes and integrates the group effects. Fixed-effect covariance uses the beta block of the inverse <strong>joint observed information</strong> of the chosen approximate marginal likelihood. It includes coupling to estimated tau; it is not simply the inverse conditional X’WX matrix.</p>
-<div id="2e41da3f" class="cell" data-execution_count="4">
+<div id="29bf1945" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>likelihood<span class="op">=</span>evaluator(c)<span class="op">;</span>theta<span class="op">=</span>np.r_[beta,tau]</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> information(step):</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    delta<span class="op">=</span>step<span class="op">*</span>(<span class="dv">1</span><span class="op">+</span><span class="bu">abs</span>(theta))<span class="op">;</span>n<span class="op">=</span><span class="bu">len</span>(theta)<span class="op">;</span>H<span class="op">=</span>np.zeros((n,n))</span>
@@ -982,7 +997,7 @@ L_g\approx\left\{\prod_{i\in g}{m_i\choose s_i}\right\}
 <section id="approximation-accuracy-a-rare-event-example" class="level2">
 <h2 class="anchored" data-anchor-id="approximation-accuracy-a-rare-event-example">Approximation accuracy: a rare-event example</h2>
 <p>The verification includes independent QUADPACK integration, which does not use Hermite nodes. On the rare-event sample, Laplace and R agree but the fitted group SD differs substantially from higher-node estimation. This is an approximation issue, not a disagreement between implementations.</p>
-<div id="9cd7643a" class="cell" data-execution_count="5">
+<div id="165412e3" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>rare<span class="op">=</span>[r <span class="cf">for</span> r <span class="kw">in</span> report[<span class="st">'results'</span>] <span class="cf">if</span> r[<span class="st">'dataset'</span>]<span class="op">==</span><span class="st">'rare_events'</span>]</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame([<span class="bu">dict</span>(nodes<span class="op">=</span>r[<span class="st">'quadrature_points'</span>],intercept<span class="op">=</span>r[<span class="st">'PHP'</span>][<span class="st">'coefficients'</span>][<span class="dv">0</span>],</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                          group_SD<span class="op">=</span>r[<span class="st">'PHP'</span>][<span class="st">'random_intercept_sd'</span>],</span>
@@ -1005,12 +1020,8 @@ L_g\approx\left\{\prod_{i\in g}{m_i\choose s_i}\right\}
 <span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>_,group,k,uu,hh,norm<span class="op">=</span><span class="bu">max</span>(choices,key<span class="op">=</span><span class="kw">lambda</span> v:v[<span class="dv">0</span>])</span>
 <span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>u<span class="op">=</span>np.linspace(<span class="op">-</span><span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">400</span>)</span>
 <span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>actual<span class="op">=</span>np.array([np.exp(k(v)<span class="op">-</span>k(uu))<span class="op">/</span>norm <span class="cf">for</span> v <span class="kw">in</span> u])<span class="op">;</span>gaussian<span class="op">=</span>np.sqrt(hh<span class="op">/</span>(<span class="dv">2</span><span class="op">*</span>np.pi))<span class="op">*</span>np.exp(<span class="op">-</span><span class="fl">.5</span><span class="op">*</span>hh<span class="op">*</span>(u<span class="op">-</span>uu)<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>fig,ax<span class="op">=</span>plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">4</span>))</span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>ax.plot(u,actual,label<span class="op">=</span><span class="st">'Numerically normalized conditional distribution'</span>)</span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>ax.plot(u,gaussian,linestyle<span class="op">=</span><span class="st">'--'</span>,label<span class="op">=</span><span class="st">'Gaussian approximation at the mode'</span>)</span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>ax.axvline(uu,color<span class="op">=</span><span class="st">'grey'</span>,alpha<span class="op">=</span><span class="fl">.6</span>,label<span class="op">=</span><span class="st">'Conditional mode'</span>)</span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">'Standardized group intercept u (b = tau × u)'</span>,ylabel<span class="op">=</span><span class="st">'Conditional density'</span>,title<span class="op">=</span><span class="ss">f'Rare events: group </span><span class="sc">{</span>group<span class="sc">}</span><span class="ss">, posterior shape'</span>)</span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>ax.legend(fontsize<span class="op">=</span><span class="dv">8</span>)<span class="op">;</span>fig.tight_layout()<span class="op">;</span>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>render_figure(<span class="st">'posterior'</span>,<span class="bu">dict</span>(u<span class="op">=</span>u.tolist(),actual<span class="op">=</span>actual.tolist(),gaussian<span class="op">=</span>gaussian.tolist(),</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>                             mode<span class="op">=</span><span class="bu">float</span>(uu),group<span class="op">=</span><span class="bu">int</span>(group)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -1069,10 +1080,13 @@ L_g\approx\left\{\prod_{i\in g}{m_i\choose s_i}\right\}
 
 </div>
 </div>
+<div class="cell-output cell-output-stdout">
+<pre><code>figures/logistic-mixed-posterior.svg </code></pre>
+</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="logistic-mixed-math_files/figure-html/cell-6-output-2.png" width="759" height="374" class="figure-img"></p>
+<p><img src="logistic-mixed-math_files/figure-html/cell-6-output-3.svg" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>

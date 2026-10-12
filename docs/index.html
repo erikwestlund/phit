@@ -26,6 +26,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -126,6 +161,18 @@ ul.task-list li input[type="checkbox"] {
           </a> 
       </div>
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Figure conventions and reproducibility</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./licensing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Licensing</span></a>
+  </div>
+</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./v0.1.html" class="sidebar-item-text sidebar-link">
@@ -449,7 +496,14 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The raw extension accepts plain numerical arrays and returns plain results. Optional helpers can make data preparation easier while keeping that boundary usable directly. These documents are the maintained record of how the project works and why it makes its choices.</p>
+<p>Fit statistical models directly in PHP using ordinary numeric arrays. The native Rust engine returns coefficients, uncertainty, fitted values, and model statistics. A fixed intercept is added automatically; <code>intercept: false</code> accepts a literal design or fits a model through the origin.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$result</span> <span class="op">=</span> stats_ols(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    x<span class="ot">:</span> [[<span class="fl">74.4</span>]<span class="ot">,</span> [<span class="fl">57.4</span>]<span class="ot">,</span> [<span class="fl">66.4</span>]<span class="ot">,</span> [<span class="fl">49.1</span>]<span class="ot">,</span> [<span class="fl">45.7</span>]<span class="ot">,</span> [<span class="fl">92.4</span>]<span class="ot">,</span> [<span class="fl">37.0</span>]<span class="ot">,</span> [<span class="fl">93.9</span>]]<span class="ot">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    y<span class="ot">:</span> [<span class="fl">1879.25</span><span class="ot">,</span> <span class="fl">1805.03</span><span class="ot">,</span> <span class="fl">2022.29</span><span class="ot">,</span> <span class="fl">1267.85</span><span class="ot">,</span> <span class="fl">1509.24</span><span class="ot">,</span> <span class="fl">2240.10</span><span class="ot">,</span> <span class="fl">959.51</span><span class="ot">,</span> <span class="fl">2386.54</span>]<span class="ot">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>)<span class="ot">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// coefficients: approximately [372.478545, 21.479724] — intercept, floor area.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Start with <a href="./development.html">installation</a> and the <a href="./contracts.html">PHP contracts</a>. For unequal exposure in a Poisson model, pass <code>offset: log(exposure)</code> as an aligned array on the log scale; see the <a href="./contracts.html#poisson-exposure-example">exposure example</a>. Existing callers that supply a ones column should remove it or use <code>intercept: false</code>; random-effect design matrices remain explicit.</p>
+<p>The <a href="./notebooks/index.html">math walkthroughs</a> build the matrices and likelihoods step by step. The verification pages compare the same models with R, Python, and independent numerical references.</p>
 <ul>
 <li><a href="./documentation.html">Building the documentation</a>: Quarto rendering and refreshing computations.</li>
 <li><a href="./design-philosophy.html">Design philosophy</a>: priorities, raw interface, helper responsibilities and scope.</li>

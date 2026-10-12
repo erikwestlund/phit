@@ -22,9 +22,12 @@ from pathlib import Path
 import json,sys
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+
 from IPython.display import display
 ROOT=next(p for p in [Path.cwd(),*Path.cwd().parents] if (p/'Cargo.toml').exists())
+import sys
+sys.path.insert(0,str(ROOT/'docs/figures'))
+from bridge import render_figure
 sys.path.insert(0,str(ROOT/'docs/verifications'))
 from compare_lmm import public_cases,compare_case
 cases=public_cases()
@@ -128,16 +131,7 @@ It is a numerical agreement plot, not a model residual diagnostic.
 
 ```{python}
 #| echo: false
-fig,axes=plt.subplots(2,2,figsize=(10,6.2))
-for ax,result in zip(axes.flat,results):
-    reference=np.asarray(result['R']['fitted']);native=np.asarray(result['php-stats']['fitted'])
-    ax.scatter(reference,1e6*(native-reference),s=8,alpha=.35,color='#009E73',rasterized=True)
-    ax.axhline(0,color='#536174',linewidth=.8)
-    ax.set(title=result['name'],xlabel='lme4 conditional fitted value',ylabel='Native − lme4 (×10⁻⁶ outcome units)')
-    ax.ticklabel_format(axis='y',style='plain',useOffset=False)
-    ax.spines[['top','right']].set_visible(False)
-fig.suptitle('Agreement on every observation',fontsize=15)
-fig.tight_layout();plt.show()
+render_figure('public-agreement')
 
 display(pd.DataFrame([dict(dataset=r['name'],
                            largest_native_residual_difference_vs_lme4=r['max_absolute_errors_vs_R']['residuals']['php-stats'],

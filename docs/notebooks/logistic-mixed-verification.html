@@ -166,6 +166,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Figure conventions and reproducibility</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../licensing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Licensing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../v0.1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">v0.1 stabilization and release assessment</span></a>
   </div>
@@ -492,18 +504,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>We compare the native binomial random-intercept fitter with <strong>R lme4</strong>, and independently evaluate its likelihood with <strong>SciPy</strong>. The model uses marginal maximum likelihood, a logit link and a Gaussian random intercept. Inputs remain plain design/outcome/group arrays. See the <a href="../notebooks/logistic-mixed-math.html">math walkthrough</a> and <a href="../contracts.html#binomial-random-intercept-ml">contract</a>.</p>
 <section id="execute-the-comparisons" class="level2">
 <h2 class="anchored" data-anchor-id="execute-the-comparisons">Execute the comparisons</h2>
-<div id="0d8e6326" class="cell" data-execution_count="1">
+<div id="06cb651c" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json,sys</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>ROOT<span class="op">=</span><span class="bu">next</span>(p <span class="cf">for</span> p <span class="kw">in</span> [Path.cwd(),<span class="op">*</span>Path.cwd().parents] <span class="cf">if</span> (p<span class="op">/</span><span class="st">'Cargo.toml'</span>).exists())</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>,<span class="bu">str</span>(ROOT<span class="op">/</span><span class="st">'docs/verifications'</span>))</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> compare_logistic_mixed <span class="im">import</span> run</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>report<span class="op">=</span>run()</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(report[<span class="st">'versions'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>,<span class="bu">str</span>(ROOT<span class="op">/</span><span class="st">'docs/figures'</span>))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bridge <span class="im">import</span> render_figure</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>,<span class="bu">str</span>(ROOT<span class="op">/</span><span class="st">'docs/verifications'</span>))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> compare_logistic_mixed <span class="im">import</span> run</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>report<span class="op">=</span>run()</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(report[<span class="st">'versions'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Passed 28 R/PHP comparisons, independent likelihood/integration checks, and statsmodels zero-variance reduction.
 Independent cbpp marginal ML fit: {'dataset': 'cbpp', 'coefficients': [-1.399230360516453, -0.9914039350112828, -1.1278198196624616, -1.579470750553407], 'random_intercept_sd': 0.6475184370023838, 'log_likelihood': -91.98336903731132, 'converged': True, 'evaluations': 120, 'message': 'CONVERGENCE: RELATIVE REDUCTION OF F &lt;= FACTR*EPSMCH', 'method': 'SciPy L-BFGS-B + QUADPACK integration', 'start': 'statsmodels binomial GLM, SD=1'}
@@ -515,7 +530,7 @@ Independent cbpp marginal ML fit: {'dataset': 'cbpp', 'coefficients': [-1.399230
 </section>
 <section id="published-cbpp-matching-estimation-methods" class="level2">
 <h2 class="anchored" data-anchor-id="published-cbpp-matching-estimation-methods">Published cbpp: matching estimation methods</h2>
-<div id="979c0b8e" class="cell" data-execution_count="2">
+<div id="da046174" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>rows<span class="op">=</span>[]</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> r <span class="kw">in</span> report[<span class="st">'results'</span>]:</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> r[<span class="st">'dataset'</span>]<span class="op">!=</span><span class="st">'cbpp'</span>:<span class="cf">continue</span></span>
@@ -628,7 +643,7 @@ Independent cbpp marginal ML fit: {'dataset': 'cbpp', 'coefficients': [-1.399230
 </section>
 <section id="likelihood-normalization-matters" class="level2">
 <h2 class="anchored" data-anchor-id="likelihood-normalization-matters">Likelihood normalization matters</h2>
-<div id="13c44504" class="cell" data-execution_count="3">
+<div id="b609d925" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame([<span class="bu">dict</span>(nodes<span class="op">=</span>r[<span class="st">'quadrature_points'</span>],</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                         R_reported_log_likelihood<span class="op">=</span>r[<span class="st">'R_reference'</span>][<span class="st">'reported_log_likelihood'</span>],</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                         R_additive_correction<span class="op">=</span>r[<span class="st">'R_reference'</span>][<span class="st">'log_likelihood_correction'</span>],</span>
@@ -694,24 +709,14 @@ Independent cbpp marginal ML fit: {'dataset': 'cbpp', 'coefficients': [-1.399230
 </section>
 <section id="approximation-error-separately-from-implementation-agreement" class="level2">
 <h2 class="anchored" data-anchor-id="approximation-error-separately-from-implementation-agreement">Approximation error, separately from implementation agreement</h2>
-<div id="89e624d7" class="cell" data-execution_count="4">
+<div id="8816ae24" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>accuracy<span class="op">=</span>pd.DataFrame([<span class="bu">dict</span>(dataset<span class="op">=</span>r[<span class="st">'dataset'</span>],nodes<span class="op">=</span>r[<span class="st">'quadrature_points'</span>],</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                           approximation_error<span class="op">=</span>r[<span class="st">'approximation_log_likelihood_error'</span>],</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                           group_SD<span class="op">=</span>r[<span class="st">'PHP'</span>][<span class="st">'random_intercept_sd'</span>],</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                           max_coefficient_difference_vs_R<span class="op">=</span>r[<span class="st">'max_coefficient_difference'</span>])</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                      <span class="cf">for</span> r <span class="kw">in</span> report[<span class="st">'results'</span>]])</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>display(accuracy)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>fig,axes<span class="op">=</span>plt.subplots(<span class="dv">1</span>,<span class="dv">2</span>,figsize<span class="op">=</span>(<span class="dv">11</span>,<span class="dv">4</span>))</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> dataset <span class="kw">in</span> accuracy.dataset.unique():</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    rows<span class="op">=</span>accuracy[accuracy.dataset<span class="op">==</span>dataset]</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> dataset<span class="op">==</span><span class="st">'boundary'</span>:<span class="cf">continue</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>].plot(rows.nodes,np.maximum(<span class="bu">abs</span>(rows.approximation_error),<span class="fl">1e-13</span>),marker<span class="op">=</span><span class="st">'o'</span>,label<span class="op">=</span>dataset)</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>rare<span class="op">=</span>accuracy[accuracy.dataset<span class="op">==</span><span class="st">'rare_events'</span>]</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].plot(rare.nodes,rare.group_SD,marker<span class="op">=</span><span class="st">'o'</span>)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].<span class="bu">set</span>(yscale<span class="op">=</span><span class="st">'log'</span>,xlabel<span class="op">=</span><span class="st">'Quadrature nodes (1 = Laplace)'</span>,ylabel<span class="op">=</span><span class="st">'Absolute log-likelihood approximation error'</span>,title<span class="op">=</span><span class="st">'Against independent integration at each fitted parameter vector'</span>)</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].legend(fontsize<span class="op">=</span><span class="dv">7</span>)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">'Quadrature nodes'</span>,ylabel<span class="op">=</span><span class="st">'Estimated group SD'</span>,title<span class="op">=</span><span class="st">'Rare events: approximation changes the estimate'</span>)</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()<span class="op">;</span>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>render_figure(<span class="st">'approximation'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -957,10 +962,21 @@ Independent cbpp marginal ML fit: {'dataset': 'cbpp', 'coefficients': [-1.399230
 
 </div>
 </div>
+<div class="cell-output cell-output-stdout">
+<pre><code>figures/logistic-mixed-integration-error.svg 
+figures/logistic-mixed-node-sensitivity.svg </code></pre>
+</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="logistic-mixed-verification_files/figure-html/cell-5-output-2.png" width="1045" height="374" class="figure-img"></p>
+<p><img src="logistic-mixed-verification_files/figure-html/cell-5-output-3.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="logistic-mixed-verification_files/figure-html/cell-5-output-4.svg" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -980,13 +996,13 @@ Independent cbpp marginal ML fit: {'dataset': 'cbpp', 'coefficients': [-1.399230
 </section>
 <section id="reproduce" class="level2">
 <h2 class="anchored" data-anchor-id="reproduce">Reproduce</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> test <span class="at">--workspace</span> <span class="at">--locked</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">-p</span> php-stats <span class="at">--release</span> <span class="at">--locked</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$PWD</span><span class="st">/target/release/libphp_stats.dylib"</span> tests/logistic-mixed.php</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$PWD</span><span class="st">/target/release/libphp_stats.dylib"</span> examples/logistic-mixed.php</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="va">PHP</span><span class="op">=</span>/opt/homebrew/bin/php <span class="ex">.context/notebooks-venv/bin/python</span> docs/verifications/compare_logistic_mixed.py</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Explicit reference refresh, not needed by ordinary Rust/PHP tests:</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> tests/generate-logistic-mixed-fixtures.R</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> test <span class="at">--workspace</span> <span class="at">--locked</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">-p</span> php-stats <span class="at">--release</span> <span class="at">--locked</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$PWD</span><span class="st">/target/release/libphp_stats.dylib"</span> tests/logistic-mixed.php</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$PWD</span><span class="st">/target/release/libphp_stats.dylib"</span> examples/logistic-mixed.php</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="va">PHP</span><span class="op">=</span>/opt/homebrew/bin/php <span class="ex">.context/notebooks-venv/bin/python</span> docs/verifications/compare_logistic_mixed.py</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Explicit reference refresh, not needed by ordinary Rust/PHP tests:</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> tests/generate-logistic-mixed-fixtures.R</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Use <code>.so</code> on Linux and select matching PHP/php-config as in the development guide. The <a href="../verifications/logistic-mixed-results.json">saved full audit</a> includes versions, fixture/data/extension hashes, original R likelihoods and corrections, all actual fit outputs, integration error measurements and the independent SciPy fit.</p>
 
 

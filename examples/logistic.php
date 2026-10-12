@@ -5,7 +5,7 @@ $file = fopen(__DIR__ . '/../docs/data/learning.csv', 'r');
 fgetcsv($file, escape: '');
 $x = $y = [];
 while (($row = fgetcsv($file, escape: '')) !== false) {
-    $x[] = [1.0, (float) $row[0], (float) $row[1]];
+    $x[] = [(float) $row[0], (float) $row[1]];
     $y[] = (float) $row[2];
 }
 fclose($file);

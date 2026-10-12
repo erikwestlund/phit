@@ -62,11 +62,12 @@ foreach ($students as $student) {
     $y[] = $student['score'];
     $groups[] = $student['school'];
 }
-$result = stats_lmm(x: $x, y: $y, groups: $groups);
+$result = stats_lmm(x: $x, y: $y, groups: $groups, intercept: false);
 ```
 
 These PHP records are already numeric; `examples/lmm.php` supplies the complete
-CSV conversion. No formulas or implicit intercepts are interpreted by the native call.
+CSV conversion with predictor-only x and an automatic fixed intercept. This
+verification passes an explicit design with `intercept: false`; formulas are not parsed.
 The comparison runner gives R the exact design columns with formula `y ~ 0 + x0 + ... + (1|group)`.
 
 ## Conventions that must match

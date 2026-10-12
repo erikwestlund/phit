@@ -166,6 +166,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Figure conventions and reproducibility</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../licensing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Licensing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../v0.1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">v0.1 stabilization and release assessment</span></a>
   </div>
@@ -492,23 +504,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>These are numerical comparisons of the specified models. They do not establish that a random intercept adequately models each scientific study. In particular, we do not reproduce the random-slope sleepstudy example or a worker-by-machine interaction. All fits are marginal maximum likelihood, not REML.</p>
 <section id="execute-all-four-comparisons" class="level2">
 <h2 class="anchored" data-anchor-id="execute-all-four-comparisons">Execute all four comparisons</h2>
-<div id="40ca274d" class="cell" data-execution_count="1">
+<div id="d2de6e6c" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json,sys</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>ROOT<span class="op">=</span><span class="bu">next</span>(p <span class="cf">for</span> p <span class="kw">in</span> [Path.cwd(),<span class="op">*</span>Path.cwd().parents] <span class="cf">if</span> (p<span class="op">/</span><span class="st">'Cargo.toml'</span>).exists())</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>,<span class="bu">str</span>(ROOT<span class="op">/</span><span class="st">'docs/verifications'</span>))</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> compare_lmm <span class="im">import</span> public_cases,compare_case</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>cases<span class="op">=</span>public_cases()</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>results<span class="op">=</span>[compare_case(case,include_nlme<span class="op">=</span><span class="va">True</span>) <span class="cf">for</span> case <span class="kw">in</span> cases]</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>ORDER<span class="op">=</span>[(<span class="st">'R'</span>,<span class="st">'R: lme4'</span>),(<span class="st">'nlme'</span>,<span class="st">'R: nlme'</span>),(<span class="st">'Python'</span>,<span class="st">'statsmodels'</span>),(<span class="st">'php-stats'</span>,<span class="st">'PHP'</span>)]</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Versions:'</span>,results[<span class="dv">0</span>][<span class="st">'versions'</span>])</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame([<span class="bu">dict</span>(dataset<span class="op">=</span>c[<span class="st">'name'</span>],observations<span class="op">=</span><span class="bu">len</span>(c[<span class="st">'y'</span>]),groups<span class="op">=</span><span class="bu">len</span>(<span class="bu">set</span>(c[<span class="st">'groups'</span>])),</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                           fixed_coefficients<span class="op">=</span><span class="bu">len</span>(c[<span class="st">'x'</span>][<span class="dv">0</span>]),formula<span class="op">=</span>c[<span class="st">'source'</span>][<span class="st">'formula'</span>],</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>                           all_comparisons_passed<span class="op">=</span><span class="va">True</span>) <span class="cf">for</span> c <span class="kw">in</span> cases]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>,<span class="bu">str</span>(ROOT<span class="op">/</span><span class="st">'docs/figures'</span>))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bridge <span class="im">import</span> render_figure</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>,<span class="bu">str</span>(ROOT<span class="op">/</span><span class="st">'docs/verifications'</span>))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> compare_lmm <span class="im">import</span> public_cases,compare_case</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>cases<span class="op">=</span>public_cases()</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>results<span class="op">=</span>[compare_case(case,include_nlme<span class="op">=</span><span class="va">True</span>) <span class="cf">for</span> case <span class="kw">in</span> cases]</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>ORDER<span class="op">=</span>[(<span class="st">'R'</span>,<span class="st">'R: lme4'</span>),(<span class="st">'nlme'</span>,<span class="st">'R: nlme'</span>),(<span class="st">'Python'</span>,<span class="st">'statsmodels'</span>),(<span class="st">'php-stats'</span>,<span class="st">'PHP'</span>)]</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Versions:'</span>,results[<span class="dv">0</span>][<span class="st">'versions'</span>])</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame([<span class="bu">dict</span>(dataset<span class="op">=</span>c[<span class="st">'name'</span>],observations<span class="op">=</span><span class="bu">len</span>(c[<span class="st">'y'</span>]),groups<span class="op">=</span><span class="bu">len</span>(<span class="bu">set</span>(c[<span class="st">'groups'</span>])),</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>                           fixed_coefficients<span class="op">=</span><span class="bu">len</span>(c[<span class="st">'x'</span>][<span class="dv">0</span>]),formula<span class="op">=</span>c[<span class="st">'source'</span>][<span class="st">'formula'</span>],</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>                           all_comparisons_passed<span class="op">=</span><span class="va">True</span>) <span class="cf">for</span> c <span class="kw">in</span> cases]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Versions: {'R': 'R version 4.6.1 (2026-06-24)', 'lme4': '2.0.6', 'statsmodels': '0.15.0', 'PHP': '8.5.10', 'Python': '3.14.7', 'nlme': '3.1.169'}</code></pre>
 </div>
@@ -580,7 +595,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <p>Reaction ~ Days + (1 | Subject), all 180 observations.</p>
-<div id="93ade0a0" class="cell" data-execution_count="3">
+<div id="bd0dfa14" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 
@@ -697,7 +712,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <p>distance ~ age * female + (1 | Subject), all 108 observations. The age × female column is constructed before calling the library.</p>
-<div id="5cffa73a" class="cell" data-execution_count="4">
+<div id="5e3c74c7" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div>
 
@@ -902,7 +917,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <p>score ~ machine_B + machine_C + (1 | Worker), all 54 observations. Machine A is the reference brand.</p>
-<div id="3a7bc7fb" class="cell" data-execution_count="5">
+<div id="3d6b3c7d" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display">
 <div>
 
@@ -1063,7 +1078,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
 <p>mAch ~ ses + meanses + catholic + (1 | school), all 7,185 observations. Public schools are the reference sector.</p>
-<div id="0e613302" class="cell" data-execution_count="6">
+<div id="3a6e2863" class="cell" data-execution_count="6">
 <div class="cell-output cell-output-display">
 <div>
 
@@ -1271,7 +1286,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="variances-and-likelihood" class="level2">
 <h2 class="anchored" data-anchor-id="variances-and-likelihood">Variances and likelihood</h2>
-<div id="d7fabd72" class="cell" data-execution_count="7">
+<div id="a131be50" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>rows<span class="op">=</span>[]</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> result <span class="kw">in</span> results:</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> key,label <span class="kw">in</span> ORDER:</span>
@@ -1468,11 +1483,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="look-closely-at-numerical-differences" class="level2">
 <h2 class="anchored" data-anchor-id="look-closely-at-numerical-differences">Look closely at numerical differences</h2>
 <p>The graph shows the difference between native and lme4 conditional fitted values, scaled by a million to make rounding differences visible. Zero means exact agreement. Every point is a retained observation; panel units differ by dataset. It is a numerical agreement plot, not a model residual diagnostic.</p>
-<div id="b12c3416" class="cell" data-execution_count="8">
+<div id="0ff3954e" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-stdout">
+<pre><code>figures/lmm-public-agreement.svg </code></pre>
+</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lmm-public-verification_files/figure-html/cell-9-output-1.png" width="953" height="588" class="figure-img"></p>
+<p><img src="lmm-public-verification_files/figure-html/cell-9-output-2.svg" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -1527,13 +1545,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Default public-data tolerances are 1e-7 absolute plus 1e-6 relative. The four observation-length output vectors use 1e-6 absolute in their outcome’s units, plus 1e-6 relative, so residuals close to zero are not tested by relative error alone. Likelihood and AIC use 1e-7 absolute plus 1e-10 relative. Original synthetic fixtures retain their uniform 1e-7 + 1e-6 × abs(reference) tolerance. These policies are recorded with each source fixture and live report. An additional native-versus-statsmodels check keeps the stricter original uniform tolerance for all quantities; reference-optimizer rounding allowances cannot hide divergence between those two estimates.</p>
 <p>The High School and Beyond sample illustrates an optimizer precision limit: lme4 and nlme have effectively identical likelihoods but slightly different variance estimates. Conditional residual differences can reach a few 1e-7 when the residual itself is nearly zero. The profile scores below independently check stationarity at each estimate; they are derivatives of negative profile log-likelihood with respect to log(1 + tau²/sigma²). Zero is the interior optimum condition. Raw scores depend on dataset size and curvature and should not be compared across different studies as a universal error metric.</p>
-<div id="958c750f" class="cell" data-execution_count="9">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame([<span class="bu">dict</span>(dataset<span class="op">=</span>r[<span class="st">'name'</span>],implementation<span class="op">=</span>label,</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                           profile_score<span class="op">=</span>r[<span class="st">'profile_scores'</span>][key],</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                           log_likelihood_difference_vs_lme4<span class="op">=</span>r[key][<span class="st">'log_likelihood'</span>]<span class="op">-</span>r[<span class="st">'R'</span>][<span class="st">'log_likelihood'</span>])</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                      <span class="cf">for</span> r <span class="kw">in</span> results <span class="cf">for</span> key,label <span class="kw">in</span> ORDER]))</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> result <span class="kw">in</span> results:</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(result[<span class="st">'name'</span>],<span class="st">'Python warnings:'</span>,result[<span class="st">'python_diagnostics'</span>][<span class="st">'warnings'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="03469869" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame([<span class="bu">dict</span>(dataset<span class="op">=</span>r[<span class="st">'name'</span>],implementation<span class="op">=</span>label,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                           profile_score<span class="op">=</span>r[<span class="st">'profile_scores'</span>][key],</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                           log_likelihood_difference_vs_lme4<span class="op">=</span>r[key][<span class="st">'log_likelihood'</span>]<span class="op">-</span>r[<span class="st">'R'</span>][<span class="st">'log_likelihood'</span>])</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                      <span class="cf">for</span> r <span class="kw">in</span> results <span class="cf">for</span> key,label <span class="kw">in</span> ORDER]))</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> result <span class="kw">in</span> results:</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(result[<span class="st">'name'</span>],<span class="st">'Python warnings:'</span>,result[<span class="st">'python_diagnostics'</span>][<span class="st">'warnings'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -1677,11 +1695,11 @@ Hsb82 Python warnings: []</code></pre>
 <section id="reproduce-without-fetching-data" class="level2">
 <h2 class="anchored" data-anchor-id="reproduce-without-fetching-data">Reproduce without fetching data</h2>
 <p>The CSVs and lme4/nlme expected outputs are checked into the repository. <code>cargo test --workspace</code> and <code>tests/lmm.php</code> check the published fixtures without R, Python or network access. The live comparison requires lme4, nlme and the pinned Python environment, but not mlmRev: it reads the saved Hsb82 CSV.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> test <span class="at">--workspace</span> <span class="at">--locked</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="va">PHP</span><span class="op">=</span>/opt/homebrew/bin/php <span class="va">STATS_EXTENSION</span><span class="op">=</span><span class="st">"</span><span class="va">$PWD</span><span class="st">/target/release/libphp_stats.dylib"</span> <span class="dt">\</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">.context/notebooks-venv/bin/python</span> docs/verifications/compare_lmm.py <span class="at">--public</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="va">QUARTO_PYTHON</span><span class="op">=</span><span class="st">"</span><span class="va">$PWD</span><span class="st">/.context/notebooks-venv/bin/python"</span> <span class="va">PHP</span><span class="op">=</span>/opt/homebrew/bin/php <span class="dt">\</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">quarto</span> render docs/notebooks/lmm-public-verification.qmd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> test <span class="at">--workspace</span> <span class="at">--locked</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="va">PHP</span><span class="op">=</span>/opt/homebrew/bin/php <span class="va">STATS_EXTENSION</span><span class="op">=</span><span class="st">"</span><span class="va">$PWD</span><span class="st">/target/release/libphp_stats.dylib"</span> <span class="dt">\</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">.context/notebooks-venv/bin/python</span> docs/verifications/compare_lmm.py <span class="at">--public</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="va">QUARTO_PYTHON</span><span class="op">=</span><span class="st">"</span><span class="va">$PWD</span><span class="st">/.context/notebooks-venv/bin/python"</span> <span class="va">PHP</span><span class="op">=</span>/opt/homebrew/bin/php <span class="dt">\</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">quarto</span> render docs/notebooks/lmm-public-verification.qmd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Use matching PHP headers to build the extension first; use <code>.so</code> on Linux. The <a href="../verifications/lmm-public-results.json">saved live report</a> records full outputs, source checksums, runtime versions, the extension hash, warnings, tolerances and score/error checks. Re-execute this page after statistical-code or source-data changes; merely rendering saved outputs is not new verification.</p>
 <p>This strengthens evidence for the current Gaussian random-intercept ML model. It does not establish correctness for random slopes, REML, other response families, assumption checks, or finite-sample group-level inference.</p>
 

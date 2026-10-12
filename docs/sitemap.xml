@@ -1,64 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/verifications/probit.html</loc>
+    <loc>https://erikwestlund.github.io/php-stat-models/visualization.html</loc>
+    <lastmod>2026-10-12T01:07:28.101Z</lastmod>
+  </url>
+  <url>
+    <loc>https://erikwestlund.github.io/php-stat-models/verifications/poisson.html</loc>
     <lastmod>2026-10-11T20:06:41.402Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/verifications/ols.html</loc>
-    <lastmod>2026-10-11T17:39:13.685Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/verifications/logistic.html</loc>
+    <lastmod>2026-10-11T19:27:20.371Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/verifications/lmm.html</loc>
-    <lastmod>2026-10-11T21:02:19.931Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/verification.html</loc>
+    <lastmod>2026-10-12T01:31:04.514Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/v0.1.html</loc>
-    <lastmod>2026-10-12T00:13:58.252Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/r-compatibility.html</loc>
+    <lastmod>2026-10-11T23:58:53.754Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/ols-math.html</loc>
-    <lastmod>2026-10-11T19:07:33.162Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/r-compatibility.html</loc>
+    <lastmod>2026-10-12T01:24:44.626Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/probit-verification.html</loc>
-    <lastmod>2026-10-11T20:08:18.807Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/probit-math.html</loc>
+    <lastmod>2026-10-12T00:03:21.687Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/poisson-verification.html</loc>
-    <lastmod>2026-10-11T20:06:41.402Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/poisson-math.html</loc>
+    <lastmod>2026-10-12T00:03:21.688Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/ols-verification.html</loc>
-    <lastmod>2026-10-11T17:38:41.603Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/ols-math.html</loc>
+    <lastmod>2026-10-12T01:28:15.739Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/logistic-verification.html</loc>
-    <lastmod>2026-10-11T19:27:20.373Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/logistic-mixed-verification.html</loc>
+    <lastmod>2026-10-12T01:04:32.773Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/logistic-mixed-math.html</loc>
-    <lastmod>2026-10-11T22:41:57.320Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/logistic-math.html</loc>
+    <lastmod>2026-10-12T00:03:21.687Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/lmm-verification.html</loc>
-    <lastmod>2026-10-11T20:31:50.130Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/lmm-public-verification.html</loc>
+    <lastmod>2026-10-12T01:04:32.773Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/lmm-math.html</loc>
-    <lastmod>2026-10-11T20:45:22.255Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/lmm-general-math.html</loc>
+    <lastmod>2026-10-11T21:52:15.830Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/index.html</loc>
-    <lastmod>2026-10-11T22:53:48.389Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/missing-data.html</loc>
+    <lastmod>2026-10-12T01:29:21.831Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/php-stat-models/index.html</loc>
-    <lastmod>2026-10-11T23:58:53.753Z</lastmod>
+    <lastmod>2026-10-12T01:29:21.831Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/php-stat-models/development.html</loc>
-    <lastmod>2026-10-11T23:58:53.753Z</lastmod>
+    <lastmod>2026-10-12T01:28:15.740Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/php-stat-models/data/lmm/index.html</loc>
@@ -74,7 +78,7 @@
   </url>
   <url>
     <loc>https://erikwestlund.github.io/php-stat-models/benchmarks/logistic-mixed.html</loc>
-    <lastmod>2026-10-11T22:53:48.363Z</lastmod>
+    <lastmod>2026-10-12T01:04:32.772Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/php-stat-models/benchmarks/lmm.html</loc>
@@ -90,66 +94,70 @@
   </url>
   <url>
     <loc>https://erikwestlund.github.io/php-stat-models/contracts.html</loc>
-    <lastmod>2026-10-12T00:14:36.338Z</lastmod>
+    <lastmod>2026-10-12T01:32:42.304Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/php-stat-models/design-philosophy.html</loc>
-    <lastmod>2026-10-11T22:53:48.389Z</lastmod>
+    <lastmod>2026-10-12T01:28:15.739Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/php-stat-models/documentation.html</loc>
-    <lastmod>2026-10-12T00:39:23.147Z</lastmod>
+    <lastmod>2026-10-12T01:07:28.122Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/missing-data.html</loc>
-    <lastmod>2026-10-11T22:53:48.390Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/licensing.html</loc>
+    <lastmod>2026-10-12T01:00:14.211Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/lmm-general-math.html</loc>
-    <lastmod>2026-10-11T21:52:15.830Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/index.html</loc>
+    <lastmod>2026-10-11T22:53:48.389Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/lmm-public-verification.html</loc>
-    <lastmod>2026-10-11T21:04:06.343Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/lmm-math.html</loc>
+    <lastmod>2026-10-12T01:04:32.773Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/logistic-math.html</loc>
-    <lastmod>2026-10-12T00:03:21.687Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/lmm-verification.html</loc>
+    <lastmod>2026-10-12T01:31:04.513Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/logistic-mixed-verification.html</loc>
-    <lastmod>2026-10-11T22:47:11.117Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/logistic-mixed-math.html</loc>
+    <lastmod>2026-10-12T01:04:32.773Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/ols-math.html</loc>
-    <lastmod>2026-10-11T18:48:20.990Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/logistic-verification.html</loc>
+    <lastmod>2026-10-12T01:31:04.512Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/poisson-math.html</loc>
-    <lastmod>2026-10-12T00:03:21.688Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/ols-verification.html</loc>
+    <lastmod>2026-10-12T01:28:15.740Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/probit-math.html</loc>
-    <lastmod>2026-10-12T00:03:21.687Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/poisson-verification.html</loc>
+    <lastmod>2026-10-12T01:31:04.513Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/r-compatibility.html</loc>
-    <lastmod>2026-10-11T21:52:15.830Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/notebooks/probit-verification.html</loc>
+    <lastmod>2026-10-12T01:31:04.513Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/r-compatibility.html</loc>
-    <lastmod>2026-10-11T23:58:53.754Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/ols-math.html</loc>
+    <lastmod>2026-10-11T19:07:33.162Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/verification.html</loc>
-    <lastmod>2026-10-11T23:58:53.753Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/v0.1.html</loc>
+    <lastmod>2026-10-12T01:31:04.513Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/verifications/logistic.html</loc>
-    <lastmod>2026-10-11T19:27:20.371Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/verifications/lmm.html</loc>
+    <lastmod>2026-10-11T21:02:19.931Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/verifications/poisson.html</loc>
+    <loc>https://erikwestlund.github.io/php-stat-models/verifications/ols.html</loc>
+    <lastmod>2026-10-12T01:31:04.509Z</lastmod>
+  </url>
+  <url>
+    <loc>https://erikwestlund.github.io/php-stat-models/verifications/probit.html</loc>
     <lastmod>2026-10-11T20:06:41.402Z</lastmod>
   </url>
 </urlset>

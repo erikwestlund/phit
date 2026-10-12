@@ -121,7 +121,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./v0.1.html">Project</a></li><li class="breadcrumb-item"><a href="./missing-data.html">Missing data and listwise deletion</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./visualization.html">Project</a></li><li class="breadcrumb-item"><a href="./missing-data.html">Missing data and listwise deletion</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -161,6 +161,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           </a> 
       </div>
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Figure conventions and reproducibility</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./licensing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Licensing</span></a>
+  </div>
+</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./v0.1.html" class="sidebar-item-text sidebar-link">
@@ -468,7 +480,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./v0.1.html">Project</a></li><li class="breadcrumb-item"><a href="./missing-data.html">Missing data and listwise deletion</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./visualization.html">Project</a></li><li class="breadcrumb-item"><a href="./missing-data.html">Missing data and listwise deletion</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Missing data and listwise deletion</h1>
 </div>
@@ -493,7 +505,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="what-counts-as-missing" class="level2">
 <h2 class="anchored" data-anchor-id="what-counts-as-missing">What counts as missing</h2>
 <p>PHP null and floating-point NAN represent missing values. Positive and negative infinity are invalid numerical input, not missingness. Strings (including empty strings and ‘NA’), booleans, objects and absent/ragged matrix elements remain errors. Numeric zero is a valid value. No value is imputed or coerced from text.</p>
-<p>Validation inspects all original values and shapes before deletion. A missing value cannot hide an invalid value or ragged row. After deletion, the retained matrix must still have n &gt; p and full numerical rank. If no usable fit remains, the call throws. The Rust fit_ols() contract continues to require complete finite numeric vectors; the PHP binding implements the omission policy before calling it.</p>
+<p>Validation inspects all original values and shapes before deletion. A missing value cannot hide an invalid value or ragged row. After deletion, the retained fixed design must still have n &gt; p (including the automatically added intercept) and full numerical rank. If no usable fit remains, the call throws. The Rust fit_ols() contract continues to require complete finite numeric vectors; the PHP binding implements the omission policy before calling it.</p>
 </section>
 <section id="warning-and-accounting" class="level2">
 <h2 class="anchored" data-anchor-id="warning-and-accounting">Warning and accounting</h2>

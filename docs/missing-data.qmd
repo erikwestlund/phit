@@ -21,7 +21,7 @@ errors. Numeric zero is a valid value. No value is imputed or coerced from text.
 
 Validation inspects all original values and shapes before deletion. A missing
 value cannot hide an invalid value or ragged row. After deletion, the retained
-matrix must still have n > p and full numerical rank. If no usable fit remains,
+fixed design must still have n > p (including the automatically added intercept) and full numerical rank. If no usable fit remains,
 the call throws. The Rust fit_ols() contract continues to require complete finite
 numeric vectors; the PHP binding implements the omission policy before calling it.
 

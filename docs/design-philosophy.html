@@ -121,7 +121,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./v0.1.html">Project</a></li><li class="breadcrumb-item"><a href="./design-philosophy.html">Design philosophy</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./visualization.html">Project</a></li><li class="breadcrumb-item"><a href="./design-philosophy.html">Design philosophy</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -161,6 +161,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           </a> 
       </div>
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Figure conventions and reproducibility</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./licensing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Licensing</span></a>
+  </div>
+</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./v0.1.html" class="sidebar-item-text sidebar-link">
@@ -467,7 +479,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./v0.1.html">Project</a></li><li class="breadcrumb-item"><a href="./design-philosophy.html">Design philosophy</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./visualization.html">Project</a></li><li class="breadcrumb-item"><a href="./design-philosophy.html">Design philosophy</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Design philosophy</h1>
 </div>
@@ -489,19 +501,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="a-plain-numerical-interface" class="level2">
 <h2 class="anchored" data-anchor-id="a-plain-numerical-interface">A plain numerical interface</h2>
 <p>The native interface should be as vanilla as possible: ordinary PHP arrays of numbers in, an associative array of numbers and numeric arrays out. A caller should be able to understand a fit from the function signature, the data shapes, and the documented statistical conventions. Loading the extension makes the functions available without application-specific imports or model classes.</p>
-<p>For all estimators, the raw interface is a supplied design matrix x and outcome vector y. Each row is an observation and each column is a coefficient. The caller supplies the intercept as a column of ones. The extension checks those inputs and performs the estimation; it does not infer how the application’s source data should be interpreted. Invalid values produce errors. Missing null/NAN values use documented listwise deletion with a warning and sample metadata; callers can choose strict rejection.</p>
+<p>For all estimators, the raw interface is a supplied design matrix x and outcome vector y. Each row is an observation and each column is a predictor. The PHP binding adds a fixed intercept by default; <code>intercept: false</code> accepts a complete literal design. The Rust core and random-effect designs remain literal matrices. This small, explicit convenience keeps the usual application call simple. The extension checks those inputs and performs the estimation; it does not infer how the application’s source data should be interpreted. Invalid values produce errors. Missing null/NAN values use documented listwise deletion with a warning and sample metadata; callers can choose strict rejection.</p>
 <p>Use explicit numerical defaults and document them. Current inference is homoskedastic OLS with 95% t intervals, and logistic, probit and Poisson maximum likelihood with 95% normal Wald intervals; rank deficiency is rejected. Undefined statistics remain NAN/INF in the raw output. Missing-data handling is explicit in the contract and observable in every fit result. Keep the mathematical calculations visible and understandable in the Rust core.</p>
 </section>
 <section id="convenience-belongs-around-the-raw-call" class="level2">
 <h2 class="anchored" data-anchor-id="convenience-belongs-around-the-raw-call">Convenience belongs around the raw call</h2>
-<p>Other packages, application code, or optional helpers from this project can make input preparation easier. They might select columns from records, read CSV data, convert numeric strings under an explicit policy, add a column of ones, handle missing observations, or attach coefficient labels. These are possible helper responsibilities, not features currently implemented or a commitment to build them.</p>
+<p>Other packages, application code, or optional helpers from this project can make input preparation easier. They might select columns from records, read CSV data, convert numeric strings under an explicit policy, handle missing observations, or attach coefficient labels. These are possible helper responsibilities, not features currently implemented or a commitment to build them.</p>
 <p>Whatever the source, preparation should finish with the same x and y arrays accepted by stats_ols(), stats_logistic(), stats_probit(), stats_poisson() or stats_lmm(). A user can construct those arrays directly and get the same estimation behavior without a helper. Helpers must make choices visible, especially column order, intercept insertion, missing-value handling and row alignment. They should preserve the raw result or explain any transformation, such as replacing nonfinite values for JSON serialization.</p>
 <p>For example, application code can prepare observations with ordinary PHP:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$x</span> <span class="op">=</span> []<span class="ot">;</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">$y</span> <span class="op">=</span> []<span class="ot">;</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">foreach</span> (<span class="va">$observations</span> <span class="kw">as</span> <span class="va">$observation</span>) {</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// This example assumes these fields are already validated numeric values.</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="va">$x</span>[] <span class="op">=</span> [<span class="fl">1.0</span><span class="ot">,</span> <span class="va">$observation</span>[<span class="st">'size'</span>]<span class="ot">,</span> <span class="va">$observation</span>[<span class="st">'bedrooms'</span>]]<span class="ot">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="va">$x</span>[] <span class="op">=</span> [<span class="va">$observation</span>[<span class="st">'size'</span>]<span class="ot">,</span> <span class="va">$observation</span>[<span class="st">'bedrooms'</span>]]<span class="ot">;</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="va">$y</span>[] <span class="op">=</span> <span class="va">$observation</span>[<span class="st">'price'</span>]<span class="ot">;</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="va">$result</span> <span class="op">=</span> stats_ols(x<span class="ot">:</span> <span class="va">$x</span><span class="ot">,</span> y<span class="ot">:</span> <span class="va">$y</span>)<span class="ot">;</span></span>

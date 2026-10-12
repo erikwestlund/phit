@@ -16,9 +16,12 @@ from pathlib import Path
 import json,sys
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+
 from IPython.display import display
 ROOT=next(p for p in [Path.cwd(),*Path.cwd().parents] if (p/'Cargo.toml').exists())
+import sys
+sys.path.insert(0,str(ROOT/'docs/figures'))
+from bridge import render_figure
 sys.path.insert(0,str(ROOT/'docs/verifications'))
 from compare_r_compatibility import run
 report=run()
@@ -152,7 +155,7 @@ $result = stats_lmm_fit(
         ['z' => $ones, 'groups' => $districtSchoolClassKeys],
         ['z' => $ones, 'groups' => $districtSchoolClassStudentKeys],
     ],
-    reml: true,
+    reml: true, intercept: false
 );
 ```
 
@@ -198,19 +201,7 @@ subject_group=dict(zip(data.Subject,fixture['terms'][0]['groups']))
 # Fixture IDs are factor-coded by the R generator; original subject ordering is
 # retained in the CSV. Map the groups explicitly rather than guessing labels.
 subjects=sorted(data.Subject.unique())
-fig,axes=plt.subplots(2,3,figsize=(11,6),sharex=True,sharey=True)
-for ax,subject in zip(axes.flat,subjects[:6]):
-    rows=data[data.Subject==subject]
-    b=fit['random'][0]['effects'][labels.index(subject_group[subject])]
-    days=np.linspace(0,9,100);beta=fit['coefficients']
-    ax.scatter(rows.Days,rows.Reaction,s=18,label='observed reaction time')
-    ax.plot(days,beta[0]+beta[1]*days,color='black',linestyle='--',label='population mean')
-    ax.plot(days,beta[0]+b[0]+(beta[1]+b[1])*days,label='subject conditional mean')
-    ax.set_title(f'Subject {subject}');ax.set_xlabel('Days of sleep deprivation');ax.set_ylabel('Reaction time (ms)')
-handles,labels=axes.flat[0].get_legend_handles_labels()
-fig.suptitle('Random intercepts and slopes: actual sleepstudy observations',y=.99)
-fig.legend(handles,labels,loc='upper center',bbox_to_anchor=(.5,.95),ncol=3,fontsize=9)
-fig.tight_layout(rect=(0,0,1,.88));plt.show()
+render_figure('sleepstudy')
 ```
 
 The observed predictor is **days of sleep deprivation**; it is not a trial

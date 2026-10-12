@@ -18,12 +18,12 @@ $function = 'stats_' . $model;
 $indices = [];
 for ($i = 0; $i < 10; $i++) $indices[] = (int) floor($i * (count($y) - 1) / 9);
 $indices = array_values(array_unique($indices));
-$warmup = ($model === 'lmm' ? $function($x, $y, $groups) : $function($x, $y));
+$warmup = ($model === 'lmm' ? $function($x, $y, $groups, intercept: false) : $function($x, $y, intercept: false));
 unset($warmup);
 $times = [];
 for ($i = 0; $i < (int) $argv[2]; $i++) {
     $start = hrtime(true);
-    $result = ($model === 'lmm' ? $function($x, $y, $groups) : $function($x, $y));
+    $result = ($model === 'lmm' ? $function($x, $y, $groups, intercept: false) : $function($x, $y, intercept: false));
     $times[] = (hrtime(true) - $start) / 1e9;
     // Compact verification/output happens outside the timed call.
     $compact = $result;

@@ -32,7 +32,7 @@ foreach ($functions as $name) {
   else $keys+=['z_statistics'=>'list<float>','fixed_fitted'=>'list<float>','linear_predictor'=>'list<float>','aic'=>'float','bic'=>'float','n_parameters'=>'int']+$group+
    ['n_groups'=>'int','random_intercept_sd'=>'float','random_intercept_variance'=>'float','neg2_log_likelihood'=>'float','quadrature_points'=>'int','integration'=>'string','method'=>'string','family'=>'string','link'=>'string','optimizer'=>'string','converged'=>'bool','evaluations'=>'int','gradient_max'=>'float','boundary'=>'bool','singular'=>'bool'];
   $api[$name]['result_keys']=array_keys($keys);sort($api[$name]['result_keys']);
-  $text.="/**\n * Explicit design matrix: rows are observations, columns are coefficients. Supply ones for an intercept.\n * null/NAN rows follow the missing policy; weights/offset are aligned with original rows.\n * @param array<array<int|float|null>> \$x\n * @param array<int|float|null> \$y\n";
+  $text.="/**\n * Predictor matrix: rows are observations. A fixed intercept is prepended by default.\n * null/NAN rows follow the missing policy; weights/offset are aligned with original rows.\n * @param array<array<int|float|null>> \$x\n * @param array<int|float|null> \$y\n * @param bool \$intercept False uses x exactly (including any caller-supplied ones).\n";
   if(in_array($name,['stats_lmm','stats_logistic_mixed'],true))$text.=" * @param array<int|string|null> \$groups\n";
   if($name==='stats_lmm_fit')$text.=" * @param array<array{z:array<array<int|float|null>>,groups:array<int|string|null>,correlated?:bool}> \$random\n";
   $text.=" * @return array{\n";

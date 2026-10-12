@@ -42,6 +42,19 @@ Homebrew's headers: use `/opt/homebrew/bin/php` and `/opt/homebrew/bin/php-confi
 The macOS linker configuration permits symbols resolved by PHP when it loads the
 extension; Linux needs no macOS linker flags.
 
+When using Homebrew LLVM's libclang on macOS, select the matching compiler and
+builtin header directory as well. Mixing Xcode's older arm_neon.h with a newer
+libclang can fail before any statistical tests run:
+
+```sh
+export LIBCLANG_PATH="$(brew --prefix llvm)/lib"
+export CC="$(brew --prefix llvm)/bin/clang"
+export CXX="$(brew --prefix llvm)/bin/clang++"
+export BINDGEN_EXTRA_CLANG_ARGS="-resource-dir=$($CC -print-resource-dir) -isysroot=$(xcrun --show-sdk-path)"
+```
+
+The CI matrix disables fail-fast so a macOS failure does not cancel Linux evidence.
+
 ## Build and run
 
 Run from the repository root with the environment above:

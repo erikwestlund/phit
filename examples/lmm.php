@@ -3,7 +3,7 @@ declare(strict_types=1);
 // Synthetic students nested in schools, with a continuous assessment score.
 $file=fopen(__DIR__.'/../docs/data/schools.csv','r');fgetcsv($file,escape:'');
 $x=$y=$groups=[];
-while(($row=fgetcsv($file,escape:''))!==false){$groups[]=$row[0];$x[]=[1.0,(float)$row[1],(float)$row[2]];$y[]=(float)$row[3];}
+while(($row=fgetcsv($file,escape:''))!==false){$groups[]=$row[0];$x[]=[(float)$row[1],(float)$row[2]];$y[]=(float)$row[3];}
 fclose($file);
 $r=stats_lmm(x:$x,y:$y,groups:$groups);
 printf("%-16s %12s %12s %12s %12s\n",'Term','Estimate','Std. error','z','p-value');

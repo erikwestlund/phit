@@ -6,10 +6,11 @@
 function stats_hello(): string {}
 
 /**
- * Explicit design matrix: rows are observations, columns are coefficients. Supply ones for an intercept.
+ * Predictor matrix: rows are observations. A fixed intercept is prepended by default.
  * null/NAN rows follow the missing policy; weights/offset are aligned with original rows.
  * @param array<array<int|float|null>> $x
  * @param array<int|float|null> $y
+ * @param bool $intercept False uses x exactly (including any caller-supplied ones).
  * @param array<int|string|null> $groups
  * @return array{
  *   coefficients: list<float>,
@@ -46,13 +47,14 @@ function stats_hello(): string {}
  * }
  * @throws \Exception Statistical or input error (codes 1001–1008).
  */
-function stats_lmm(array $x, array $y, array $groups, string $missing = 'drop'): array {}
+function stats_lmm(array $x, array $y, array $groups, string $missing = 'drop', bool $intercept = true): array {}
 
 /**
- * Explicit design matrix: rows are observations, columns are coefficients. Supply ones for an intercept.
+ * Predictor matrix: rows are observations. A fixed intercept is prepended by default.
  * null/NAN rows follow the missing policy; weights/offset are aligned with original rows.
  * @param array<array<int|float|null>> $x
  * @param array<int|float|null> $y
+ * @param bool $intercept False uses x exactly (including any caller-supplied ones).
  * @param array<array{z:array<array<int|float|null>>,groups:array<int|string|null>,correlated?:bool}> $random
  * @return array{
  *   coefficients: list<float>,
@@ -89,13 +91,14 @@ function stats_lmm(array $x, array $y, array $groups, string $missing = 'drop'):
  * }
  * @throws \Exception Statistical or input error (codes 1001–1008).
  */
-function stats_lmm_fit(array $x, array $y, array $random, string $missing = 'drop', bool $reml = false, ?array $weights = NULL, ?array $offset = NULL, ?array $start = NULL, int $max_evaluations = 20000, float $tolerance = 1.0E-7, string $optimizer = 'bobyqa', float $objective_tolerance = 1.0E-12): array {}
+function stats_lmm_fit(array $x, array $y, array $random, string $missing = 'drop', bool $reml = false, ?array $weights = NULL, ?array $offset = NULL, ?array $start = NULL, int $max_evaluations = 20000, float $tolerance = 1.0E-7, string $optimizer = 'bobyqa', float $objective_tolerance = 1.0E-12, bool $intercept = true): array {}
 
 /**
- * Explicit design matrix: rows are observations, columns are coefficients. Supply ones for an intercept.
+ * Predictor matrix: rows are observations. A fixed intercept is prepended by default.
  * null/NAN rows follow the missing policy; weights/offset are aligned with original rows.
  * @param array<array<int|float|null>> $x
  * @param array<int|float|null> $y
+ * @param bool $intercept False uses x exactly (including any caller-supplied ones).
  * @return array{
  *   coefficients: list<float>,
  *   covariance: list<list<float>>,
@@ -121,13 +124,14 @@ function stats_lmm_fit(array $x, array $y, array $random, string $missing = 'dro
  * }
  * @throws \Exception Statistical or input error (codes 1001–1008).
  */
-function stats_logistic(array $x, array $y, string $missing = 'drop', ?array $weights = NULL, ?array $offset = NULL): array {}
+function stats_logistic(array $x, array $y, string $missing = 'drop', ?array $weights = NULL, ?array $offset = NULL, bool $intercept = true): array {}
 
 /**
- * Explicit design matrix: rows are observations, columns are coefficients. Supply ones for an intercept.
+ * Predictor matrix: rows are observations. A fixed intercept is prepended by default.
  * null/NAN rows follow the missing policy; weights/offset are aligned with original rows.
  * @param array<array<int|float|null>> $x
  * @param array<int|float|null> $y
+ * @param bool $intercept False uses x exactly (including any caller-supplied ones).
  * @param array<int|string|null> $groups
  * @return array{
  *   coefficients: list<float>,
@@ -172,13 +176,14 @@ function stats_logistic(array $x, array $y, string $missing = 'drop', ?array $we
  * }
  * @throws \Exception Statistical or input error (codes 1001–1008).
  */
-function stats_logistic_mixed(array $x, array $y, array $groups, string $missing = 'drop', ?array $weights = NULL, ?array $offset = NULL, int $quadrature_points = 1, int $max_evaluations = 20000, float $tolerance = 1.0E-7): array {}
+function stats_logistic_mixed(array $x, array $y, array $groups, string $missing = 'drop', ?array $weights = NULL, ?array $offset = NULL, int $quadrature_points = 1, int $max_evaluations = 20000, float $tolerance = 1.0E-7, bool $intercept = true): array {}
 
 /**
- * Explicit design matrix: rows are observations, columns are coefficients. Supply ones for an intercept.
+ * Predictor matrix: rows are observations. A fixed intercept is prepended by default.
  * null/NAN rows follow the missing policy; weights/offset are aligned with original rows.
  * @param array<array<int|float|null>> $x
  * @param array<int|float|null> $y
+ * @param bool $intercept False uses x exactly (including any caller-supplied ones).
  * @return array{
  *   coefficients: list<float>,
  *   covariance: list<list<float>>,
@@ -204,13 +209,14 @@ function stats_logistic_mixed(array $x, array $y, array $groups, string $missing
  * }
  * @throws \Exception Statistical or input error (codes 1001–1008).
  */
-function stats_ols(array $x, array $y, string $missing = 'drop', ?array $weights = NULL, ?array $offset = NULL): array {}
+function stats_ols(array $x, array $y, string $missing = 'drop', ?array $weights = NULL, ?array $offset = NULL, bool $intercept = true): array {}
 
 /**
- * Explicit design matrix: rows are observations, columns are coefficients. Supply ones for an intercept.
+ * Predictor matrix: rows are observations. A fixed intercept is prepended by default.
  * null/NAN rows follow the missing policy; weights/offset are aligned with original rows.
  * @param array<array<int|float|null>> $x
  * @param array<int|float|null> $y
+ * @param bool $intercept False uses x exactly (including any caller-supplied ones).
  * @return array{
  *   coefficients: list<float>,
  *   covariance: list<list<float>>,
@@ -236,13 +242,14 @@ function stats_ols(array $x, array $y, string $missing = 'drop', ?array $weights
  * }
  * @throws \Exception Statistical or input error (codes 1001–1008).
  */
-function stats_poisson(array $x, array $y, string $missing = 'drop', ?array $weights = NULL, ?array $offset = NULL): array {}
+function stats_poisson(array $x, array $y, string $missing = 'drop', ?array $weights = NULL, ?array $offset = NULL, bool $intercept = true): array {}
 
 /**
- * Explicit design matrix: rows are observations, columns are coefficients. Supply ones for an intercept.
+ * Predictor matrix: rows are observations. A fixed intercept is prepended by default.
  * null/NAN rows follow the missing policy; weights/offset are aligned with original rows.
  * @param array<array<int|float|null>> $x
  * @param array<int|float|null> $y
+ * @param bool $intercept False uses x exactly (including any caller-supplied ones).
  * @return array{
  *   coefficients: list<float>,
  *   covariance: list<list<float>>,
@@ -268,4 +275,4 @@ function stats_poisson(array $x, array $y, string $missing = 'drop', ?array $wei
  * }
  * @throws \Exception Statistical or input error (codes 1001–1008).
  */
-function stats_probit(array $x, array $y, string $missing = 'drop', ?array $weights = NULL, ?array $offset = NULL): array {}
+function stats_probit(array $x, array $y, string $missing = 'drop', ?array $weights = NULL, ?array $offset = NULL, bool $intercept = true): array {}

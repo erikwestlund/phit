@@ -121,7 +121,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./v0.1.html">Project</a></li><li class="breadcrumb-item"><a href="./verification.html">Verification</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./visualization.html">Project</a></li><li class="breadcrumb-item"><a href="./verification.html">Verification</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -161,6 +161,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           </a> 
       </div>
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Figure conventions and reproducibility</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./licensing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Licensing</span></a>
+  </div>
+</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./v0.1.html" class="sidebar-item-text sidebar-link">
@@ -456,6 +468,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#routine-checks" id="toc-routine-checks" class="nav-link active" data-scroll-target="#routine-checks">Routine checks</a></li>
+  <li><a href="#php-intercept-and-offset-contracts" id="toc-php-intercept-and-offset-contracts" class="nav-link" data-scroll-target="#php-intercept-and-offset-contracts">PHP intercept and offset contracts</a></li>
   <li><a href="#reference-and-tolerances" id="toc-reference-and-tolerances" class="nav-link" data-scroll-target="#reference-and-tolerances">Reference and tolerances</a></li>
   <li><a href="#current-coverage-and-limits" id="toc-current-coverage-and-limits" class="nav-link" data-scroll-target="#current-coverage-and-limits">Current coverage and limits</a></li>
   <li><a href="#maintaining-evidence" id="toc-maintaining-evidence" class="nav-link" data-scroll-target="#maintaining-evidence">Maintaining evidence</a></li>
@@ -473,7 +486,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./v0.1.html">Project</a></li><li class="breadcrumb-item"><a href="./verification.html">Verification</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./visualization.html">Project</a></li><li class="breadcrumb-item"><a href="./verification.html">Verification</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Verification</h1>
 </div>
@@ -508,6 +521,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$STATS_EXTENSION</span><span class="st">"</span> examples/ols.php</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$STATS_EXTENSION</span><span class="st">"</span> examples/logistic.php</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>cargo test verifies the independent Rust engine. The extension crate disables its Rust test harness; explicitly building it and running PHP integration tests are separate required checks for binding changes. For a release/deployment check, build with –release and run the PHP scripts against target/release instead. For documentation-only changes, check links, commands and claims against source; rerun numerical tests when behavior or implementation changes.</p>
+</section>
+<section id="php-intercept-and-offset-contracts" class="level2">
+<h2 class="anchored" data-anchor-id="php-intercept-and-offset-contracts">PHP intercept and offset contracts</h2>
+<p><code>tests/intercept.php</code> checks all seven PHP fitters with predictors-only inputs against the same complete design passed with <code>intercept: false</code>. Those results must be identical, including covariance, likelihood, group effects, row accounting, and diagnostics. Existing fixtures retain their literal matrices and their PHP runners explicitly opt out of insertion. No-intercept and intercept-only models are exercised separately; automatic insertion never changes random-design z.</p>
+<p>Poisson exposure checks independently calculate the intercept-only weighted MLE, its standard error, likelihood and fitted counts. They use absolute tolerances 1e-10 for the coefficient/SE and 1e-9 for likelihood/counts. Rescaling exposure must shift only the intercept and preserve counts. Default-intercept weighted/offset fits also match stored R fixtures under the existing 1e-7 absolute + 1e-6 relative tolerance. Missing offsets participate in the same warning/deletion/strict-rejection contract as other inputs. The offline release gate includes this suite and the runnable exposure example.</p>
 </section>
 <section id="reference-and-tolerances" class="level2">
 <h2 class="anchored" data-anchor-id="reference-and-tolerances">Reference and tolerances</h2>

@@ -3,6 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   check:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-24.04, macos-14]
     runs-on: ${{ matrix.os }}
@@ -21,7 +22,11 @@ jobs:
           brew install php llvm
           echo "PHP=$(brew --prefix php)/bin/php" >> "$GITHUB_ENV"
           echo "PHP_CONFIG=$(brew --prefix php)/bin/php-config" >> "$GITHUB_ENV"
-          echo "LIBCLANG_PATH=$(brew --prefix llvm)/lib" >> "$GITHUB_ENV"
+          llvm_prefix="$(brew --prefix llvm)"
+          echo "LIBCLANG_PATH=$llvm_prefix/lib" >> "$GITHUB_ENV"
+          echo "CC=$llvm_prefix/bin/clang" >> "$GITHUB_ENV"
+          echo "CXX=$llvm_prefix/bin/clang++" >> "$GITHUB_ENV"
+          echo "BINDGEN_EXTRA_CLANG_ARGS=-resource-dir=$($llvm_prefix/bin/clang -print-resource-dir) -isysroot=$(xcrun --show-sdk-path)" >> "$GITHUB_ENV"
       - name: Stable Rust
         run: rustup update stable && rustup default stable && rustup component add clippy rustfmt
       - name: Test and load extension

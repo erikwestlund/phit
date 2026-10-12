@@ -43,7 +43,7 @@ hashes. Native estimates never seed the R worker.
 from pathlib import Path
 import json
 import pandas as pd
-import matplotlib.pyplot as plt
+
 from IPython.display import display
 ROOT=next(p for p in [Path.cwd(),*Path.cwd().parents] if (p/'Cargo.toml').exists())
 report=json.loads((ROOT/'docs/benchmarks/logistic-mixed-results.json').read_text())
@@ -61,16 +61,13 @@ table=pd.DataFrame(rows);display(table)
 print('Machine:',report.get('cpu'),report['platform'])
 print('Threads:',report['thread_environment'])
 print('Versions:',{name:report['cases'][0]['implementations'][name]['version'] for name in ORDER})
-fig,axes=plt.subplots(1,2,figsize=(11,4))
-for label in ORDER:
-    data=table[table.implementation==label]
-    axes[0].plot(data.observations,data.median_fit_seconds,marker='o',label=label)
-    axes[1].plot(data.observations,data.peak_process_RSS_MiB,marker='o',label=label)
-axes[0].set(xscale='log',yscale='log',xlabel='Observations',ylabel='Median full fit (seconds)',title='Binomial random intercept: Laplace ML')
-axes[1].set(xscale='log',xlabel='Observations',ylabel='Peak whole-process RSS (MiB)',title='Memory includes runtime startup')
-for ax in axes:ax.legend(fontsize=8);ax.grid(alpha=.2)
-fig.tight_layout();plt.show()
+import subprocess,os
+subprocess.run([os.environ.get('RSCRIPT','Rscript'),str(ROOT/'docs/figures/render.R'),'logistic-mixed'],check=True)
 ```
+
+![Median complete fits and individual repetitions, in fixed R/Python/PHP order.](figures/logistic-mixed-fit-time.svg)
+
+![Peak whole-process memory, in fixed R/Python/PHP order.](figures/logistic-mixed-memory.svg)
 
 These are 50-group, three-coefficient, one-intercept models using the one-node
 approximation. They do not benchmark 61-node integration, random slopes or multiple

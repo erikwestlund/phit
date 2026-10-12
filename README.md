@@ -1,145 +1,132 @@
-# PHP statistical models in Rust
+# PHP Statistical Models
 
-[Browse the documentation](https://erikwestlund.github.io/php-stat-models/) ·
-[Rendered index](docs/index.html)
+Fit regressions directly in PHP. This native extension uses Rust for estimation
+and returns ordinary associative arrays with coefficients, uncertainty, fitted
+values, and model statistics.
 
-A small native PHP extension exposing stats_hello(), stats_ols(),
-stats_logistic(), stats_probit(), stats_poisson(), stats_lmm(), stats_lmm_fit() and stats_logistic_mixed(). The single-level estimators accept explicit x/y arrays, a missing-data policy, and optional weights/offsets
-and return associative arrays. stats_lmm() also requires an aligned groups array. The independent stats-core crate implements OLS
-with scaled SVD, logistic, probit and Poisson maximum likelihood with weighted SVD,
-and Gaussian mixed models with ML/REML, random slopes, multiple grouping terms, weights/offsets, and native BOBYQA or Nelder–Mead. The fast random-intercept ML specialization remains available.
-Requires stable Rust
-and PHP 8.3+ with matching development headers. Dependencies are pinned in
-Cargo.lock.
+**[Documentation and math walkthroughs](https://erikwestlund.github.io/php-stat-models/)** ·
+[PHP API](https://erikwestlund.github.io/php-stat-models/contracts.html) · [Installation](https://erikwestlund.github.io/php-stat-models/development.html) ·
+[Verification](https://erikwestlund.github.io/php-stat-models/verification.html)
 
-The numerical engine uses Rust-native nalgebra. External BLAS/LAPACK backends
-are deferred until a concrete need justifies them; the docs preserve our
-[measured experiment](docs/benchmarks/ols.qmd#apple-accelerate-experiment).
+```php
+// Simulated apartments: floor area (m²) predicts monthly rent.
+$result = stats_ols(
+    x: [[74.4], [57.4], [66.4], [49.1], [45.7], [92.4], [37.0], [93.9]],
+    y: [1879.25, 1805.03, 2022.29, 1267.85, 1509.24, 2240.10, 959.51, 2386.54],
+);
 
-## v0.1 release candidate
-
-Read the [stabilization assessment](docs/v0.1.qmd) for verified scope, numerical
-limits, compatibility notes and remaining release gates. No new families were
-added in this pass. The [PHP stubs](stubs/php-stats.php) are for IDEs, not runtime inclusion.
-Run the complete offline Rust/PHP gate with matching executables:
-
-```sh
-PHP=/path/to/php PHP_CONFIG=/matching/php-config ./scripts/check
+$result['coefficients']; // [372.478545..., 21.479724...] — intercept, area
+$result['std_errors'];   // Standard error for each coefficient
+$result['conf_int'];     // 95% intervals: [[lower, upper], ...]
+$result['r_squared'];    // Approximately 0.876
 ```
 
-## Quick start
+Supply one row per observation and one column per predictor. **The fixed intercept
+is added automatically** and returned first. Use `intercept: false` for a model
+through the origin, or to supply a complete design matrix yourself. Loading the
+extension makes its functions available; application code needs no imports or
+model classes.
 
-First follow [development setup](docs/development.qmd) to select matching PHP and
-php-config executables. Run these commands in the checkout containing this README:
+## Models
+
+| Function | Model |
+| --- | --- |
+| `stats_ols()` | Continuous outcome; ordinary or weighted least squares |
+| `stats_logistic()` | Binary/grouped-binomial outcome; logit link |
+| `stats_probit()` | Binary/grouped-binomial outcome; probit link |
+| `stats_poisson()` | Counts; log link, weights and offsets |
+| `stats_lmm()` | Gaussian random intercept; optimized ML fit |
+| `stats_lmm_fit()` | Gaussian mixed model; ML/REML, random slopes, multiple grouping terms |
+| `stats_logistic_mixed()` | Binomial random intercept; Laplace or adaptive quadrature |
+
+Each fitter has its own documented inference and diagnostics. General Gaussian
+mixed models support explicit correlated/independent random designs; binomial
+mixed models currently support one grouping factor and a random intercept.
+See [supported structures and numerical limits](https://erikwestlund.github.io/php-stat-models/contracts.html).
+
+## Poisson counts with exposure
+
+Different observation periods belong in an offset on the **log scale**:
+
+```php
+$visitors = [82, 104, 96, 131, 87, 115, 142, 98];
+$days = [1, 2, 1, 3, 2, 1, 2, 3];
+$calls = [5, 12, 4, 22, 8, 8, 19, 16];
+
+$result = stats_poisson(
+    x: array_map(fn($v) => [$v], $visitors),
+    y: $calls,
+    offset: array_map(fn($d) => log($d), $days),
+);
+
+$expectedCount = $result['fitted'][0];
+$expectedRate = $expectedCount / $days[0];
+```
+
+The model is `log(expected count) = intercept + predictors × coefficients + offset`.
+The offset's coefficient is fixed at 1. Exposure must be positive; `weights:`
+means positive prior likelihood weights and serves a different purpose. Offset
+and weight arrays must align with the original observations. See the complete
+[exposure example](examples/poisson-offset.php).
+
+## Build and run
+
+Requires **PHP 8.3+**, matching PHP development headers, stable Rust, and Clang.
+Follow the [macOS/Linux setup guide](https://erikwestlund.github.io/php-stat-models/development.html) first, especially when
+selecting `php`, `php-config`, and libclang. In that configured shell:
+
+```sh
+cargo build -p php-stats --release --locked
+
+# macOS; use libphp_stats.so on Linux.
+export STATS_EXTENSION="$PWD/target/release/libphp_stats.dylib"
+php -n -d "extension=$STATS_EXTENSION" examples/ols.php
+php -n -d "extension=$STATS_EXTENSION" examples/poisson-offset.php
+```
+
+For a real application, install the compiled library and enable it in the
+application runtime's PHP configuration as described in
+[installation and deployment](https://erikwestlund.github.io/php-stat-models/development.html#running-in-an-application).
+Then call `stats_ols()`, `stats_poisson()`, etc. normally. The
+[PHP stubs](stubs/php-stats.php) support IDEs and static analysis; do not include
+them at runtime.
+
+## Data and errors
+
+Inputs are numeric PHP arrays. Null and `NAN` values are dropped listwise with a
+warning by default; `missing: 'raise'` rejects them. Results record retained and
+dropped row positions. Invalid shapes, infinite values, rank deficiency, and
+failed estimation raise exceptions with documented error codes. Fitted values
+and residuals follow retained-row order.
+
+**Migration:** older calls supplied their own ones column. Either remove that
+column and use the default, or add `intercept: false` to preserve the previous
+matrix exactly. Automatic insertion applies to fixed effects only; `random[*].z`
+remains an explicit random-effect design.
+
+## Tests and learning
 
 ```sh
 cargo test --workspace --locked
-cargo build -p php-stats --release --locked
-# macOS; use libphp_stats.so on Linux
-export STATS_EXTENSION="$PWD/target/release/libphp_stats.dylib"
-php -n -d "extension=$STATS_EXTENSION" tests/ols.php
-php -n -d "extension=$STATS_EXTENSION" tests/logistic.php
-php -n -d "extension=$STATS_EXTENSION" tests/probit.php
-php -n -d "extension=$STATS_EXTENSION" tests/poisson.php
-php -n -d "extension=$STATS_EXTENSION" tests/lmm.php
-php -n -d "extension=$STATS_EXTENSION" tests/r-compatibility.php
-php -n -d "extension=$STATS_EXTENSION" tests/lmm-expanded.php
-php -n -d "extension=$STATS_EXTENSION" tests/logistic-mixed.php
-php -n -d "extension=$STATS_EXTENSION" examples/ols.php
-php -n -d "extension=$STATS_EXTENSION" examples/logistic.php
-php -n -d "extension=$STATS_EXTENSION" examples/probit.php
-php -n -d "extension=$STATS_EXTENSION" examples/poisson.php
-php -n -d "extension=$STATS_EXTENSION" examples/lmm.php
-php -n -d "extension=$STATS_EXTENSION" examples/lmm-slopes.php
-php -n -d "extension=$STATS_EXTENSION" examples/logistic-mixed.php
+PHP=/path/to/php PHP_CONFIG=/matching/php-config ./scripts/check
 ```
 
-Polyscope workspaces and the original project are separate checkouts. Build
-outputs in target/ are gitignored and must be rebuilt in a different checkout.
-For persistent installation and web application usage, see the development guide.
+The release gate checks Rust, native PHP signatures, integration suites, and
+examples. Deterministic fixtures compare appropriate quantities against R,
+statsmodels, lme4, and independent numerical integration. Tests need neither R
+nor Python for fitting; provenance and tolerances are documented in the
+[verification record](https://erikwestlund.github.io/php-stat-models/verification.html).
 
-## Example
+The [Quarto walkthroughs](https://erikwestlund.github.io/php-stat-models/notebooks/index.html) explain matrices, estimation,
+likelihood, and inference with simulated and published data. Figures use a shared
+[R/ggplot2 strategy](https://erikwestlund.github.io/php-stat-models/visualization.html). R/Python are development tools;
+PHP runtime computation uses Rust-native nalgebra.
 
-These are saved simulated apartments: floor area in square metres predicts
-monthly rent in fictional currency units. The ones supply an intercept.
+This is a **v0.1 release candidate**. Read the
+[stabilization assessment](https://erikwestlund.github.io/php-stat-models/v0.1.html) for verified scope and remaining release
+gates.
 
-```php
-$result = stats_ols(
-    x: [[1.0, 74.4], [1.0, 57.4], [1.0, 66.4], [1.0, 49.1],
-        [1.0, 45.7], [1.0, 92.4], [1.0, 37.0], [1.0, 93.9]],
-    y: [1879.25, 1805.03, 2022.29, 1267.85, 1509.24, 2240.10, 959.51, 2386.54],
-);
-print_r($result['coefficients']); // approximately [372.478545, 21.479724]
-```
+## License
 
-The raw interface uses ordinary PHP arrays. Supply an intercept explicitly;
-inputs must be rectangular and the retained sample must be finite, full rank,
-and have more rows than columns. Missing null/NAN rows are dropped with a warning;
-use missing: 'raise' for strict rejection.
-The complete [example](examples/ols.php) prints coefficients and inference.
-
-## Documentation
-
-Render the documentation website with `quarto render docs` and browse it with
-`quarto preview docs`. Saved computations are included; see
-[documentation setup](docs/documentation.qmd) to refresh them.
-
-In Polyscope, open Preview to browse the workspace documentation at its own
-Herd `.test` URL. Workspace setup/archive hooks render, link and unlink it.
-
-Start with the [docs index](docs/index.qmd), or go directly to:
-
-- [Design philosophy](docs/design-philosophy.qmd): plain numeric inputs and outputs;
-  optional helpers own data preparation.
-- [Contracts](docs/contracts.qmd): signatures, types, ordering, validation, errors
-  and statistical conventions.
-- [Development](docs/development.qmd): environment, build, installation and deployment.
-- [Verification](docs/verification.qmd): checks, R fixtures, tolerances and limits.
-- [Missing data](docs/missing-data.qmd): listwise deletion, warnings and row accounting.
-- [Executed notebooks](docs/notebooks/index.qmd): math walkthrough and three-way fits.
-- [OLS verification report](docs/verifications/ols.qmd): R, statsmodels and PHP evidence.
-- [Scale and performance](docs/benchmarks/ols.qmd): reproducible comparisons up to one million rows.
-- [OLS mathematics and Rust notes](docs/ols-math.qmd): estimation, likelihood and code.
-
-OLS, logistic, probit, Poisson and Gaussian mixed ML/REML models are implemented. Logistic regression uses
-Newton/IRLS updates, weighted SVD and conventional normal Wald inference.
-Run `examples/logistic.php` or `tests/logistic.php` with the same extension-loading
-command above; see the [logistic walkthrough](docs/notebooks/logistic-math.qmd). R is a development reference, not a runtime dependency.
-
-The [probit walkthrough](docs/notebooks/probit-math.qmd) and
-[Poisson walkthrough](docs/notebooks/poisson-math.qmd) explain the estimators
-with saved simulated data, matrices and executed reference comparisons.
-
-The [mixed-model walkthrough](docs/notebooks/lmm-math.qmd) explains group
-covariance, marginal likelihood, variance profiling and shrinkage. `stats_lmm`
-adds a plain groups array for the optimized random-intercept fit. stats_lmm_fit() accepts explicit random-design terms for general Gaussian ML/REML.
-
-
-The [published-data mixed-model verification](docs/notebooks/lmm-public-verification.qmd)
-checks four independent study datasets against lme4, nlme and statsmodels, with
-saved CSV provenance and offline Rust/PHP reference fixtures.
-
-## Expanded R compatibility
-
-The [coverage ledger](docs/r-compatibility.qmd) distinguishes tested features from
-the remaining work toward full R/lme4 parity. We verify weighted/offset OLS,
-logistic, probit and Poisson fits; grouped binomial trials; and general Gaussian
-mixed designs against all four actual lme4 optimizer wrappers. The runtime has
-pure Rust BOBYQA and Nelder–Mead, not native NLopt/PORT backends. The
-[executed audit](docs/notebooks/r-compatibility.qmd) and
-[random-slopes/REML math walkthrough](docs/notebooks/lmm-general-math.qmd) include
-the published sleepstudy example. Full functionality is not yet implemented.
-
-## Binomial random-intercept models
-
-`stats_logistic_mixed(x, y, groups, weights: $trials, quadrature_points: 25)` fits
-binary/grouped-binomial logit outcomes with a Gaussian random intercept. One
-node is Laplace; 2..61 nodes use adaptive quadrature. The
-[walkthrough](docs/notebooks/logistic-mixed-math.qmd) explains modes and integration;
-the [verification](docs/notebooks/logistic-mixed-verification.qmd) compares 28 R
-fits with actual PHP calls and independent SciPy integration/estimation.
-Approximation sensitivity is measured explicitly, including a difficult rare-event
-case. This binomial fitter supports one grouping factor/intercept, not the broader
-Gaussian random-slope/multilevel API. See the
-[contract](docs/contracts.qmd#binomial-random-intercept-ml) and
-[scale report](docs/benchmarks/logistic-mixed.qmd).
+[MIT](LICENSE). Bundled reference datasets and third-party assets retain their
+original licenses; see [licensing](https://erikwestlund.github.io/php-stat-models/licensing.html).

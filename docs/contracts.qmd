@@ -12,10 +12,10 @@ callers can use named arguments.
 
 ```php
 stats_hello(): string; // "Hello from Rust!"
-stats_ols(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null): array;
-stats_logistic(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null): array;
-stats_probit(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null): array;
-stats_poisson(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null): array;
+stats_ols(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+stats_logistic(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+stats_probit(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+stats_poisson(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
 ```
 
 These are global native functions available when the extension is loaded.
@@ -23,12 +23,40 @@ All estimators are synchronous and stateless: each returns a complete fit withou
 retaining a model handle, input data or mutable configuration. It does not mutate
 the caller's arrays. Repeated fits are independent.
 
+## Fixed-intercept convention and migration
+
+All seven PHP estimators append `bool $intercept = true` to their existing
+arguments. Supply predictor columns only: the binding prepends an exact ones
+column and the estimated intercept is coefficient 0, followed by predictors in
+supplied column order. Covariance, standard errors, tests and intervals follow
+that same order. Parameter counts and residual degrees of freedom include the
+added coefficient. No input array is mutated.
+
+`intercept: false` passes the supplied x matrix literally. It is both the opt-out
+for a through-origin model and the compatibility option for callers already
+supplying a complete design with ones. There is **no automatic detection** of
+existing constant columns: leaving ones in x with the default creates a duplicate
+intercept and a rank-deficiency error, rather than silently guessing intent.
+
+For an intercept-only fit, supply one empty predictor row per outcome, such as
+`x: array_fill(0, count($y), [])`. An empty sample or ragged matrix is still invalid;
+empty predictor rows require `intercept: true`. Missing-row validation and deletion
+still apply to outcomes, predictors, groups, weights and offsets before fitting.
+
+This changes the default interpretation of x from the earlier release candidate.
+Remove the old ones column or add `intercept: false` when migrating. Stored
+reference/benchmark matrices keep their literal design and their PHP runners
+explicitly opt out. The independent Rust core remains a literal-design API.
+
+Random-effect designs `random[*].z` remain explicit; this option only constructs
+the fixed design. For a random intercept/slope, z still needs `[1, slope]` rows.
+
 ## OLS input and output
 
 
 ```php
 $result = stats_ols(
-    x: [[1.0, 1.0], [1.0, 2.0], [1.0, 3.0], [1.0, 4.0], [1.0, 5.0]],
+    x: [[1.0], [2.0], [3.0], [4.0], [5.0]],
     y: [2.1, 4.2, 5.8, 8.1, 10.2],
 );
 print_r($result);
@@ -43,10 +71,11 @@ Numeric inputs accept PHP integers or floats. null and NAN are missing values;
 rows containing them are dropped by default with a warning, or rejected with
 missing: 'raise'. Strings, booleans and infinity are rejected.
 Arrays are consumed in iteration order; keys are ignored. Supply a rectangular
-n × p design and n outcomes; the retained sample must have n > p. Add the intercept yourself as a column
-of exact ones. Only that convention enables centered R-squared and its adjusted
-version; other constant columns are not interpreted as intercepts. Without that
-column, R-squared is uncentered, matching R's no-intercept models.
+n × k predictor matrix and n outcomes. The default prepends ones, giving p=k+1
+coefficients; `intercept: false` gives p=k and uses x exactly. The retained sample
+must have n > p. An exact ones column enables centered R-squared and its adjusted
+version; other constant columns are not interpreted as intercepts. Without ones,
+R-squared is uncentered, matching R's no-intercept models.
 Empty, ragged, infinite, numerically rank-deficient or overflowing inputs throw
 PHP exceptions. Rust returns `Result<OlsResult, StatsError>`.
 
@@ -94,10 +123,11 @@ removed. fitted and residuals follow retained_rows order. See
 [missing-data.qmd](missing-data.qmd) for validation order, warnings, accounting and
 application handling. Applications can promote PHP warnings to exceptions.
 
-Current errors use PHP exceptions with readable messages; there are no dedicated
-exception classes or stable numeric error codes. Callers should handle Throwable
-at their application boundary rather than parse exception message text. Messages
-may change. If the extension is absent, the functions themselves are unavailable;
+Statistical and input failures use PHP Exception with stable numeric codes
+1001–1008; see [the diagnostic/error contract](#v01-diagnostics-and-errors).
+There are no estimator-specific exception classes. Callers can inspect getCode()
+and should handle Throwable at their application boundary, since PHP argument
+and runtime errors use their own types. Message text may change. If the extension is absent, the functions themselves are unavailable;
 that is an installation failure rather than an invalid-data result.
 
 NAN/INF are floating-point values in successful results, not failure sentinels.
@@ -127,15 +157,19 @@ raw API and optional convenience layers.
 ## Binary logistic regression
 
 ```php
-$result = stats_logistic(x: $design, y: $binaryOutcomes, missing: 'drop');
+$result = stats_logistic(x: $design, y: $binaryOutcomes, missing: 'drop', intercept: false);
 ```
 
-Use the same plain rectangular arrays, explicit intercept, ordering, numeric
-validation and missing-data policy as OLS. With default unit weights, outcomes must be exactly 0 or 1; integer trial weights also permit grouped proportions as documented below;
-both classes must remain after deletion, and retained n must exceed p. Invalid
+Use the same plain rectangular arrays, automatic fixed intercept, ordering, numeric
+validation and missing-data policy as OLS. With default unit weights, outcomes must encode 0 or 1 under the documented
+success-count rounding tolerance. Integer trial weights also permit grouped
+proportions; successes and failures must both remain after deletion, and retained n
+must exceed p. Invalid
 numeric outcomes are rejected even if another value in their row is missing.
-The model is independent Bernoulli observations with linear log-odds. It does
-not accept proportions, grouped successes/trials, observation weights or penalties.
+The model uses independent binomial observations with linear log-odds
+`offset + X beta`. Unit trial weights give Bernoulli outcomes; positive integer
+trial weights allow grouped successes/trials supplied as proportions. General
+fractional likelihood weights and penalties are unsupported.
 
 | Keys | PHP types and meaning |
 | --- | --- |
@@ -144,9 +178,9 @@ not accept proportions, grouped successes/trials, observation weights or penalti
 | covariance | list<list<float>>, p × p, inverse observed information |
 | fitted | list<float>, retained length n, estimated success probabilities |
 | residuals | list<float>, retained length n, response residuals y - fitted |
-| log_likelihood | float, summed individual Bernoulli log-likelihood |
-| deviance | float, -2 × log_likelihood; individual binary saturated likelihood is zero |
-| null_deviance | float, intercept-only baseline if exact ones column exists; otherwise fixed probability 0.5 |
+| log_likelihood | float, normalized binomial log-likelihood including grouped binomial coefficients; unit weights give Bernoulli likelihood |
+| deviance | float, twice saturated minus fitted log-likelihood; equals -2 × log_likelihood for individual binary outcomes |
+| null_deviance | float, intercept-only baseline retaining offsets if an exact ones column exists; otherwise offset-only baseline (probability 0.5 with zero offsets) |
 | aic | float, 2p - 2 × log_likelihood |
 | df_residual | int, retained n - p; no variance parameter is estimated |
 | iterations | int, accepted Newton updates, at most 100 |
@@ -191,24 +225,25 @@ field types match OlsResult, with usize for iterations and degrees of freedom.
 ## Probit regression
 
 ```php
-stats_probit(array $x, array $y, string $missing = 'drop'): array;
+stats_probit(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
 ```
 
-The binary input contract and output keys match logistic regression: numeric 0/1
-outcomes, both classes after deletion, full rank, n > p, explicit intercept,
+The binomial input contract and output keys match logistic regression: binary
+outcomes or grouped proportions with integer trial weights, both successes and
+failures after deletion, full rank, n > p after fixed-intercept insertion,
 probabilities in fitted, response residuals, coefficients/covariance/SE/z/p/Wald
 intervals, likelihood, deviance, null_deviance, AIC, df_residual, iterations,
-converged and sample metadata. Its link is Phi(X beta), not sigmoid(X beta).
+converged and sample metadata. Its link is Phi(offset + X beta), not sigmoid(offset + X beta).
 No latent variance parameter is estimated; it is fixed to one for identification.
 
 The dedicated Fisher-scoring fitter uses expected information
-X' diag(phi(eta)^2/[Phi(eta)Phi(-eta)]) X, recalculated at the final fit.
+X' diag(trials × phi(eta)^2/[Phi(eta)Phi(-eta)]) X, recalculated at the final fit.
 This convention matches R glm(probit) and statsmodels GLM(Binomial(Probit)).
 An observed-Hessian covariance from a discrete Probit implementation may differ.
 Confidence intervals and tests remain normal Wald, not profile likelihood.
 Coefficients are latent-normal effects; exponentiating them does not give a
-constant odds ratio. Null deviance uses the mean outcome with an exact ones
-column, otherwise probability 0.5.
+constant odds ratio. Null deviance uses an intercept-only fit retaining offsets with an exact ones
+column, otherwise the offset-only baseline (probability 0.5 with zero offsets).
 
 The limit is 100 updates with up to 30 step halvings. Probit uses tighter full
 scaled-coordinate step tolerance 1e-11 × (1 + absolute next coordinate), and
@@ -227,7 +262,7 @@ See the [walkthrough](notebooks/probit-math.qmd).
 ## Poisson regression
 
 ```php
-stats_poisson(array $x, array $y, string $missing = 'drop'): array;
+stats_poisson(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
 ```
 
 The raw design and missing-data contracts are the same. Outcomes must be finite,
@@ -237,11 +272,13 @@ missing predictor. The retained sample must have at least one positive count,
 full numerical rank and n > p. All-zero samples are conservatively rejected,
 including no-intercept designs where a finite optimum might otherwise exist.
 
-The model is independent Poisson observations with log mean X beta. Returned
+The model is independent Poisson observations with log mean `offset + X beta`. Returned
 keys and types match the logistic table, but fitted is a **mean count**, not a
 probability, and residuals are y - fitted. Confidence intervals/tests are normal
 Wald with dispersion fixed at one. There is no estimated sigma, RSS-based
-variance, robust covariance, offset, exposure argument or sample weights.
+variance or robust covariance. Positive prior likelihood weights and additive
+offsets are supported. There is no separate exposure argument: supply
+`offset = log(exposure)` for positive known exposure.
 A coefficient's exponential is a conditional mean multiplier per unit.
 
 Likelihood includes -log Gamma(y+1). Deviance is twice saturated minus fitted
@@ -251,7 +288,8 @@ otherwise fixed mean one. AIC is 2p - 2 × log_likelihood, and df_residual is n-
 Zero individual counts are valid. Conditional variance equals the conditional
 mean; overdispersion can invalidate conventional standard errors.
 
-The dedicated weighted-SVD Newton/IRLS fitter uses weights equal to the fitted
+The dedicated weighted-SVD Newton/IRLS fitter uses information weights equal
+to prior likelihood weights times the fitted
 means and final inverse information for covariance. It uses the logistic step
 and likelihood tolerances (1e-8 and 1e-10), at most 100 updates and 30 halvings.
 Certain predictor patterns have no finite MLE; numerical rank failure or
@@ -266,12 +304,12 @@ Its numeric Rust field types match LogisticResult. See the
 ## Gaussian random-intercept mixed model
 
 ```php
-stats_lmm(array $x, array $y, array $groups, string $missing = 'drop'): array;
+stats_lmm(array $x, array $y, array $groups, string $missing = 'drop', bool $intercept = true): array;
 ```
 
 This first mixed model has continuous Gaussian outcomes and **one random
-intercept per group**. The fixed design is supplied explicitly, including a ones
-column when desired. This specialized call has no random slopes, crossed/nested grouping
+intercept per group**. The fixed intercept is prepended by default; use
+`intercept: false` for a literal fixed design. This specialized call has no random slopes, crossed/nested grouping
 arguments, random-effects covariance matrices, offsets or observation weights.
 The estimation method is marginal maximum likelihood (ML), not REML.
 
@@ -349,14 +387,14 @@ metadata. See the [walkthrough](notebooks/lmm-math.qmd).
 
 ## Weights, offsets and grouped binomial responses
 
-The four fixed-model signatures now append optional arrays without changing
-existing positional arguments:
+The four fixed-model signatures accept optional weights/offsets and append
+the fixed-intercept option after existing positional arguments:
 
 ```php
-stats_ols(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null): array;
-stats_logistic(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null): array;
-stats_probit(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null): array;
-stats_poisson(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null): array;
+stats_ols(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+stats_logistic(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+stats_probit(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+stats_poisson(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
 ```
 
 Optional vectors must have one value per **original** observation. null means
@@ -385,6 +423,28 @@ Missing values in any supplied optional vector participate in listwise deletion
 with x and y. One warning and the same retained/dropped row metadata apply.
 Invalid values and original shapes are checked before deleting rows.
 
+### Poisson exposure example
+
+```php
+$exposure = [1, 2, 4, 8, 16, 3, 6, 12];
+$counts = [1, 4, 3, 12, 23, 2, 11, 14];
+$r = stats_poisson(
+    x: array_fill(0, count($counts), []), // Intercept-only rate model.
+    y: $counts,
+    offset: array_map(fn($e) => log($e), $exposure),
+);
+$rate = exp($r['coefficients'][0]);
+// fitted[i] = exposure[i] * rate; the result contains expected counts.
+```
+
+The offset has a known coefficient of 1 and adds no estimated parameter. It is
+on the linear-predictor scale, not the count scale. With a unit exposure use zero;
+with a general positive exposure pass its natural logarithm. Multiplying every
+exposure by a constant shifts the intercept and preserves fitted counts. To get
+a fitted rate, divide a fitted count by its original exposure. Invalid/nonfinite
+or misaligned offsets fail validation; missing offsets follow `missing`.
+The runnable repository example `examples/poisson-offset.php` adds a visitor predictor.
+
 ## General Gaussian mixed-model call
 
 ```php
@@ -394,6 +454,7 @@ stats_lmm_fit(
     ?array $weights = null, ?array $offset = null, ?array $start = null,
     int $max_evaluations = 20000, float $tolerance = 1e-7,
     string $optimizer = 'bobyqa', float $objective_tolerance = 1e-12,
+    bool $intercept = true,
 ): array;
 ```
 
@@ -408,7 +469,7 @@ integer 1 and string "1" remain distinct.
 
 ```php
 $r = stats_lmm_fit(
-    x: $fixedDesign,
+    x: $fixedPredictors, // Fixed intercept is added automatically.
     y: $outcomes,
     random: [
         ['z' => $interceptAndSlope, 'groups' => $subjects, 'correlated' => true],
@@ -474,7 +535,7 @@ stats_logistic_mixed(
     array $x, array $y, array $groups, string $missing = 'drop',
     ?array $weights = null, ?array $offset = null,
     int $quadrature_points = 1, int $max_evaluations = 20000,
-    float $tolerance = 1e-7,
+    float $tolerance = 1e-7, bool $intercept = true,
 ): array;
 ```
 
@@ -489,7 +550,7 @@ proportions. The first implementation limits trials per row to **1,000,000** to
 protect direct binomial likelihood arithmetic; larger counts need another stable
 log-mass implementation. R has broader input support.
 
-The fixed intercept must be supplied as ones. Require finite full-rank x,
+The fixed intercept is prepended by default; `intercept: false` uses x literally. Require finite full-rank fixed design,
 n>p, at least two groups, a repeated group, and both successes/failures after
 count canonicalization and deletion. Some groups may contain only successes or
 only failures. Fixed-design separation prevents a finite unpenalized MLE and

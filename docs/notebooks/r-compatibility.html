@@ -166,6 +166,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Figure conventions and reproducibility</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../licensing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Licensing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../v0.1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">v0.1 stabilization and release assessment</span></a>
   </div>
@@ -493,18 +505,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>This notebook executes the <strong>installed PHP extension</strong> on saved R reference inputs. R generated the checked-in expected values using <code>lm</code>, <code>glm</code>, and <code>lmer</code> with each of its four optimizer wrappers. The two native algorithms are BOBYQA and Nelder–Mead. See the <a href="../r-compatibility.html">compatibility ledger</a> for supported features and the work still needed for full parity.</p>
 <section id="run-the-audit" class="level2">
 <h2 class="anchored" data-anchor-id="run-the-audit">Run the audit</h2>
-<div id="218e539d" class="cell" data-execution_count="1">
+<div id="2d003406" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json,sys</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>ROOT<span class="op">=</span><span class="bu">next</span>(p <span class="cf">for</span> p <span class="kw">in</span> [Path.cwd(),<span class="op">*</span>Path.cwd().parents] <span class="cf">if</span> (p<span class="op">/</span><span class="st">'Cargo.toml'</span>).exists())</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>,<span class="bu">str</span>(ROOT<span class="op">/</span><span class="st">'docs/verifications'</span>))</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> compare_r_compatibility <span class="im">import</span> run</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>report<span class="op">=</span>run()</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(report[<span class="st">'versions'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>,<span class="bu">str</span>(ROOT<span class="op">/</span><span class="st">'docs/figures'</span>))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bridge <span class="im">import</span> render_figure</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>,<span class="bu">str</span>(ROOT<span class="op">/</span><span class="st">'docs/verifications'</span>))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> compare_r_compatibility <span class="im">import</span> run</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>report<span class="op">=</span>run()</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(report[<span class="st">'versions'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Passed 12 fixed-model cases and 15 mixed-model cases × 2 native × 4 lme4 optimizers; sleepstudy ML/REML also passed statsmodels.
 {'R': 'R version 4.6.1 (2026-06-24)', 'lme4': '2.0.6', 'PHP': '8.5.10', 'python': '3.14.7', 'numpy': '2.5.4', 'scipy': '1.18.1', 'statsmodels': '0.15.0'}</code></pre>
@@ -514,7 +529,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="fixed-estimators-weights-offsets-and-binomial-trials" class="level2">
 <h2 class="anchored" data-anchor-id="fixed-estimators-weights-offsets-and-binomial-trials">Fixed estimators: weights, offsets and binomial trials</h2>
-<div id="0b9457cf" class="cell" data-execution_count="2">
+<div id="c493720c" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame([<span class="bu">dict</span>(case<span class="op">=</span>r[<span class="st">'name'</span>],estimator<span class="op">=</span>r[<span class="st">'model'</span>],</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                          largest_absolute_error<span class="op">=</span>r[<span class="st">'max_absolute_error'</span>],passed<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                     <span class="cf">for</span> r <span class="kw">in</span> report[<span class="st">'fixed'</span>]]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -639,7 +654,7 @@ fit$null.deviance</code></pre>
 </section>
 <section id="mixed-models-and-optimizer-agreement" class="level2">
 <h2 class="anchored" data-anchor-id="mixed-models-and-optimizer-agreement">Mixed models and optimizer agreement</h2>
-<div id="637392c2" class="cell" data-execution_count="3">
+<div id="2508b31f" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>R_ORDER<span class="op">=</span>[<span class="st">'bobyqa'</span>,<span class="st">'Nelder_Mead'</span>,<span class="st">'nlminbwrap'</span>,<span class="st">'nloptwrap'</span>]</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>rows<span class="op">=</span>[]</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> case <span class="kw">in</span> report[<span class="st">'mixed'</span>]:</span>
@@ -795,7 +810,7 @@ fit$null.deviance</code></pre>
 <section id="more-than-two-grouping-levels" class="level2">
 <h2 class="anchored" data-anchor-id="more-than-two-grouping-levels">More than two grouping levels</h2>
 <p>The fitter accepts a list of random terms; there is no two-level cap. The new synthetic cases use <strong>256 repeated assessments</strong>, with 8 districts, 16 schools, 32 classes and 64 students. They fit three grouping levels (district/school/class) and four grouping levels (district/school/class/student), each under ML and REML. The four-level simulation includes independent Gaussian intercepts at all four grouping levels; the three-level simulation omits the student effect. Study hours and practice scores are correlated observed predictors, not initial parameter guesses.</p>
-<div id="8c388365" class="cell" data-execution_count="4">
+<div id="1e70e99d" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fixture<span class="op">=</span>json.loads((ROOT<span class="op">/</span><span class="st">'tests/fixtures/lmm-expanded-r.json'</span>).read_text())</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>nested_inputs<span class="op">=</span>{c[<span class="st">'name'</span>]:c <span class="cf">for</span> c <span class="kw">in</span> fixture[<span class="st">'cases'</span>] <span class="cf">if</span> <span class="st">'_grouping_levels_'</span> <span class="kw">in</span> c[<span class="st">'name'</span>]}</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>summary<span class="op">=</span>[]</span>
@@ -931,7 +946,7 @@ fit$null.deviance</code></pre>
 </section>
 <section id="published-sleepstudy-r-statsmodels-and-php" class="level2">
 <h2 class="anchored" data-anchor-id="published-sleepstudy-r-statsmodels-and-php">Published sleepstudy: R, statsmodels and PHP</h2>
-<div id="41f65343" class="cell" data-execution_count="5">
+<div id="cb226e04" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> case <span class="kw">in</span> [r <span class="cf">for</span> r <span class="kw">in</span> report[<span class="st">'mixed'</span>] <span class="cf">if</span> r[<span class="st">'name'</span>].startswith(<span class="st">'sleepstudy_'</span>)]:</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    fits<span class="op">=</span>[(<span class="st">'R: '</span><span class="op">+</span>o,case[<span class="st">'R'</span>][o][<span class="st">'result'</span>]) <span class="cf">for</span> o <span class="kw">in</span> R_ORDER]</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    fits<span class="op">+=</span>[(<span class="st">'statsmodels'</span>,case[<span class="st">'statsmodels'</span>])]</span>
@@ -1161,7 +1176,7 @@ sleepstudy_reml</code></pre>
 </section>
 <section id="what-the-random-slopes-mean" class="level2">
 <h2 class="anchored" data-anchor-id="what-the-random-slopes-mean">What the random slopes mean</h2>
-<div id="92f06131" class="cell" data-execution_count="6">
+<div id="d80a786c" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>data<span class="op">=</span>pd.read_csv(ROOT<span class="op">/</span><span class="st">'docs/data/lmm/sleepstudy.csv'</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>case<span class="op">=</span><span class="bu">next</span>(r <span class="cf">for</span> r <span class="kw">in</span> report[<span class="st">'mixed'</span>] <span class="cf">if</span> r[<span class="st">'name'</span>]<span class="op">==</span><span class="st">'sleepstudy_reml'</span>)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>fit<span class="op">=</span>case[<span class="st">'PHP'</span>][<span class="st">'bobyqa'</span>]<span class="op">;</span>labels<span class="op">=</span>fit[<span class="st">'random'</span>][<span class="dv">0</span>][<span class="st">'group_labels'</span>]</span>
@@ -1170,23 +1185,14 @@ sleepstudy_reml</code></pre>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Fixture IDs are factor-coded by the R generator; original subject ordering is</span></span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co"># retained in the CSV. Map the groups explicitly rather than guessing labels.</span></span>
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>subjects<span class="op">=</span><span class="bu">sorted</span>(data.Subject.unique())</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>fig,axes<span class="op">=</span>plt.subplots(<span class="dv">2</span>,<span class="dv">3</span>,figsize<span class="op">=</span>(<span class="dv">11</span>,<span class="dv">6</span>),sharex<span class="op">=</span><span class="va">True</span>,sharey<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax,subject <span class="kw">in</span> <span class="bu">zip</span>(axes.flat,subjects[:<span class="dv">6</span>]):</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    rows<span class="op">=</span>data[data.Subject<span class="op">==</span>subject]</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    b<span class="op">=</span>fit[<span class="st">'random'</span>][<span class="dv">0</span>][<span class="st">'effects'</span>][labels.index(subject_group[subject])]</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    days<span class="op">=</span>np.linspace(<span class="dv">0</span>,<span class="dv">9</span>,<span class="dv">100</span>)<span class="op">;</span>beta<span class="op">=</span>fit[<span class="st">'coefficients'</span>]</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    ax.scatter(rows.Days,rows.Reaction,s<span class="op">=</span><span class="dv">18</span>,label<span class="op">=</span><span class="st">'observed reaction time'</span>)</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    ax.plot(days,beta[<span class="dv">0</span>]<span class="op">+</span>beta[<span class="dv">1</span>]<span class="op">*</span>days,color<span class="op">=</span><span class="st">'black'</span>,linestyle<span class="op">=</span><span class="st">'--'</span>,label<span class="op">=</span><span class="st">'population mean'</span>)</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    ax.plot(days,beta[<span class="dv">0</span>]<span class="op">+</span>b[<span class="dv">0</span>]<span class="op">+</span>(beta[<span class="dv">1</span>]<span class="op">+</span>b[<span class="dv">1</span>])<span class="op">*</span>days,label<span class="op">=</span><span class="st">'subject conditional mean'</span>)</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="ss">f'Subject </span><span class="sc">{</span>subject<span class="sc">}</span><span class="ss">'</span>)<span class="op">;</span>ax.set_xlabel(<span class="st">'Days of sleep deprivation'</span>)<span class="op">;</span>ax.set_ylabel(<span class="st">'Reaction time (ms)'</span>)</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>handles,labels<span class="op">=</span>axes.flat[<span class="dv">0</span>].get_legend_handles_labels()</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">'Random intercepts and slopes: actual sleepstudy observations'</span>,y<span class="op">=</span><span class="fl">.99</span>)</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>fig.legend(handles,labels,loc<span class="op">=</span><span class="st">'upper center'</span>,bbox_to_anchor<span class="op">=</span>(<span class="fl">.5</span>,<span class="fl">.95</span>),ncol<span class="op">=</span><span class="dv">3</span>,fontsize<span class="op">=</span><span class="dv">9</span>)</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>fig.tight_layout(rect<span class="op">=</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="fl">.88</span>))<span class="op">;</span>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>render_figure(<span class="st">'sleepstudy'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>figures/sleepstudy-slopes.svg </code></pre>
+</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="r-compatibility_files/figure-html/cell-7-output-1.png" width="1047" height="575" class="figure-img"></p>
+<p><img src="r-compatibility_files/figure-html/cell-7-output-2.svg" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -1195,11 +1201,11 @@ sleepstudy_reml</code></pre>
 </section>
 <section id="reproduce-or-refresh" class="level2">
 <h2 class="anchored" data-anchor-id="reproduce-or-refresh">Reproduce or refresh</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Normal audit: stored R values, fresh PHP and statsmodels fits.</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="va">PHP</span><span class="op">=</span>/opt/homebrew/bin/php <span class="ex">.context/notebooks-venv/bin/python</span> docs/verifications/compare_r_compatibility.py</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Explicitly refresh reference fits using installed R/lme4.</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="va">PHP</span><span class="op">=</span>/opt/homebrew/bin/php <span class="ex">.context/notebooks-venv/bin/python</span> docs/verifications/compare_r_compatibility.py <span class="at">--refresh</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="va">QUARTO_PYTHON</span><span class="op">=</span><span class="st">"</span><span class="va">$PWD</span><span class="st">/.context/notebooks-venv/bin/python"</span> <span class="ex">quarto</span> render docs/notebooks/r-compatibility.qmd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Normal audit: stored R values, fresh PHP and statsmodels fits.</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="va">PHP</span><span class="op">=</span>/opt/homebrew/bin/php <span class="ex">.context/notebooks-venv/bin/python</span> docs/verifications/compare_r_compatibility.py</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Explicitly refresh reference fits using installed R/lme4.</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="va">PHP</span><span class="op">=</span>/opt/homebrew/bin/php <span class="ex">.context/notebooks-venv/bin/python</span> docs/verifications/compare_r_compatibility.py <span class="at">--refresh</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="va">QUARTO_PYTHON</span><span class="op">=</span><span class="st">"</span><span class="va">$PWD</span><span class="st">/.context/notebooks-venv/bin/python"</span> <span class="ex">quarto</span> render docs/notebooks/r-compatibility.qmd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 
 
 </section>

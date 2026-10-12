@@ -25,6 +25,12 @@
                 "type": "string",
                 "optional": true,
                 "default": "drop"
+            },
+            {
+                "name": "intercept",
+                "type": "bool",
+                "optional": true,
+                "default": true
             }
         ],
         "return_type": "array",
@@ -132,6 +138,12 @@
                 "type": "float",
                 "optional": true,
                 "default": 1.0e-12
+            },
+            {
+                "name": "intercept",
+                "type": "bool",
+                "optional": true,
+                "default": true
             }
         ],
         "return_type": "array",
@@ -198,6 +210,12 @@
                 "type": "?array",
                 "optional": true,
                 "default": null
+            },
+            {
+                "name": "intercept",
+                "type": "bool",
+                "optional": true,
+                "default": true
             }
         ],
         "return_type": "array",
@@ -277,6 +295,12 @@
                 "type": "float",
                 "optional": true,
                 "default": 1.0e-7
+            },
+            {
+                "name": "intercept",
+                "type": "bool",
+                "optional": true,
+                "default": true
             }
         ],
         "return_type": "array",
@@ -351,6 +375,12 @@
                 "type": "?array",
                 "optional": true,
                 "default": null
+            },
+            {
+                "name": "intercept",
+                "type": "bool",
+                "optional": true,
+                "default": true
             }
         ],
         "return_type": "array",
@@ -407,6 +437,12 @@
                 "type": "?array",
                 "optional": true,
                 "default": null
+            },
+            {
+                "name": "intercept",
+                "type": "bool",
+                "optional": true,
+                "default": true
             }
         ],
         "return_type": "array",
@@ -463,6 +499,12 @@
                 "type": "?array",
                 "optional": true,
                 "default": null
+            },
+            {
+                "name": "intercept",
+                "type": "bool",
+                "optional": true,
+                "default": true
             }
         ],
         "return_type": "array",

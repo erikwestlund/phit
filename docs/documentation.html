@@ -121,7 +121,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./v0.1.html">Project</a></li><li class="breadcrumb-item"><a href="./documentation.html">Building and maintaining the documentation</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./visualization.html">Project</a></li><li class="breadcrumb-item"><a href="./documentation.html">Building and maintaining the documentation</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -161,6 +161,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           </a> 
       </div>
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Figure conventions and reproducibility</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./licensing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Licensing</span></a>
+  </div>
+</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./v0.1.html" class="sidebar-item-text sidebar-link">
@@ -459,7 +471,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#polyscope-workspace-preview" id="toc-polyscope-workspace-preview" class="nav-link" data-scroll-target="#polyscope-workspace-preview">Polyscope workspace preview</a></li>
   <li><a href="#recompute-the-walkthroughs" id="toc-recompute-the-walkthroughs" class="nav-link" data-scroll-target="#recompute-the-walkthroughs">Recompute the walkthroughs</a></li>
   <li><a href="#authoring-and-verification" id="toc-authoring-and-verification" class="nav-link" data-scroll-target="#authoring-and-verification">Authoring and verification</a></li>
-  <li><a href="#benchmark-charts" id="toc-benchmark-charts" class="nav-link" data-scroll-target="#benchmark-charts">Benchmark charts</a></li>
+  <li><a href="#standard-figures" id="toc-standard-figures" class="nav-link" data-scroll-target="#standard-figures">Standard figures</a></li>
   <li><a href="#publish-github-pages" id="toc-publish-github-pages" class="nav-link" data-scroll-target="#publish-github-pages">Publish GitHub Pages</a></li>
   </ul>
 </nav>
@@ -467,7 +479,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./v0.1.html">Project</a></li><li class="breadcrumb-item"><a href="./documentation.html">Building and maintaining the documentation</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./visualization.html">Project</a></li><li class="breadcrumb-item"><a href="./documentation.html">Building and maintaining the documentation</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Building and maintaining the documentation</h1>
 </div>
@@ -538,13 +550,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Use relative links to .qmd pages so Quarto rewrites them to HTML links. Keep local reference data and scripts alongside the verification document. Each future implemented estimator should have a derivation walkthrough and equivalent-model verification evidence, following <a href="./notebooks/index.html">the notebook guide</a>.</p>
 <p>For prose-only pages, render the site and check navigation and local links. Any edit to a computational walkthrough (including prose) requires an individual page render to update its frozen content. For computational edits, rerun the affected pages and comparison scripts, inspect output, and run the appropriate <a href="./verification.html">Rust/PHP checks</a>. Saved results must never be mistaken for a new estimator test run.</p>
 </section>
-<section id="benchmark-charts" class="level2">
-<h2 class="anchored" data-anchor-id="benchmark-charts">Benchmark charts</h2>
-<p>Each benchmark report includes fit-time and peak-process-memory charts generated with the pinned documentation-only Matplotlib dependency. Colors and language order match across estimators. Timing bars show medians with individual repetitions as dots; memory bars show recorded whole-worker peak RSS. Each workload panel uses its own labeled linear scale. Charts do not measure the numerical solver in isolation.</p>
-<p>Re-executing a benchmark <code>.qmd</code> regenerates its SVG/PNG downloads from the saved JSON report. To refresh all charts without executing notebooks or benchmarks:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">.context/notebooks-venv/bin/python</span> docs/benchmarks/plots.py</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render docs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Saved chart files live in <code>docs/benchmarks/figures/</code>; rendering the frozen website requires no fresh timing run. Refresh the saved notebook outputs as well when benchmark measurements change.</p>
+<section id="standard-figures" class="level2">
+<h2 class="anchored" data-anchor-id="standard-figures">Standard figures</h2>
+<p>All benchmark and notebook figures now use the shared R/ggplot2 strategy in <a href="./visualization.html">Figure conventions</a>. SVG/PNG exports, fixed language ordering, colors/shapes, units, scale choices and input/package provenance use the same renderer. Python remains a numerical/verification notebook engine rather than a second drawing implementation. Matplotlib is no longer a documentation dependency.</p>
+<p>To refresh saved figures without estimating or timing anything:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> docs/figures/render.R <span class="at">--all</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/render-docs</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The renderer uses saved reports and small notebook-exported point snapshots. Individual .qmd execution invokes the R renderer when appropriate. Saved images and frozen outputs support browsing/rendering without rerunning scientific checks.</p>
 </section>
 <section id="publish-github-pages" class="level2">
 <h2 class="anchored" data-anchor-id="publish-github-pages">Publish GitHub Pages</h2>

@@ -30,13 +30,16 @@ from pathlib import Path
 import json,sys
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+
 from scipy.special import expit,logsumexp
 from scipy.optimize import brentq
 from scipy.integrate import quad
 from scipy.linalg import cho_factor,cho_solve
 from IPython.display import display,Math
 ROOT=next(p for p in [Path.cwd(),*Path.cwd().parents] if (p/'Cargo.toml').exists())
+import sys
+sys.path.insert(0,str(ROOT/'docs/figures'))
+from bridge import render_figure
 sys.path.insert(0,str(ROOT/'docs/verifications'))
 from compare_logistic_mixed import evaluator
 fixture=json.loads((ROOT/'tests/fixtures/logistic-mixed-r.json').read_text())
@@ -240,12 +243,8 @@ for group in dict.fromkeys(rg):
 _,group,k,uu,hh,norm=max(choices,key=lambda v:v[0])
 u=np.linspace(-4,4,400)
 actual=np.array([np.exp(k(v)-k(uu))/norm for v in u]);gaussian=np.sqrt(hh/(2*np.pi))*np.exp(-.5*hh*(u-uu)**2)
-fig,ax=plt.subplots(figsize=(8,4))
-ax.plot(u,actual,label='Numerically normalized conditional distribution')
-ax.plot(u,gaussian,linestyle='--',label='Gaussian approximation at the mode')
-ax.axvline(uu,color='grey',alpha=.6,label='Conditional mode')
-ax.set(xlabel='Standardized group intercept u (b = tau × u)',ylabel='Conditional density',title=f'Rare events: group {group}, posterior shape')
-ax.legend(fontsize=8);fig.tight_layout();plt.show()
+render_figure('posterior',dict(u=u.tolist(),actual=actual.tolist(),gaussian=gaussian.tolist(),
+                             mode=float(uu),group=int(group)))
 ```
 
 Use increasing node counts to assess sensitivity, especially for rare outcomes

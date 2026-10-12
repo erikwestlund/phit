@@ -120,25 +120,24 @@ render to update its frozen content. For computational edits, rerun the affected
 output, and run the appropriate [Rust/PHP checks](verification.qmd). Saved
 results must never be mistaken for a new estimator test run.
 
-## Benchmark charts
+## Standard figures
 
-Each benchmark report includes fit-time and peak-process-memory charts generated
-with the pinned documentation-only Matplotlib dependency. Colors and language order
-match across estimators. Timing bars show medians with individual repetitions as
-dots; memory bars show recorded whole-worker peak RSS. Each workload panel uses
-its own labeled linear scale. Charts do not measure the numerical solver in isolation.
+All benchmark and notebook figures now use the shared R/ggplot2 strategy in
+[Figure conventions](visualization.qmd). SVG/PNG exports, fixed language ordering,
+colors/shapes, units, scale choices and input/package provenance use the same
+renderer. Python remains a numerical/verification notebook engine rather than a
+second drawing implementation. Matplotlib is no longer a documentation dependency.
 
-Re-executing a benchmark `.qmd` regenerates its SVG/PNG downloads from the saved
-JSON report. To refresh all charts without executing notebooks or benchmarks:
+To refresh saved figures without estimating or timing anything:
 
 ```sh
-.context/notebooks-venv/bin/python docs/benchmarks/plots.py
-quarto render docs
+Rscript docs/figures/render.R --all
+./scripts/render-docs
 ```
 
-Saved chart files live in `docs/benchmarks/figures/`; rendering the frozen website
-requires no fresh timing run. Refresh the saved notebook outputs as well when
-benchmark measurements change.
+The renderer uses saved reports and small notebook-exported point snapshots.
+Individual .qmd execution invokes the R renderer when appropriate. Saved images
+and frozen outputs support browsing/rendering without rerunning scientific checks.
 
 ## Publish GitHub Pages
 

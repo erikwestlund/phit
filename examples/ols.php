@@ -6,7 +6,7 @@ $file = fopen(__DIR__ . '/../docs/data/housing.csv', 'r');
 fgetcsv($file, escape: ''); // Header.
 $x = $y = [];
 while (($row = fgetcsv($file, escape: '')) !== false) {
-    $x[] = [1.0, (float) $row[0]]; // Explicit intercept and observed area.
+    $x[] = [(float) $row[0]]; // Observed area; the fixed intercept is added by default.
     $y[] = (float) $row[2];
 }
 fclose($file);

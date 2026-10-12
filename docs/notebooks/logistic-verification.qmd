@@ -38,7 +38,9 @@ counts are expected because initial values and convergence rules differ.
 
 ## Equivalent calls
 
-R adds an intercept in this formula; the other two designs supply it explicitly.
+R adds an intercept in this formula; the reference runners pass the same explicit
+design to Python and PHP (`intercept: false` in PHP). Application calls can
+instead supply predictors only and use the automatic fixed intercept.
 
 ```r
 students <- read.csv("docs/data/learning.csv")
@@ -62,12 +64,13 @@ foreach ($students as $student) {
     $x[] = [1.0, $student['study_hours'], $student['practice_score']];
     $y[] = $student['passed'];
 }
-$result = stats_logistic(x: $x, y: $y);
+$result = stats_logistic(x: $x, y: $y, intercept: false);
 ```
 
 Here `$students` contains already numeric records; see `examples/logistic.php`
 for the complete CSV conversion and call. The native interface uses no formula
-parser, implicit column construction or model classes.
+parser or model classes. The explicit-design example opts out of automatic
+fixed-intercept insertion.
 
 ## Missing rows and model statistics
 

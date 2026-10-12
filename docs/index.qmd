@@ -2,10 +2,28 @@
 title: "Project documentation"
 ---
 
-The raw extension accepts plain numerical arrays and returns plain results.
-Optional helpers can make data preparation easier while keeping that boundary
-usable directly. These documents are the maintained record of how the project
-works and why it makes its choices.
+Fit statistical models directly in PHP using ordinary numeric arrays. The native
+Rust engine returns coefficients, uncertainty, fitted values, and model statistics.
+A fixed intercept is added automatically; `intercept: false` accepts a literal
+design or fits a model through the origin.
+
+```php
+$result = stats_ols(
+    x: [[74.4], [57.4], [66.4], [49.1], [45.7], [92.4], [37.0], [93.9]],
+    y: [1879.25, 1805.03, 2022.29, 1267.85, 1509.24, 2240.10, 959.51, 2386.54],
+);
+// coefficients: approximately [372.478545, 21.479724] — intercept, floor area.
+```
+
+Start with [installation](development.qmd) and the [PHP contracts](contracts.qmd).
+For unequal exposure in a Poisson model, pass `offset: log(exposure)` as an aligned
+array on the log scale; see the [exposure example](contracts.qmd#poisson-exposure-example).
+Existing callers that supply a ones column should remove it or use
+`intercept: false`; random-effect design matrices remain explicit.
+
+The [math walkthroughs](notebooks/index.qmd) build the matrices and likelihoods
+step by step. The verification pages compare the same models with R, Python,
+and independent numerical references.
 
 - [Building the documentation](documentation.qmd): Quarto rendering and refreshing computations.
 - [Design philosophy](design-philosophy.qmd): priorities, raw interface, helper

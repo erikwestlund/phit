@@ -24,11 +24,14 @@ from pathlib import Path
 import json
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+
 from scipy.optimize import brentq
 from scipy.stats import norm
 from IPython.display import Math, display
 ROOT=next(p for p in [Path.cwd(),*Path.cwd().parents] if (p/'Cargo.toml').exists())
+import sys
+sys.path.insert(0,str(ROOT/'docs/figures'))
+from bridge import render_figure
 observations=pd.read_csv(ROOT/'docs/data/schools.csv')
 X=np.column_stack([np.ones(len(observations)),observations[['study_hours','prior_score']]])
 y=observations.score.to_numpy()
@@ -296,12 +299,8 @@ print('Residual variance:',variance,'Group variance:',tau,'ICC:',rho/(1+rho))
 show_matrix(r'\hat\beta',beta)
 
 curve=np.linspace(0,4,81);objective=np.array([profile(t)['objective'] for t in curve])
-fig,ax=plt.subplots(figsize=(8,3.6))
-ax.plot(curve,objective-objective.min(),color='#0072B2')
-ax.axvline(best_t,color='#009E73',linestyle='--',label='Selected ML fit')
-ax.scatter([0],[profile(0)['objective']-objective.min()],color='#D55E00',label='Zero group variance')
-ax.set(xlabel='log(1 + variance ratio)',ylabel='Negative log-likelihood minus plotted minimum',title='The variance-ratio profile on the teaching sample')
-ax.legend();ax.spines[['top','right']].set_visible(False);fig.tight_layout();plt.show()
+render_figure('profile',dict(curve=curve.tolist(),objective=(objective-objective.min()).tolist(),
+                           best_t=float(best_t),boundary=float(profile(0)['objective']-objective.min())))
 ```
 
 ML is **not REML**. Restricted maximum likelihood adjusts for estimating fixed

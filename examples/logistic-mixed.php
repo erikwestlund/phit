@@ -5,7 +5,7 @@ declare(strict_types=1);
 $handle=fopen(__DIR__.'/../docs/data/cbpp.csv','r');$header=fgetcsv($handle,escape:'');
 $x=$y=$groups=$trials=[];
 while(($row=fgetcsv($handle,escape:''))!==false){$r=array_combine($header,$row);$period=(int)$r['period'];
- $x[]=[1.0,(float)($period===2),(float)($period===3),(float)($period===4)];
+ $x[]=[(float)($period===2),(float)($period===3),(float)($period===4)];
  $trials[]=(int)$r['size'];$y[]=(int)$r['incidence']/(int)$r['size'];$groups[]=$r['herd'];}
 fclose($handle);
 foreach([1,9,25,61] as $points){

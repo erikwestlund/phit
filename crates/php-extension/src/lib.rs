@@ -123,6 +123,7 @@ struct PreparedData {
     dropped_rows: Vec<i64>,
 }
 
+#[allow(clippy::too_many_arguments)] // Literal PHP options share one validation/deletion path.
 fn prepare_data(
     x: &ZendHashTable,
     y: &ZendHashTable,
@@ -131,6 +132,7 @@ fn prepare_data(
     groups: Option<&ZendHashTable>,
     weights: Option<&ZendHashTable>,
     offset: Option<&ZendHashTable>,
+    intercept: bool,
 ) -> PhpResult<PreparedData> {
     if missing != "drop" && missing != "raise" {
         return Err(input_exception(
@@ -159,43 +161,26 @@ fn prepare_data(
         .map(|(_, value)| {
             let value = number(value)?;
             if outcome == "binary" && value.is_some_and(|v| !(0.0..=1.0).contains(&v)) {
-                return Err(PhpException::from(
+                return Err(input_exception(
+                    stats_core::ErrorKind::InvalidInput,
                     "binary/grouped-binomial y must be in [0,1]",
                 ));
             }
             if outcome == "count" && value.is_some_and(|v| v < 0.0 || v.fract() != 0.0) {
-                return Err(PhpException::from(
+                return Err(input_exception(
+                    stats_core::ErrorKind::InvalidInput,
                     "Poisson y must contain nonnegative integer counts",
                 ));
             }
             Ok(value)
         })
         .collect::<PhpResult<Vec<_>>>()?;
-    let labels = groups
-        .map(|values| {
-            values
-                .iter()
-                .map(|(_, value)| {
-                    if value.is_null() {
-                        Ok(None)
-                    } else if let Some(id) = value.long() {
-                        Ok(Some(GroupLabel::Integer(id)))
-                    } else if let Some(id) = value.str() {
-                        Ok(Some(GroupLabel::Text(id.to_owned())))
-                    } else {
-                        Err(PhpException::from(
-                            "group IDs must be integers, strings, or null",
-                        ))
-                    }
-                })
-                .collect::<PhpResult<Vec<_>>>()
-        })
-        .transpose()?;
+    let labels = groups.map(labels).transpose()?;
     let n = rows.len();
-    if n == 0 || rows[0].is_empty() {
+    if n == 0 || (!intercept && rows[0].is_empty()) {
         return Err(input_exception(
             stats_core::ErrorKind::InvalidInput,
-            "x must have at least one row and column",
+            "x must have at least one row; without an intercept, at least one column is required",
         ));
     }
     if labels.as_ref().is_some_and(|labels| labels.len() != n) {
@@ -289,12 +274,23 @@ fn prepare_data(
         groups: complete_groups,
         weights: complete_weights,
         offset: complete_offset,
-        x: complete_x,
+        x: fixed_design(complete_x, intercept),
         y: complete_y,
         n_input: n,
         retained_rows,
         dropped_rows,
     })
+}
+
+// The PHP convenience option constructs the fixed design only. stats-core and
+// random-effect designs continue to receive literal mathematical matrices.
+fn fixed_design(mut rows: Vec<Vec<f64>>, intercept: bool) -> Vec<Vec<f64>> {
+    if intercept {
+        for row in &mut rows {
+            row.insert(0, 1.0);
+        }
+    }
+    rows
 }
 
 fn finish_result(
@@ -368,15 +364,25 @@ fn finish_result(
 }
 
 #[php_function]
-#[php(defaults(missing = "\"drop\""))]
+#[php(defaults(missing = "\"drop\"", intercept = true))]
 pub fn stats_ols(
     x: &ZendHashTable,
     y: &ZendHashTable,
     missing: &str,
     weights: Option<&ZendHashTable>,
     offset: Option<&ZendHashTable>,
+    intercept: bool,
 ) -> PhpResult<ZBox<ZendHashTable>> {
-    let input = prepare_data(x, y, missing, "continuous", None, weights, offset)?;
+    let input = prepare_data(
+        x,
+        y,
+        missing,
+        "continuous",
+        None,
+        weights,
+        offset,
+        intercept,
+    )?;
     let result = stats_core::fit_ols_with_data(input.x, input.y, input.weights, input.offset)
         .map_err(stats_exception)?;
     let mut output = ZendHashTable::new();
@@ -419,15 +425,16 @@ pub fn stats_ols(
 }
 
 #[php_function]
-#[php(defaults(missing = "\"drop\""))]
+#[php(defaults(missing = "\"drop\"", intercept = true))]
 pub fn stats_logistic(
     x: &ZendHashTable,
     y: &ZendHashTable,
     missing: &str,
     weights: Option<&ZendHashTable>,
     offset: Option<&ZendHashTable>,
+    intercept: bool,
 ) -> PhpResult<ZBox<ZendHashTable>> {
-    let input = prepare_data(x, y, missing, "binary", None, weights, offset)?;
+    let input = prepare_data(x, y, missing, "binary", None, weights, offset, intercept)?;
     let result = stats_core::fit_logistic_with_data(input.x, input.y, input.weights, input.offset)
         .map_err(stats_exception)?;
     let mut output = ZendHashTable::new();
@@ -470,15 +477,16 @@ pub fn stats_logistic(
 }
 
 #[php_function]
-#[php(defaults(missing = "\"drop\""))]
+#[php(defaults(missing = "\"drop\"", intercept = true))]
 pub fn stats_probit(
     x: &ZendHashTable,
     y: &ZendHashTable,
     missing: &str,
     weights: Option<&ZendHashTable>,
     offset: Option<&ZendHashTable>,
+    intercept: bool,
 ) -> PhpResult<ZBox<ZendHashTable>> {
-    let input = prepare_data(x, y, missing, "binary", None, weights, offset)?;
+    let input = prepare_data(x, y, missing, "binary", None, weights, offset, intercept)?;
     let result = stats_core::fit_probit_with_data(input.x, input.y, input.weights, input.offset)
         .map_err(stats_exception)?;
     let mut output = ZendHashTable::new();
@@ -521,15 +529,16 @@ pub fn stats_probit(
 }
 
 #[php_function]
-#[php(defaults(missing = "\"drop\""))]
+#[php(defaults(missing = "\"drop\"", intercept = true))]
 pub fn stats_poisson(
     x: &ZendHashTable,
     y: &ZendHashTable,
     missing: &str,
     weights: Option<&ZendHashTable>,
     offset: Option<&ZendHashTable>,
+    intercept: bool,
 ) -> PhpResult<ZBox<ZendHashTable>> {
-    let input = prepare_data(x, y, missing, "count", None, weights, offset)?;
+    let input = prepare_data(x, y, missing, "count", None, weights, offset, intercept)?;
     let result = stats_core::fit_poisson_with_data(input.x, input.y, input.weights, input.offset)
         .map_err(stats_exception)?;
     let mut output = ZendHashTable::new();
@@ -572,14 +581,24 @@ pub fn stats_poisson(
 }
 
 #[php_function]
-#[php(defaults(missing = "\"drop\""))]
+#[php(defaults(missing = "\"drop\"", intercept = true))]
 pub fn stats_lmm(
     x: &ZendHashTable,
     y: &ZendHashTable,
     groups: &ZendHashTable,
     missing: &str,
+    intercept: bool,
 ) -> PhpResult<ZBox<ZendHashTable>> {
-    let input = prepare_data(x, y, missing, "continuous", Some(groups), None, None)?;
+    let input = prepare_data(
+        x,
+        y,
+        missing,
+        "continuous",
+        Some(groups),
+        None,
+        None,
+        intercept,
+    )?;
     let mut group_labels = Vec::new();
     let mut label_indices = std::collections::HashMap::new();
     let indices = input
@@ -661,7 +680,8 @@ pub fn stats_lmm(
     max_evaluations = 20000,
     tolerance = 1e-7,
     optimizer = "\"bobyqa\"",
-    objective_tolerance = 1e-12
+    objective_tolerance = 1e-12,
+    intercept = true
 ))]
 // Preserve the procedural PHP signature and named arguments.
 #[allow(clippy::too_many_arguments)]
@@ -678,6 +698,7 @@ pub fn stats_lmm_fit(
     tolerance: f64,
     optimizer: &str,
     objective_tolerance: f64,
+    intercept: bool,
 ) -> PhpResult<ZBox<ZendHashTable>> {
     if missing != "drop" && missing != "raise" {
         return Err(input_exception(
@@ -687,7 +708,7 @@ pub fn stats_lmm_fit(
     }
     let x = numeric_rows(x)?;
     let n = x.len();
-    if n == 0 || x[0].is_empty() || x.iter().any(|r| r.len() != x[0].len()) {
+    if n == 0 || (!intercept && x[0].is_empty()) || x.iter().any(|r| r.len() != x[0].len()) {
         return Err(input_exception(
             stats_core::ErrorKind::DimensionMismatch,
             "x must be nonempty and rectangular",
@@ -858,10 +879,13 @@ pub fn stats_lmm_fit(
         tolerance,
     };
     let result = stats_core::fit_lmm(
-        retained
-            .iter()
-            .map(|i| x[*i as usize].iter().flatten().copied().collect())
-            .collect(),
+        fixed_design(
+            retained
+                .iter()
+                .map(|i| x[*i as usize].iter().flatten().copied().collect())
+                .collect(),
+            intercept,
+        ),
         select(&y)?,
         core_terms,
         options,
@@ -923,7 +947,8 @@ pub fn stats_lmm_fit(
     missing = "\"drop\"",
     quadrature_points = 1,
     max_evaluations = 20000,
-    tolerance = 1e-7
+    tolerance = 1e-7,
+    intercept = true
 ))]
 // Preserve the procedural PHP signature and named arguments.
 #[allow(clippy::too_many_arguments)]
@@ -937,6 +962,7 @@ pub fn stats_logistic_mixed(
     quadrature_points: i64,
     max_evaluations: i64,
     tolerance: f64,
+    intercept: bool,
 ) -> PhpResult<ZBox<ZendHashTable>> {
     if let Some(weights) = weights {
         for (_, value) in weights.iter() {
@@ -948,7 +974,16 @@ pub fn stats_logistic_mixed(
             }
         }
     }
-    let input = prepare_data(x, y, missing, "binary", Some(groups), weights, offset)?;
+    let input = prepare_data(
+        x,
+        y,
+        missing,
+        "binary",
+        Some(groups),
+        weights,
+        offset,
+        intercept,
+    )?;
     let mut group_labels = Vec::new();
     let mut map = std::collections::HashMap::new();
     let indices = input

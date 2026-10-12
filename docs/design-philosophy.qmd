@@ -11,8 +11,10 @@ and the documented statistical conventions. Loading the extension makes the
 functions available without application-specific imports or model classes.
 
 For all estimators, the raw interface is a supplied design matrix x and outcome vector y.
-Each row is an observation and each column is a coefficient. The caller supplies
-the intercept as a column of ones. The extension checks those inputs and performs
+Each row is an observation and each column is a predictor. The PHP binding adds
+a fixed intercept by default; `intercept: false` accepts a complete literal design.
+The Rust core and random-effect designs remain literal matrices. This small,
+explicit convenience keeps the usual application call simple. The extension checks those inputs and performs
 the estimation; it does not infer how the application's source data should be
 interpreted. Invalid values produce errors. Missing null/NAN values use documented listwise
 deletion with a warning and sample metadata; callers can choose strict rejection.
@@ -28,7 +30,7 @@ calculations visible and understandable in the Rust core.
 
 Other packages, application code, or optional helpers from this project can make
 input preparation easier. They might select columns from records, read CSV data,
-convert numeric strings under an explicit policy, add a column of ones, handle
+convert numeric strings under an explicit policy, handle
 missing observations, or attach coefficient labels. These are possible helper
 responsibilities, not features currently implemented or a commitment to build them.
 
@@ -46,7 +48,7 @@ $x = [];
 $y = [];
 foreach ($observations as $observation) {
     // This example assumes these fields are already validated numeric values.
-    $x[] = [1.0, $observation['size'], $observation['bedrooms']];
+    $x[] = [$observation['size'], $observation['bedrooms']];
     $y[] = $observation['price'];
 }
 $result = stats_ols(x: $x, y: $y);

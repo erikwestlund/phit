@@ -1,0 +1,88 @@
+---
+title: "Figure conventions and reproducibility"
+---
+
+Documentation figures use **R and ggplot2**, with one shared theme in
+`figures/style.R` and explicit figure jobs in `figures/render.R`. Rust/PHP
+estimation has no graphics or R dependency. The .qmd walkthroughs still use
+Python for matrices and independent verification; a small bridge passes computed
+points to R for drawing. No ipynb files are maintained as documentation sources.
+
+## Visual conventions
+
+- Language comparisons keep **R, Python, PHP** in that order. Python is labeled
+  statsmodels or SciPy reference to identify the actual implementation.
+- R uses blue circles (#0072B2); Python uses orange triangles (#D55E00); PHP uses
+  green squares (#009E73). Color and shape reinforce the labels.
+- Conceptual figures use blue for the reference/population curve, green for the
+  conditional/native curve, orange for an approximation or boundary, and gray for
+  observations. Their legends describe the statistical quantity rather than imply
+  that a curve is an implementation comparison.
+- Use a white background, common sans-serif type, restrained grids and explicit
+  quantity/unit labels. Titles state what is shown; captions state the data or
+  approximation, transformations and relevant limits.
+- Bar charts start at zero. Benchmark facets use their own labeled linear scales
+  and show median bars plus actual timing repetitions. Missing memory is labeled
+  unrecorded, not plotted as measured zero. A measured time of zero is marked 0*
+  because timer resolution can hide a short fit.
+- Log scales are explicit and reserved for quantities spanning orders of magnitude,
+  such as integration errors. The 1e-13 display floor in the quadrature-error plot
+  is disclosed; it never changes stored numerical measurements.
+- Error-versus-reference figures use a zero reference line and label any unit
+  multiplier. Agreement plots are not residual or model-adequacy diagnostics.
+
+These conventions use ggplot2's [shared themes](https://ggplot2.tidyverse.org/reference/theme.html)
+and [explicit export controls](https://ggplot2.tidyverse.org/reference/ggsave.html).
+Each figure is saved as selectable-text **SVG** and a **160-dpi PNG**, with
+fixed dimensions recorded in the [figure manifest](figures/manifest.json).
+Font family is generic sans-serif; the resolved font can differ across platforms.
+
+## Generate figures without running fits or benchmarks
+
+Install the documentation-only R packages:
+
+```r
+install.packages(c("ggplot2", "jsonlite", "svglite"),
+                 repos = "https://cloud.r-project.org")
+```
+
+From the repository root:
+
+```sh
+Rscript docs/figures/render.R --all
+# Or render an individual family/figure:
+Rscript docs/figures/render.R ols
+Rscript docs/figures/render.R approximation
+Rscript docs/figures/render.R sleepstudy
+./scripts/render-docs
+```
+
+The renderer reads saved benchmark/reference reports and notebook-exported
+points in `figures/data/`. It does not call estimators, regenerate reference
+fixtures or run timed workers. A changed numerical report requires refreshed
+plots; unchanged measurements should not be retimed for a style change.
+
+The [manifest](figures/manifest.json) records each input path/content MD5, image
+hashes, dimensions, renderer/theme hashes, R version, platform and direct package
+versions. [The R package record](figures/r-packages.json) also records installed
+transitive dependency versions. These are the versions used for the saved figures;
+installing another version is not a claim of byte-identical reproduction.
+Data/report provenance remains in its original statistical verification records.
+
+Mathematical profile and posterior plots use points exported by the executable
+walkthroughs, preserving the visible calculations. Re-executing those .qmd pages
+updates their small JSON point snapshots and figures. Other figures read existing
+result reports. Jupyter embeds SVGs with namespaced clip IDs so figures on the same
+page do not interfere with each other.
+
+Ordinary website rendering reuses frozen outputs and saved images. Neither R
+nor Python is required to browse the committed HTML. Re-executing computational
+notebooks still requires the [documentation environment](documentation.qmd).
+
+## Existing figure coverage
+
+The common renderer covers all five fixed/Gaussian-intercept benchmarks, the
+logistic-mixed benchmark, v0.1 preservation comparisons, Gaussian likelihood
+profiles, published-data numerical agreement, sleepstudy random slopes,
+logistic-mixed integration error, node sensitivity and conditional posterior shape.
+SVG and PNG downloads are retained alongside their saved input records.

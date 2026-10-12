@@ -31,6 +31,24 @@ build with --release and run the PHP scripts against target/release instead.
 For documentation-only changes, check links, commands and claims against source;
 rerun numerical tests when behavior or implementation changes.
 
+## PHP intercept and offset contracts
+
+`tests/intercept.php` checks all seven PHP fitters with predictors-only inputs
+against the same complete design passed with `intercept: false`. Those results
+must be identical, including covariance, likelihood, group effects, row accounting,
+and diagnostics. Existing fixtures retain their literal matrices and their PHP
+runners explicitly opt out of insertion. No-intercept and intercept-only models
+are exercised separately; automatic insertion never changes random-design z.
+
+Poisson exposure checks independently calculate the intercept-only weighted MLE,
+its standard error, likelihood and fitted counts. They use absolute tolerances
+1e-10 for the coefficient/SE and 1e-9 for likelihood/counts. Rescaling exposure
+must shift only the intercept and preserve counts. Default-intercept weighted/offset
+fits also match stored R fixtures under the existing 1e-7 absolute + 1e-6 relative
+tolerance. Missing offsets participate in the same warning/deletion/strict-rejection
+contract as other inputs. The offline release gate includes this suite and the
+runnable exposure example.
+
 ## Reference and tolerances
 
 

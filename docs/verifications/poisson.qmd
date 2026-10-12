@@ -1,0 +1,53 @@
+---
+title: "Poisson regression verification record"
+---
+
+The [executed comparison](../notebooks/poisson-verification.qmd) fits identical
+observations in base R `glm()`, statsmodels `GLM`, and PHP `stats_poisson()`.
+The [saved report](poisson-results.json) records versions, complete outputs,
+maximum differences from R, warnings and retained-row metadata.
+
+## Reference cases and conventions
+
+Six saved R fixtures cover the simulated clinic sample, a single predictor,
+multiple predictors, no intercept, intercept only, correlated full-rank columns
+and sparse counts (the main sample is the multiple-predictor case).
+The three-way comparison adds listwise deletion of two rows. All coefficients,
+covariance entries, standard errors, normal z tests and p-values, Wald confidence
+limits, full fitted mean counts and response residuals, likelihood, deviance,
+null deviance, AIC and residual df are checked. Numerical tolerance is
+1e-9 + 1e-7 × abs(reference); sample accounting is exact.
+
+R uses `confint.default(fit)`, not profile-likelihood `confint(fit)`.
+Its fitting tolerance is 1e-16 to make covariance evaluated at the preceding
+IRLS iterate negligible. Iteration counts can differ across implementations;
+they are not a reference equality requirement. Without a ones column the null
+baseline is mean one; the Python runner computes this convention explicitly.
+
+## Failure and integration checks
+
+Rust/PHP tests reject insufficient observations, invalid shapes, nonfinite or
+negative/fractional outcomes, all-zero samples, dependent columns, and selected boundary designs. They check scaled predictor units, zero-count and near-fit deviance arithmetic, iteration exhaustion, missing-row warnings and alignment.
+OLS integration tests also run after changes to the shared PHP conversion code.
+No exhaustive finite-MLE existence test is supplied. Count overdispersion and
+sparse samples can invalidate conventional Wald inference. Offsets and exposure
+arguments are outside the first implementation. Linux and PHP-FPM deployment have not been exercised by these reports.
+
+## Reproduce
+
+From the repository root with matching PHP development tools:
+
+```sh
+export PHP=/opt/homebrew/bin/php
+export PHP_CONFIG=/opt/homebrew/bin/php-config
+cargo test --workspace --locked
+cargo build -p php-stats --locked
+php -n -d "extension=$PWD/target/debug/libphp_stats.dylib" tests/poisson.php
+.context/notebooks-venv/bin/python docs/verifications/compare_poisson.py
+QUARTO_PYTHON="$PWD/.context/notebooks-venv/bin/python" quarto render docs/notebooks/poisson-verification.qmd
+```
+
+Use `.so` on Linux. R fixture regeneration is an explicit development step:
+`Rscript tests/generate-probit-poisson-fixtures.R`. Ordinary Rust/PHP tests use saved
+fixtures without R or Python. See [development](../development.qmd) for setup and
+[large-sample benchmarks](../benchmarks/poisson.qmd) for additional evidence.

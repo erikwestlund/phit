@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Render frozen Quarto results, then publish a directly browsable /docs tree.
+set -euo pipefail
+workspace_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+cd "$workspace_root"
+quarto render docs
+python3 - <<'PY'
+from pathlib import Path
+import shutil
+import tempfile
+import os
+root=Path('docs')
+site=root/'_site'
+if not (site/'index.html').is_file():
+    raise SystemExit('Quarto did not produce index.html')
+for source in site.rglob('*'):
+    if not source.is_file():
+        continue
+    destination=root/source.relative_to(site)
+    if destination.exists() and destination.read_bytes()==source.read_bytes():
+        continue
+    destination.parent.mkdir(parents=True,exist_ok=True)
+    # Source resources may be read-only; skip identical files and replace generated
+    # outputs atomically instead of changing source permissions.
+    with tempfile.NamedTemporaryFile(dir=destination.parent,delete=False) as file:
+        temporary=Path(file.name)
+    try:
+        shutil.copy2(source,temporary)
+        os.replace(temporary,destination)
+    finally:
+        temporary.unlink(missing_ok=True)
+(root/'.nojekyll').touch()
+print('Published rendered documentation to docs/index.html')
+PY

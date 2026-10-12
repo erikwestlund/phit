@@ -1,0 +1,6 @@
+[workspace]
+members = ["crates/stats-core", "crates/php-extension"]
+resolver = "2"
+
+[profile.release]
+strip = "debuginfo"

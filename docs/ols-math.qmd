@@ -1,0 +1,131 @@
+---
+title: "OLS mathematics and Rust notes"
+---
+
+Follow the [executed OLS walkthrough](notebooks/ols-math.qmd) for intermediate
+matrices and calculations, and the [three-way verification](verifications/ols.qmd)
+for equivalent fits in R, statsmodels and PHP. Missing-data deletion happens in
+the binding before estimation; all formulas below use the retained sample.
+
+## Least squares
+
+For an $n \times p$ design matrix $X$ and outcome vector $y$, choose
+
+$$
+\hat\beta=\operatorname*{arg\,min}_{\beta}(y-X\beta)^\top(y-X\beta).
+$$
+
+Differentiating the quadratic gives gradient $-2X^\top(y-X\beta)$. Setting it
+to zero produces the normal equations:
+
+$$
+X^\top X\hat\beta=X^\top y.
+$$
+
+This characterizes the answer, but computing the inverse of $X^\top X$ squares
+the condition number and can lose accuracy. In `crates/stats-core/src/ols.rs`,
+we scale columns with a diagonal matrix $D$ and decompose
+$A=XD^{-1}=USV^\top$. The least-squares solution is
+$\hat\beta=D^{-1}VS^{-1}U^\top y$. nalgebra's SVD `solve` performs this
+calculation. Singular values at numerical zero indicate a rank failure. Scaling
+makes the rank decision less dependent on predictor units.
+
+The numerical engine uses nalgebra's Rust-native decomposition. External
+BLAS/LAPACK dependencies are deferred until a concrete need justifies them;
+the [past experiment](benchmarks/ols.qmd#apple-accelerate-experiment) is kept
+as historical evidence.
+
+Fitted values are $X\hat\beta$, residuals are $y-X\hat\beta$, and
+$\mathrm{RSS}$ is the squared residual norm. Full rank uses $p$ estimated
+coefficients and leaves $n-p$ residual degrees of freedom. The unbiased estimate
+of error variance is $s^2=\mathrm{RSS}/(n-p)$. The conventional covariance is
+
+$$
+\widehat{\operatorname{Var}}(\hat\beta)
+=s^2(X^\top X)^{-1}
+=s^2D^{-1}VS^{-2}V^\top D^{-1}.
+$$
+
+The code computes the final expression directly from the SVD. Standard errors
+are square roots of its diagonal. Under Gaussian independent errors,
+$(\hat\beta_j-\beta_j)/\mathrm{SE}_j$ has a Student $t$ distribution with
+$n-p$ degrees of freedom. For the null $\beta_j=0$, the reported statistic is
+$\hat\beta_j/\mathrm{SE}_j$. Two-sided p-values use twice the upper tail at
+its absolute value. Confidence limits are
+$\hat\beta_j\pm t_{0.975,n-p}\,\mathrm{SE}_j$. The survival function
+preserves precision for small p-values.
+
+With an explicit ones column, $\mathrm{TSS}=\sum_i(y_i-\bar y)^2$;
+otherwise $\mathrm{TSS}=\sum_i y_i^2$. We report
+$R^2=1-\mathrm{RSS}/\mathrm{TSS}$. Adjusted $R^2$ is
+$1-(1-R^2)(n-1)/(n-p)$ with an intercept, or
+$1-(1-R^2)n/(n-p)$ without one. See the
+[contracts](contracts.qmd) for zero-variance and perfect-fit conventions.
+
+## Gaussian likelihood
+
+Assume independent observations
+
+$$
+y_i\sim N(x_i^\top\beta,\sigma^2).
+$$
+
+Multiplying their densities and taking logs turns the product into a sum:
+
+$$
+\ell(\beta,\sigma^2)
+=-\frac n2\log(2\pi\sigma^2)
+-\frac{1}{2\sigma^2}\sum_i(y_i-x_i^\top\beta)^2.
+$$
+
+For any positive fixed variance, maximizing this expression with respect to
+$\beta$ minimizes $\mathrm{RSS}$, giving the OLS coefficients.
+Differentiating with respect to the variance gives
+$-n/(2\sigma^2)+\mathrm{RSS}/(2\sigma^4)=0$, so the ML estimate is
+$\mathrm{RSS}/n$. Substitution yields
+
+$$
+\ell(\hat\beta,\hat\sigma^2_{\mathrm{ML}})
+=-\frac n2\left[\log(2\pi)+\log(\mathrm{RSS}/n)+1\right].
+$$
+
+This is the likelihood returned by the code. ML variance differs from
+$\mathrm{RSS}/(n-p)$: estimating coefficients consumes $p$ degrees of freedom,
+so dividing by $n-p$ corrects the downward bias for inference. At
+$\mathrm{RSS}=0$, the positive-variance model has no finite maximum:
+likelihood grows without bound as variance approaches zero. The code reports
+positive infinity as the limiting log-likelihood.
+
+## Rust constructs in this implementation
+
+`fit_ols` takes ownership of `Vec<Vec<f64>>` and `Vec<f64>`: it can consume them
+with `into_iter()` without copying. Validation uses borrowed iterators (`iter()`)
+to inspect values before moving them. The binding borrows PHP's `ZendHashTable`
+for the duration of the call, copying numeric values into Rust-owned vectors.
+
+`OlsResult` is a struct grouping named outputs. `StatsError` holds a readable
+message and implements Display and Error. `Result<OlsResult, StatsError>` forces
+the caller to handle failure. The `?` operator returns early on an error; the PHP
+binding uses `map_err` to convert it into a `PhpException`. No PHP types appear
+in stats-core.
+
+Vectors own variable-length data. Borrowed slices and iterators let us inspect
+that data without taking ownership. `map`, `collect`, `any` and `sum` express the
+coefficient, validation and scalar calculations. `Vec<[f64; 2]>` stores each
+confidence interval as a fixed-size pair.
+
+nalgebra's `DMatrix` and `DVector` have runtime dimensions and own their storage.
+`from_row_iterator` accepts the flattened row-wise design; nalgebra stores its
+matrix column-wise internally. Indexing `(i,j)` accesses a row and column.
+Borrowing `&design` and `&beta` during multiplication keeps them available for
+later calculations. SVD consumes the scaled matrix, and its singular values and
+right singular vectors provide both the fit and covariance.
+
+In `crates/php-extension/src/lib.rs`, `#[php_function]` exports functions and
+`#[php_module]` registers them. Input values are inspected explicitly so strings
+and booleans cannot silently become numbers. The binding filters null/NAN rows
+listwise, reports original positions and warns on successful omission; strict
+mode rejects missingness. Rust still receives complete finite vectors. `ZendHashTable::insert` and the
+crate's `IntoZval` conversions turn Rust floats, vectors and nested vectors into
+PHP values. The owned `ZBox<ZendHashTable>` uses PHP-managed allocation. The
+binding has no statistical calculations beyond selecting the result fields.

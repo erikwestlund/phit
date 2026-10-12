@@ -1,0 +1,284 @@
+---
+title: "Gaussian random slopes, penalized least squares and REML"
+jupyter: python3
+---
+
+The [random-intercept walkthrough](lmm-math.qmd) introduces clustering. Here we
+allow each subject both a different starting reaction time and a different
+response to days of sleep deprivation. We use the published sleepstudy data,
+not synthetic row numbers. The [optimizer audit](r-compatibility.qmd) verifies
+this model against R lme4 and statsmodels under ML and REML.
+
+## Observations and matrices
+
+$$
+y_i=o_i+x_i^\top\beta+z_i^\top b_{g(i)}+\epsilon_i,
+\qquad b_g\sim N(0,\Sigma),\quad
+\epsilon_i\sim N(0,\sigma^2/w_i).
+$$
+
+Here o is a known offset, w is a positive prior weight, x contains fixed predictors
+and z contains random predictors. For sleepstudy, o=0, w=1 and both local designs
+have `[1, Days]` columns. The ones construct an intercept; Days is observed data.
+Beta contains the population intercept and slope. Each group's b contains deviations
+from those population coefficients, not a second set of observed predictors.
+
+```{python}
+from pathlib import Path
+import json
+import numpy as np
+import pandas as pd
+from IPython.display import display,Math
+ROOT=next(p for p in [Path.cwd(),*Path.cwd().parents] if (p/'Cargo.toml').exists())
+fixtures=json.loads((ROOT/'tests/fixtures/lmm-expanded-r.json').read_text())
+c=next(c for c in fixtures['cases'] if c['name']=='sleepstudy_reml')
+x=np.array(c['x']);y=np.array(c['y']);z=np.array(c['terms'][0]['z']);groups=np.array(c['terms'][0]['groups'])
+raw=pd.read_csv(ROOT/'docs/data/lmm/sleepstudy.csv')
+display(raw.head(8))
+print('X:',x.shape,'y:',y.shape,'local random design:',z.shape)
+def matrix_tex(a,name):
+    a=np.atleast_2d(a)
+    body=r' \\ '.join(' & '.join(f'{v:.5g}' for v in row) for row in a)
+    display(Math(name+r'=\begin{bmatrix}'+body+r'\end{bmatrix}'))
+# Show observed inputs, not guesses at beta.
+matrix_tex(x[:4],'X_{\mathrm{first\ four}}')
+matrix_tex(y[:4,None],'y_{\mathrm{first\ four}}')
+```
+
+The global Z has separate columns for each subject. Four rows for each of the
+first two groups illustrate its block pattern:
+
+```{python}
+order=list(dict.fromkeys(groups));g_index={g:i for i,g in enumerate(order)}
+Z=np.zeros((len(y),2*len(order)))
+for i,g in enumerate(groups):Z[i,2*g_index[g]:2*g_index[g]+2]=z[i]
+ids=np.r_[np.flatnonzero(groups==order[0])[:4],np.flatnonzero(groups==order[1])[:4]]
+matrix_tex(Z[np.ix_(ids,range(4))],'Z_{\mathrm{excerpt}}')
+print('Full Z:',Z.shape,'= observations × all random coefficients')
+```
+
+A zero means that another subject's random coefficients do not contribute to this
+observation. Crossed models add more independent blocks, for example subject and
+site. Nested models supply distinct parent/child identifiers. Independent slopes
+constrain the corresponding covariance to a diagonal matrix.
+
+## Covariance through a Cholesky factor
+
+Instead of optimizing variance/correlation entries directly, optimize a lower
+triangular relative factor:
+
+$$
+L=\begin{bmatrix}a&0\\c&d\end{bmatrix},\qquad a,d\geq0,
+\qquad\Sigma=\sigma^2LL^\top
+=\sigma^2\begin{bmatrix}a^2&ac\\ac&c^2+d^2\end{bmatrix}.
+$$
+
+This guarantees positive semidefinite covariance, including valid zero-variance
+or perfect-correlation boundaries. A negative c can represent negative
+intercept/slope covariance. lme4's lower-triangle parameter ordering is column-major:
+`[a, c, d]`. Several terms concatenate their parameters in supplied term order.
+
+```{python}
+from scipy.linalg import cholesky
+reference=c['references']['bobyqa']['result']
+Sigma=np.array(reference['terms'][0]['covariance'])
+sigma2=reference['residual_variance'];L=cholesky(Sigma/sigma2,lower=True)
+matrix_tex(L,'L');matrix_tex(sigma2*L@L.T,r'\widehat\Sigma')
+print('Intercept SD (ms):',np.sqrt(Sigma[0,0]))
+print('Slope SD (ms/day):',np.sqrt(Sigma[1,1]))
+print('Intercept/slope correlation:',Sigma[0,1]/np.sqrt(Sigma[0,0]*Sigma[1,1]))
+```
+
+These are estimated quantities from the full sample. They are not initial guesses.
+The off-diagonal dot product `a*c + 0*d` produces the covariance after multiplying
+by sigma². Variances have different physical units because the second coefficient
+is measured in milliseconds per day.
+
+## Penalized least squares profiles out beta and random effects
+
+Repeat L once per group to construct block-diagonal Lambda. Write b=Lambda u,
+where u has spherical covariance sigma²I. Given theta, minimize
+
+$$
+q(\theta)=\min_{u,\beta}
+\left\|W^{1/2}(y-o-X\beta-Z\Lambda u)\right\|^2+\|u\|^2.
+$$
+
+The first term fits observed reaction times; the second penalizes implausibly
+large standardized random effects. This is a consequence of their Gaussian
+likelihood, not an arbitrary regularization parameter chosen by the user.
+It is the least-squares problem
+
+$$
+\begin{bmatrix}W^{1/2}Z\Lambda&W^{1/2}X\\I&0\end{bmatrix}
+\begin{bmatrix}u\\\beta\end{bmatrix}
+\approx\begin{bmatrix}W^{1/2}(y-o)\\0\end{bmatrix}.
+$$
+
+For a selected theta, linear algebra finds u and beta. The nonlinear optimizer
+searches theta only. We solve with QR; coefficients do not come from explicitly
+inverting a normal-equation matrix.
+
+```{python}
+from scipy.linalg import block_diag,solve_triangular
+Lambda=block_diag(*([L]*len(order)))
+A=np.block([[Z@Lambda,x],[np.eye(Z.shape[1]),np.zeros((Z.shape[1],x.shape[1]))]])
+b=np.r_[y,np.zeros(Z.shape[1])]
+Q,R=np.linalg.qr(A,mode='reduced');solution=solve_triangular(R,Q.T@b)
+u=solution[:Z.shape[1]];beta=solution[Z.shape[1]:];effects=Lambda@u
+residual=y-x@beta-Z@effects
+q=residual@residual+u@u
+print('Augmented design:',A.shape)
+print('beta:',beta)
+print('Observation residual contribution:',residual@residual)
+print('Random-effect penalty contribution:',u@u)
+print('Total profiled q:',q)
+assert np.allclose(beta,reference['coefficients'],rtol=1e-8,atol=1e-8)
+assert np.allclose(effects.reshape(-1,2),reference['terms'][0]['effects'],rtol=1e-8,atol=1e-8)
+```
+
+The code uses an additional QR compression before optimization. QR of weighted
+`[Z, X/scales, y-offset]` preserves every trial residual norm. Each trial needs
+only that compact square-root summary plus identity penalty rows. This extends
+the earlier cached random-intercept idea. The current general summary is dense;
+lme4 uses sparse factorization to support larger random designs.
+
+## ML and REML are different objectives
+
+With C=W⁻¹+Z Lambda Lambdaᵀ Zᵀ, the profiled Gaussian ML scale is
+
+$$\hat\sigma^2_{ML}=q/n.$$
+
+The negative profiled marginal log-likelihood is
+
+$$
+-\ell_{ML}(\theta)=\tfrac12\left[
+ n\{\log(2\pi)+1+\log(q/n)\}+\log|C|
+\right].
+$$
+
+REML adjusts for estimating the p fixed coefficients. It uses
+
+$$
+\hat\sigma^2_{REML}=q/(n-p),
+$$
+
+and the restricted criterion
+
+$$
+-\ell_{REML}(\theta)=\tfrac12\left[
+(n-p)\{\log(2\pi)+1+\log(q/(n-p))\}
++\log|C|+\log|X^\top C^{-1}X|
+\right].
+$$
+
+REML changes the optimization objective, not merely the final denominator.
+Its extra determinant accounts for fixed-effect estimation. Both determinants
+come from triangular QR factors in our implementation. Scaling fixed columns
+requires restoring their determinant contribution, even though scaling does not
+change the fitted mean. REML likelihood values should not compare different
+fixed-effect designs.
+
+```{python}
+qr_random=R[:Z.shape[1],:Z.shape[1]]
+qr_fixed=R[Z.shape[1]:,Z.shape[1]:]
+logdet_C=2*np.log(abs(np.diag(qr_random))).sum()
+logdet_info=2*np.log(abs(np.diag(qr_fixed))).sum()
+df=len(y)-x.shape[1]
+reml_variance=q/df
+reml_ll=-.5*(df*(np.log(2*np.pi)+1+np.log(reml_variance))+logdet_C+logdet_info)
+print('n, p, n-p:',len(y),x.shape[1],df)
+print('q/(n-p):',reml_variance)
+print('log determinant C:',logdet_C)
+print('log determinant fixed information:',logdet_info)
+print('Restricted log-likelihood:',reml_ll)
+assert np.isclose(reml_ll,reference['log_likelihood'],rtol=0,atol=1e-8)
+```
+
+## Fixed-effect uncertainty
+
+At the fitted variance components, the plug-in covariance is
+
+$$\widehat{\mathrm{Var}}(\hat\beta)=\hat\sigma^2(X^\top C^{-1}X)^{-1}.$$
+
+The fixed triangular QR block supplies this through triangular solves.
+Standard errors are square roots of its diagonal. Our mixed-model z tests and
+95% intervals are normal Wald approximations; this does not supply finite-group
+Student t degrees of freedom or variance-component confidence intervals.
+
+```{python}
+R_inv=solve_triangular(qr_fixed,np.eye(x.shape[1]))
+cov_beta=reml_variance*R_inv@R_inv.T
+matrix_tex(cov_beta,r'\widehat{\mathrm{Var}}(\hat\beta)')
+print('Standard errors:',np.sqrt(cov_beta.diagonal()))
+assert np.allclose(cov_beta,reference['covariance'],rtol=1e-8,atol=1e-8)
+```
+
+The implementation is `crates/stats-core/src/lmm.rs`. Owned Vec inputs become
+nalgebra matrices; term/result structs preserve the array shapes and term order.
+`Result` propagates invalid designs, failed controls and nonconvergence to the
+PHP binding as exceptions. The binding validates and filters all aligned inputs,
+then returns plain arrays. No R process participates in application fitting.
+
+
+## Four grouping levels: which observations share variation?
+
+The same construction handles multiple nested terms. For repeated assessments
+within students, classes, schools and districts,
+
+$$
+y_i=x_i^\top\beta+d_{D(i)}+s_{S(i)}+c_{C(i)}+t_{T(i)}+\epsilon_i.
+$$
+
+Each term has its own Gaussian variance and is independent of the other terms.
+Conditional on the fixed design, two different observations share covariance
+only through common groups:
+
+$$
+\operatorname{Cov}(y_i,y_j\mid X)
+=\tau_D^2\mathbf{1}_{D(i)=D(j)}
++\tau_S^2\mathbf{1}_{S(i)=S(j)}
++\tau_C^2\mathbf{1}_{C(i)=C(j)}
++\tau_T^2\mathbf{1}_{T(i)=T(j)},\quad i\ne j.
+$$
+
+On the diagonal, add the observation variance sigma² (or sigma²/w_i with weights).
+The grouping IDs must be globally unique within each term: a local school number
+needs its district in the key, and a local student number needs all its parents.
+Three grouping terms plus observations are often called a four-level model; here
+we name the number of grouping terms explicitly.
+
+```{python}
+# Demonstrate the covariance implied by the fitted four-grouping-level model.
+# This small matrix is for teaching; the native engine never constructs full V.
+report=json.loads((ROOT/'docs/verifications/r-compatibility-results.json').read_text())
+case=next(r for r in report['mixed'] if r['name']=='nested_4_grouping_levels_reml')
+fit=case['PHP']['bobyqa']
+input_case=next(r for r in fixtures['cases'] if r['name']==case['name'])
+variances=np.array([t['covariance'][0][0] for t in fit['random']])
+# First pair: same student; then different student, class, school and district.
+selected=[0,1,4,8,16,32]
+V=np.eye(len(selected))*fit['residual_variance']
+for term,var in zip(input_case['terms'],variances):
+    ids=np.array(term['groups'])[selected]
+    V+=var*(ids[:,None]==ids[None,:])
+display(pd.DataFrame(dict(grouping=['district','school','class','student'],
+                          groups=[len(t['group_labels']) for t in fit['random']],
+                          variance=variances)))
+matrix_tex(V,r'V_{\mathrm{six\ observations}}')
+print('Same student:',V[0,1])
+print('Same class, different students:',V[0,2])
+print('Same school, different classes:',V[0,3])
+print('Same district, different schools:',V[0,4])
+print('Different districts:',V[0,5])
+assert np.isclose(V[0,1],variances.sum())
+assert np.isclose(V[0,2],variances[:3].sum())
+assert np.isclose(V[0,3],variances[:2].sum())
+assert np.isclose(V[0,4],variances[0])
+assert V[0,5]==0
+```
+
+The [expanded audit](r-compatibility.qmd#more-than-two-grouping-levels) checks all
+observations and effects in three- and four-grouping-level cases, under ML and
+REML, with both native optimizers and all four actual lme4 wrappers. There is no
+two-level restriction in the API; the current dense size limits still apply.

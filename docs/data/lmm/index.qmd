@@ -1,0 +1,91 @@
+---
+title: "Published mixed-model verification data: provenance"
+jupyter: python3
+---
+
+These are published observations distributed with R packages, separate from our
+synthetic teaching and benchmark data. The repository keeps CSV snapshots so
+verification never depends on a network download. SHA-256 checksums, exported
+package versions, column selection, formulas and original references are recorded
+in [sources.json](sources.json).
+
+```{python}
+from pathlib import Path
+import hashlib,json
+import pandas as pd
+ROOT=next(p for p in [Path.cwd(),*Path.cwd().parents] if (p/'Cargo.toml').exists())
+HERE=ROOT/'docs/data/lmm'
+sources=json.loads((HERE/'sources.json').read_text())['datasets']
+for source in sources:
+    assert hashlib.sha256((HERE/source['file']).read_bytes()).hexdigest()==source['sha256']
+display(pd.DataFrame([dict(dataset=s['name'],package=s['package'],version=s['package_version'],
+                           observations=s['n'],groups=s['n_groups'],
+                           smallest_group=s['minimum_group_size'],largest_group=s['maximum_group_size']) for s in sources]))
+```
+
+## Sleep deprivation
+
+[sleepstudy.csv](sleepstudy.csv) contains reaction times in milliseconds over
+ten days for eighteen subjects. All 180 rows are retained. Our verification
+model uses a fixed intercept, Days and a random intercept by Subject.
+[The lme4 dataset documentation](https://lme4.github.io/lme4/reference/sleepstudy.html)
+attributes the data to Belenky et al. (2003). Its example uses random slopes;
+our chosen random-intercept comparison is a different, deliberately simpler model.
+
+## Orthodontic growth
+
+[Orthodont.csv](Orthodont.csv) contains 108 measurements from 27 children.
+We use age, an explicitly constructed female indicator and age × female,
+with a random intercept by Subject. All observations and original columns are
+retained. Female=1 for Sex equal to 'Female'; Male is the reference category.
+[The nlme dataset documentation](https://stat.ethz.ch/R-manual/R-devel/library/nlme/html/Orthodont.html)
+describes the measurements and cites Potthoff and Roy (1964), and Pinheiro and
+Bates (2000), Appendix A.17.
+
+## Worker and machine productivity
+
+[Machines.csv](Machines.csv) contains 54 observations: six workers each operated
+three machine brands three times. We construct separate B and C indicators,
+with A as the reference brand, and a random intercept by Worker. All rows and
+original columns are retained. This comparison has no worker-by-machine random
+interaction. [The nlme documentation](https://stat.ethz.ch/R-manual/R-devel/library/nlme/html/Machines.html)
+cites Milliken and Johnson (1992), and Pinheiro and Bates (2000), Appendix A.14.
+
+## High School and Beyond
+
+[Hsb82.csv](Hsb82.csv) contains all 7,185 observations in the package's 1982
+High School and Beyond sample. We retain the five columns used by the model:
+school, individual SES, school mean SES, school sector and mathematics achievement.
+The fixed columns are intercept, SES, mean SES and Catholic=1 for sector equal
+to 'Catholic'; Public is the reference. School is the grouping variable, with
+160 schools and 14–67 students per school.
+[The mlmRev reference manual](https://cran.r-project.org/web/packages/mlmRev/mlmRev.pdf#page=11)
+describes the data and cites Raudenbush and Bryk (2002), chapter 4.
+
+## Snapshot and model construction
+
+The exporter `tests/export-lmm-public-data.R` reads installed package data and
+writes UTF-8 CSVs with original row order and no row-name column. The fixture
+generator `tests/generate-lmm-public-fixtures.py` constructs the numeric designs
+listed above, maps first-appearance group labels to integer core IDs, and saves
+lme4 and nlme ML reference outputs. The PHP verification also exercises original
+string labels. No rows are sampled or silently removed. The matrix-building code
+is an explicit test helper; the native API still accepts vanilla arrays and adds
+no categorical encoder or formula parser.
+
+The snapshots are distributed from packages declaring GPL (>= 2); package source
+links and study citations are in sources.json, and [COPYING](COPYING) contains
+GPL version 2. These package distribution notices do not claim new ownership of
+the original studies. R and these data packages are development dependencies.
+
+To intentionally refresh snapshots and expectations:
+
+```sh
+Rscript -e 'install.packages(c("lme4", "nlme", "mlmRev"), repos="https://cloud.r-project.org")'
+.context/notebooks-venv/bin/python tests/generate-lmm-public-fixtures.py --export
+```
+
+To regenerate expectations from the existing, checksum-verified snapshots, omit
+`--export`; only lme4 and nlme are needed in R. Review CSVs, sources.json,
+`tests/fixtures/lmm-public-r.json` and the [executed comparison](../../notebooks/lmm-public-verification.qmd)
+together. A changed source snapshot must never be accepted solely by changing its hash.

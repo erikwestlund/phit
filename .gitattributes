@@ -1,0 +1,4 @@
+# Rendered Quarto HTML/assets are generated; preserve upstream formatting.
+docs/**/*.html linguist-generated=true -whitespace
+docs/site_libs/** linguist-generated=true -whitespace
+docs/_freeze/** linguist-generated=true

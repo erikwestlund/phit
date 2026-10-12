@@ -1,0 +1,126 @@
+---
+title: "Missing data and listwise deletion"
+---
+
+stats_ols() now defaults to listwise deletion: if any supplied predictor or the
+outcome is missing, omit the entire observation from both x and y. This applies
+to the supplied model columns, not unrelated fields in an application's records.
+The raw API remains ordinary PHP arrays with an optional string policy:
+
+```php
+$result = stats_ols(x: $x, y: $y); // missing: 'drop'
+$result = stats_ols(x: $x, y: $y, missing: 'raise'); // reject missing values
+```
+
+## What counts as missing
+
+PHP null and floating-point NAN represent missing values. Positive and negative
+infinity are invalid numerical input, not missingness. Strings (including empty
+strings and 'NA'), booleans, objects and absent/ragged matrix elements remain
+errors. Numeric zero is a valid value. No value is imputed or coerced from text.
+
+Validation inspects all original values and shapes before deletion. A missing
+value cannot hide an invalid value or ragged row. After deletion, the retained
+matrix must still have n > p and full numerical rank. If no usable fit remains,
+the call throws. The Rust fit_ols() contract continues to require complete finite
+numeric vectors; the PHP binding implements the omission policy before calling it.
+
+## Warning and accounting
+
+Every successful fit that omits observations emits one native PHP E_WARNING
+including the number dropped and original sample size. Complete data emits no
+warning. missing: 'raise' throws when missing values are found, without fitting.
+An unsuccessful fit throws rather than returning deletion metadata. Warning text
+is descriptive and is not a stable machine-readable interface.
+
+Every successful result also includes:
+
+| Key | Meaning |
+| --- | --- |
+| n_input | int: original observations |
+| n_observations | int: retained observations used in estimation |
+| n_dropped | int: omitted observations |
+| retained_rows | list<int>: original zero-based iteration positions retained |
+| dropped_rows | list<int>: original zero-based iteration positions omitted |
+
+These positions refer to input iteration order, not PHP array keys. Each list is
+in ascending original order. fitted and residuals contain retained observations
+only, in retained_rows order; they are not padded with null. All statistics use
+the retained sample, including df_residual = n_observations - p. Metadata remains
+available even if warning display is disabled by PHP configuration.
+
+```php
+foreach ($result['retained_rows'] as $outputPosition => $inputPosition) {
+    $residualForOriginalPosition[$inputPosition] = $result['residuals'][$outputPosition];
+}
+```
+
+Applications should use their normal warning handling to log or display the
+message and use the structured counts for reporting. PHP error handlers that
+promote warnings to exceptions can abort this call; use missing: 'raise' when
+omission should be prohibited explicitly. Warnings may be suppressed by PHP
+settings, so user-facing applications should also inspect n_dropped rather than
+rely only on display_errors. Do not suppress deletion without recording it.
+
+## Statistical interpretation and reference behavior
+
+Listwise deletion is simple and preserves aligned observations, but changes the
+estimation sample. It does not guarantee unbiased results for arbitrary missingness.
+Report the excluded count and investigate why values are missing; this policy
+implements neither imputation nor a missing-data model.
+
+R's explicit [na.action = na.omit](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/lm.html)
+and statsmodels' explicit [missing='drop'](https://www.statsmodels.org/stable/missing.html)
+provide comparable complete-case fits. Do not assume that every reference library
+warns on omission by default: warnings and metadata are our explicit contract.
+The [three implementation verification](verifications/ols.qmd) checks identical
+retained samples and numerical results, with the PHP warning captured as evidence.
+
+This changes the initial API, which rejected null and NAN. Existing callers that
+need that strict behavior should pass missing: 'raise'. Other invalid inputs
+continue to be rejected. Helpers can still perform their own explicit preparation;
+when they omit data before the call, they must report it themselves because the
+extension can account only for rows it actually receives.
+
+## Logistic outcomes
+
+`stats_logistic()` follows the same deletion, warning and row-accounting policy
+as `stats_ols()`. With default unit trial weights, numeric outcomes must be exactly 0 or 1, including rows with
+missing predictors. After deletion both classes must remain and n must exceed p;
+otherwise fitting fails. Its residuals are response residuals y - probability,
+and both residuals and fitted probabilities follow retained_rows order.
+
+## Probit and Poisson outcomes
+
+Probit follows the binary rules above. Poisson validates nonnegative integer
+counts before deletion; after deletion at least one positive count must remain.
+All estimators warn once on a successful fit that dropped rows, expose original
+row positions, and support missing: 'raise'. Zero Poisson counts are observed
+values, not missingness. Returned mean counts and residuals follow retained_rows.
+
+## Mixed-model group IDs
+
+stats_lmm() deletes a row if x, y or the group ID is missing. Group missingness
+means null; NAN/float group IDs are invalid categorical labels and are rejected.
+Validation still covers every original value before deletion. Group labels and
+sizes describe the retained sample, and groups completely removed by deletion
+are absent from results. If deletion leaves only one group, all singletons or
+insufficient fixed-design observations, fitting fails. Inspect retained_rows to
+align conditional/population fits and both residual definitions with original data.
+
+## Expanded inputs
+
+Optional weights/offsets and every random term's z/groups participate in the same
+listwise deletion mask. Validate original lengths, types and values before
+deletion; preserve aligned rows across all vectors and terms. The fixed-model
+contracts now permit grouped-binomial proportions with positive integer trial
+weights. Invalid success/trial counts remain errors, even in rows that would
+otherwise be dropped. General mixed fits return one warning and original row
+positions just like the existing functions. These cases are tested in
+`tests/r-compatibility.php` and `tests/lmm-expanded.php`.
+
+`stats_logistic_mixed` applies the same policy across x, proportions, groups,
+trial counts and offsets. Trial counts above 1,000,000 are rejected before
+deleting rows. Near-integer success encodings within tolerance are canonicalized
+only after original validation and deletion; zero-success/zero-failure samples
+then fail as required for a finite unpenalized fit.

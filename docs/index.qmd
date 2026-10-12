@@ -1,0 +1,69 @@
+---
+title: "Project documentation"
+---
+
+The raw extension accepts plain numerical arrays and returns plain results.
+Optional helpers can make data preparation easier while keeping that boundary
+usable directly. These documents are the maintained record of how the project
+works and why it makes its choices.
+
+- [Building the documentation](documentation.qmd): Quarto rendering and refreshing computations.
+- [Design philosophy](design-philosophy.qmd): priorities, raw interface, helper
+  responsibilities and scope.
+- [Contracts](contracts.qmd): current PHP and Rust APIs, shapes, ordering, errors
+  and statistical edge cases.
+- [Development and installation](development.qmd): local setup, separate checkouts,
+  builds and application deployment.
+- [Verification](verification.qmd): checks, reference fixtures, tolerances and
+  evidence limits.
+- [Missing data](missing-data.qmd): omission policy, warnings and sample metadata.
+- [Walkthrough notebooks](notebooks/index.qmd): executable mathematics and comparisons.
+- [OLS verification](verifications/ols.qmd): the same fits in R, statsmodels and PHP.
+- [OLS mathematics and Rust notes](ols-math.qmd): derivations and implementation.
+
+Keep the root README as a quick entry point. Put detailed guidance here and
+update the relevant document alongside code changes. Distinguish implemented
+behavior, verified behavior and proposed direction; do not present plans as
+existing features. Add new documents only when a topic needs its own explanation.
+
+## Binary logistic regression
+
+- [Math walkthrough](notebooks/logistic-math.qmd): likelihood, matrix calculations, Newton/IRLS and Wald inference.
+- [Executed comparison](notebooks/logistic-verification.qmd): identical models in R, statsmodels and PHP.
+- [Verification record](verifications/logistic.qmd): fixtures, edge cases and tolerances.
+- [Scale and performance](benchmarks/logistic.qmd): standard release benchmarks.
+
+## Probit regression
+
+- [Math walkthrough](notebooks/probit-math.qmd): likelihood, scoring, matrices and inference.
+- [Executed comparison](notebooks/probit-verification.qmd): identical fits in R, statsmodels and PHP.
+- [Verification record](verifications/probit.qmd): conventions and failure cases.
+- [Scale and performance](benchmarks/probit.qmd): standard release benchmarks.
+
+## Poisson regression
+
+- [Math walkthrough](notebooks/poisson-math.qmd): likelihood, scoring, matrices and inference.
+- [Executed comparison](notebooks/poisson-verification.qmd): identical fits in R, statsmodels and PHP.
+- [Verification record](verifications/poisson.qmd): conventions and failure cases.
+- [Scale and performance](benchmarks/poisson.qmd): standard release benchmarks.
+
+## Gaussian random-intercept mixed model
+
+- [Math walkthrough](notebooks/lmm-math.qmd): covariance, marginal likelihood and shrinkage.
+- [Synthetic reference comparison](notebooks/lmm-verification.qmd): lme4 ML, statsmodels and PHP.
+- [Published dataset comparison](notebooks/lmm-public-verification.qmd): four studies, lme4, nlme, statsmodels and PHP.
+- [Verification record](verifications/lmm.qmd): conventions, boundary fits and limits.
+- [Scale and performance](benchmarks/lmm.qmd): release API benchmarks and charts.
+
+The [R compatibility ledger](r-compatibility.qmd) records the expanded weighted,
+offset and general Gaussian mixed-model capabilities and remaining work toward
+full parity. See the [executed optimizer audit](notebooks/r-compatibility.qmd) and
+[random-slopes/REML walkthrough](notebooks/lmm-general-math.qmd).
+
+[Binomial random-intercept models](notebooks/logistic-mixed-math.qmd) now add
+non-Gaussian multilevel likelihoods, with
+[R/SciPy verification and approximation-error checks](notebooks/logistic-mixed-verification.qmd).
+
+See the [v0.1 stabilization assessment](v0.1.qmd) for the offline `scripts/check` gate,
+IDE stubs, structured diagnostics, stress fixtures, provenance manifest,
+performance preservation and remaining release/deployment gates.

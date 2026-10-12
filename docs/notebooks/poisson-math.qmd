@@ -1,0 +1,290 @@
+---
+title: "Poisson: count likelihood, log link and IRLS"
+jupyter: python3
+---
+
+## 1. Meaningful simulated observations
+
+We observe **simulated clinic days**, with daily visitors, a staffing measure
+and the number of calls received. These are synthetic counts, not patient records.
+R seed 20261014 generates 120 days. Visitors are rounded uniform draws between
+80 and 300; staffing is visitors/50 plus normal noise with standard deviation 0.8,
+clipped to 2–10 and rounded to two decimals. Counts are independent draws from
+
+$$y_i\sim\operatorname{Poisson}(\mu_i),\qquad
+\log\mu_i=0.1+0.005\,\mathrm{visitors}_i-0.12\,\mathrm{staff}_i.$$
+
+Inputs and outcomes are data. The supplied ones column estimates the intercept.
+Known generating parameters are distinct from fitted estimates, which vary by sample.
+The outcome is a nonnegative integer; the fitted mean $\mu_i$ is a positive real
+number, not a rounded count or a probability. Under the model,
+$E[y_i\mid x_i]=\operatorname{Var}(y_i\mid x_i)=\mu_i$.
+
+The **log link** is $\eta_i=x_i^\top\beta=\log\mu_i$, so $\mu_i=e^{\eta_i}$.
+Holding other predictors fixed, a one-unit increase multiplies the mean by
+$e^{\beta_j}$. A negative staffing coefficient here describes a conditional
+association, not a causal staffing effect. This first API has no exposure/offset
+argument: a constant exposure is implicit, and these are daily counts, not rates.
+
+The hand-worked iteration below deliberately uses zero starting coefficients to
+make the first weights and dot products easy to inspect. Since the v0.1
+stabilization, the native implementation uses a finite marginal intercept start
+for extreme inputs when a ones column is present, which cancels a large common offset.
+Ordinary inputs retain the original zero start; the finite intercept fallback
+is used only for extreme offsets/counts described in the release notes.
+Starting values change the iteration path, not the declared likelihood or
+converged estimates. See [the release notes](../v0.1.qmd).
+
+```{python}
+from pathlib import Path
+import json
+import numpy as np
+import pandas as pd
+from scipy.special import ndtr, log_ndtr, gammaln, xlogy
+from scipy.stats import norm
+from IPython.display import Math, display
+ROOT = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / "Cargo.toml").exists())
+observations = pd.read_csv(ROOT / "docs/data/clinic.csv")
+X = np.column_stack([np.ones(len(observations)), observations[['visitors', 'staff']]])
+y = observations.iloc[:,-1].to_numpy(dtype=float)
+n,p = X.shape
+fixture = json.loads((ROOT / "tests/fixtures/poisson-r.json").read_text())
+case = next(c for c in fixture["cases"] if c["name"] == "simulated_clinic")
+np.testing.assert_array_equal(X,case["x"])
+np.testing.assert_array_equal(y,case["y"])
+display(observations.head(8))
+display(observations.corr().rename_axis("Sample correlations"))
+def number(value):
+    text = f"{value:.6g}"
+    if "e" in text:
+        mantissa, exponent = text.split("e")
+        return mantissa + rf"\times10^{{{int(exponent)}}}"
+    return text
+
+def show_matrix(symbol, values, limit=6):
+    matrix = np.asarray(values)
+    if matrix.ndim == 1:
+        matrix = matrix[:, None]
+    indices = list(range(len(matrix))) if len(matrix) <= limit else [0,1,2,None,len(matrix)-1]
+    columns = list(range(matrix.shape[1])) if matrix.shape[1] <= limit else [0,1,2,None,matrix.shape[1]-1]
+    rows = [" & ".join(r"\ddots" if j is None else r"\vdots" for j in columns) if i is None
+            else " & ".join(r"\cdots" if j is None else number(matrix[i,j]) for j in columns) for i in indices]
+    display(Math(symbol + r"=\begin{bmatrix}" + r" \\ ".join(rows)
+                 + r"\end{bmatrix}" + rf"\quad({matrix.shape[0]}\times{matrix.shape[1]})"))
+
+def show_dot(symbol, left, right):
+    terms = [rf"({number(a)})\cdot({number(b)})" for a,b in zip(left,right)]
+    if len(terms) > 3:
+        terms = terms[:2] + [r"\cdots", terms[-1]]
+    display(Math(symbol + "=" + "+".join(terms) + r"\approx" + number(np.asarray(left) @ right)))
+
+
+show_matrix("X",X)
+show_matrix("y",y)
+show_matrix(r"X^\top",X.T)
+```
+
+Matrix displays show dimensions and truncate middle rows/columns using dots.
+Calculations use every observation and full precision. Correlation does not
+establish causation. The saved dataset is shared by the PHP example and R fixtures;
+regeneration is explicit in `tests/generate-probit-poisson-fixtures.R`.
+
+## 2. Likelihood and derivatives
+
+The probability of one count is
+
+$$P(y_i\mid\mu_i)=\frac{e^{-\mu_i}\mu_i^{y_i}}{y_i!}.$$
+
+Taking logs and substituting $\mu_i=e^{\eta_i}$ gives
+
+$$\ell(\beta)=\sum_i[y_i\eta_i-e^{\eta_i}-\log\Gamma(y_i+1)].$$
+
+For integer counts $\Gamma(y_i+1)=y_i!$. The factorial term does not change the
+coefficient optimum, but must remain in reported likelihood and AIC. Rust uses
+`statrs::function::gamma::ln_gamma` instead of forming a huge factorial.
+
+Since $d e^{\eta_i}/d\eta_i=e^{\eta_i}=\mu_i$, the first derivative is
+$y_i-\mu_i$. Applying $d\eta_i/d\beta_j=x_{ij}$ gives
+
+$$g=X^\top(y-\mu),\qquad H=-X^\top W X,\qquad
+W=\operatorname{diag}(\mu_i).$$
+
+Observed and expected information coincide here: $I=-H=X^\top W X$.
+There is no OLS estimate of error variance; Poisson dispersion is fixed at one.
+Actual count data with overdispersion can have understated conventional standard
+errors. Robust covariance and negative-binomial models are outside this implementation.
+
+## 3. Scoring, weighted matrices and SVD
+
+Fisher scoring solves $I\Delta\beta=g$ and updates coefficients. For Poisson
+this is also the Newton step, since information equals negative Hessian. To avoid
+forming and inverting the cross-product for fitting, define column scales $D$,
+$A=XD^{-1}$ and $\theta=D\beta$. Solve
+
+$$B\Delta\theta\approx q,\quad B=W^{1/2}A,\quad q=W^{-1/2}s,
+\qquad B=USV^\top,\quad \Delta\theta=VS^{-1}U^\top q.$$
+
+The weighted least-squares normal equations are
+$A^\top W A\Delta\theta=A^\top s$. This is the same update in scaled coordinates,
+with $\Delta\beta=D^{-1}\Delta\theta$. We display cross-products to understand
+them; the production solve uses weighted SVD. See the [OLS SVD explanation](ols-math.qmd#what-problem-does-svd-help-us-understand).
+
+Weights and scores change each iteration: this is IRLS. The full increment can
+overshoot, so a decreasing-likelihood step is halved, at most 30 times. Both a
+small full coefficient increment and a small likelihood change are required.
+A tiny damped step alone does not establish convergence; the limit is 100 updates.
+
+```{python}
+def values(eta):
+    mean = np.exp(eta)
+    return mean,np.exp(0.5*eta),y-mean
+
+def log_likelihood(eta):
+    return np.sum(y*eta-np.exp(eta)-gammaln(y+1))
+
+scales = np.linalg.norm(X,axis=0)
+A = X/scales
+theta = np.zeros(p)
+history=[]
+for iteration in range(1,101):
+    eta=A@theta
+    fitted,root,score=values(eta)
+    B=root[:,None]*A
+    q=score/root
+    U,singular,Vt=np.linalg.svd(B,full_matrices=False)
+    assert np.all(singular > np.finfo(float).eps*max(n,p)*singular[0])
+    step=Vt.T@((U.T@q)/singular)
+    old_ll=log_likelihood(eta)
+    fraction=1.0
+    for _ in range(31):
+        candidate=theta+fraction*step
+        new_ll=log_likelihood(A@candidate)
+        if np.isfinite(new_ll) and new_ll >= old_ll-16*np.finfo(float).eps*(1+abs(old_ll)): break
+        fraction/=2
+    else: raise RuntimeError("No improving step")
+    if iteration==1:
+        show_matrix(r"\beta^{(0)}",theta/scales)
+        show_matrix(r"s^{(0)}",score)
+        show_matrix(r"W^{(0)}_{1:5,1:5}\text{ (top-left block)}",np.diag(root[:5]**2))
+        show_matrix(r"g^{(0)}=X^\top s",X.T@score)
+        show_matrix(r"I^{(0)}=X^\top W X",X.T@(root[:,None]**2*X))
+        for j in range(p): show_dot(rf"g_{{{j+1}}}",X[:,j],score)
+        show_dot(r"I_{2,3}",X[:,1],root**2*X[:,2])
+        show_matrix("B",B)
+        show_matrix("q",q)
+        show_matrix(r"U^\top q",U.T@q)
+        show_matrix(r"\Delta\beta",step/scales)
+    history.append({"iteration":iteration,"fraction":fraction,"log-likelihood":new_ll,
+                    "intercept":candidate[0]/scales[0],"predictor 1":candidate[1]/scales[1],"predictor 2":candidate[2]/scales[2]})
+    small=np.all(np.abs(step)<=1e-8*(1+np.abs(candidate)))
+    small_ll=abs(new_ll-old_ll)<=1e-10*(1+abs(old_ll))
+    theta=candidate
+    if small and small_ll: break
+else: raise RuntimeError("Did not converge")
+beta=theta/scales
+eta=X@beta
+fitted,root,score=values(eta)
+display(pd.DataFrame(history))
+show_matrix(r"\hat\beta",beta)
+show_matrix(r"X^\top s\text{ at final fit}",X.T@score)
+show_dot(r"\hat\eta_1",X[0],beta)
+print("First fitted mean count:",fitted[0])
+```
+
+Starting coefficients are zero. They imply mean 1 and weights 1 for every observation.
+These are starting guesses, not the observed predictors or outcomes.
+The first displayed gradient is a set of actual data dot products.
+
+## 4. Covariance and Wald inference
+
+Evaluate information at the final coefficients, then compute
+
+$$\widehat{\operatorname{Var}}(\hat\beta)=I(\hat\beta)^{-1},\quad
+\operatorname{SE}_j=\sqrt{\widehat{\operatorname{Var}}(\hat\beta)_{jj}},\quad
+z_j=\hat\beta_j/\operatorname{SE}_j.$$
+
+The SVD supplies the covariance as $D^{-1}VS^{-2}V^\top D^{-1}$.
+Two-sided p-values use $2P(Z\ge |z_j|)$ and 95% Wald limits use
+$\hat\beta_j\pm1.959964\operatorname{SE}_j$. These are asymptotic normal tests,
+not OLS Student t tests. We do not multiply covariance by RSS/(n-p).
+R `confint.default()` supplies equivalent Wald intervals; ordinary GLM `confint()`
+uses profile likelihood instead.
+
+```{python}
+_,singular,Vt=np.linalg.svd(root[:,None]*A,full_matrices=False)
+covariance=((Vt.T/singular)@(Vt/singular[:,None]))/scales[:,None]/scales[None,:]
+se=np.sqrt(np.diag(covariance))
+z=beta/se
+p_values=2*norm.sf(np.abs(z))
+conf_int=np.column_stack([beta-norm.ppf(.975)*se,beta+norm.ppf(.975)*se])
+show_matrix(r"\widehat{\operatorname{Var}}(\hat\beta)",covariance)
+show_matrix(r"\hat\mu\text{ or }\hat\pi",fitted)
+display(pd.DataFrame({"coefficient":beta,"SE":se,"z":z,"p":p_values,"95% lower":conf_int[:,0],"95% upper":conf_int[:,1]},index=["intercept",*observations.columns[:2]]))
+display(pd.DataFrame({"observed":y,"fitted":fitted,"response residual":y-fitted}).head(8))
+```
+
+## 5. Likelihood, deviance and AIC
+
+The saturated model sets $\mu_i=y_i$. Its log-likelihood is generally **not zero**:
+
+$$\ell_{\mathrm{sat}}=\sum_i[y_i\log y_i-y_i-\log\Gamma(y_i+1)],\qquad
+D=2(\ell_{\mathrm{sat}}-\ell(\hat\beta))
+=2\sum_i[y_i\log(y_i/\hat\mu_i)-(y_i-\hat\mu_i)].$$
+
+For zero counts use $0\log0=0$, so the deviance contribution is $2\hat\mu_i$.
+For $y_i>0$, Rust writes $d_i=\eta_i-\log y_i$ and evaluates the contribution
+as $2y_i[\operatorname{expm1}(d_i)-d_i]$ to preserve precision near a fitted count.
+Unlike binary regression, **Poisson deviance is not -2 × log-likelihood**.
+An explicit intercept gives null mean $\bar y$; without it the null mean is one.
+
+AIC is $2p-2\ell(\hat\beta)$; residual degrees of freedom are $n-p$, without an
+estimated dispersion parameter. Predictions are mean counts, and residuals
+are observed minus fitted. These vectors follow retained input row order.
+
+```{python}
+ll=log_likelihood(eta)
+saturated=np.sum(xlogy(y,y)-y-gammaln(y+1))
+model_deviance=2*(saturated-ll)
+null_ll=np.sum(y*np.log(y.mean())-y.mean()-gammaln(y+1))
+null_deviance=2*(saturated-null_ll)
+print("Mean multipliers:",np.exp(beta))
+print("Saturated log-likelihood:",saturated)
+calculated=dict(coefficients=beta,covariance=covariance,std_errors=se,z_statistics=z,p_values=p_values,
+                conf_int=conf_int,fitted=fitted,residuals=y-fitted,log_likelihood=ll,
+                deviance=model_deviance,null_deviance=null_deviance,aic=2*p-2*ll,df_residual=n-p)
+for key,value in calculated.items():
+    np.testing.assert_allclose(value,case["expected"][key],atol=1e-9,rtol=1e-7,err_msg=key)
+print({key:calculated[key] for key in ["log_likelihood","deviance","null_deviance","aic","df_residual"]})
+print("Every statistical field agrees with the saved R fixture.")
+```
+
+## 6. Assumptions, failure modes and experiments
+
+Counts must be finite nonnegative integers and at least one must be positive.
+An all-zero sample is rejected, including no-intercept designs, as a conservative
+first-version restriction. Certain predictor patterns have a boundary MLE with
+coefficients diverging; the fitter rejects nonconvergence or singular information
+rather than returning a partial fit. It has no exhaustive boundary-existence test.
+Independent outcomes, equal conditional mean/variance and linear log mean are
+model assumptions. There are no offsets, exposures, sample weights, grouped trials,
+robust errors, zero-inflation or negative-binomial alternatives. Try doubling every
+count while retaining the design: which coefficient should shift, and why?
+
+For both methods the retained design must have n > p and full numerical rank.
+Missing null/NAN rows are dropped with a warning unless missing: 'raise'. No partial
+unconverged result is returned. See the [contract](../contracts.qmd) and the
+[executed three-way comparison](poisson-verification.qmd).
+
+## Rust connections
+
+`fit_poisson` owns its input vectors and converts them to nalgebra matrices.
+Borrowed matrix operands remain available for later iterations; iterators construct
+weights and score residuals. A dedicated loop performs this estimator's updates.
+`Result` and `?` propagate validation/numerical failures. The returned struct holds
+numeric fields; the PHP binding converts those fields into an associative array
+and adds warning/sample metadata. No generic optimizer or family hierarchy is added.
+See [Rust learning notes](../ols-math.qmd) and `crates/stats-core/src/poisson.rs`.
+
+Reference documentation: [R glm](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/glm.html),
+[R families](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/family.html),
+[statsmodels GLM](https://www.statsmodels.org/stable/glm.html).

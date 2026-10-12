@@ -1,0 +1,546 @@
+---
+title: 'Ordinary least squares: from the objective to inference'
+jupyter: python3
+---
+
+
+This is an executable companion to [ols-math.qmd](../ols-math.qmd), for learning and reviewing the estimator. It uses Python to make the intermediate matrices visible; production estimation lives in `crates/stats-core/src/ols.rs`. NumPy and SciPy are notebook tools, not Rust dependencies. We use the same saved simulated housing observations as the PHP example and R fixtures. These are synthetic observations, not real housing records.
+
+We model $y=X\beta+\epsilon$. Rows are observations, columns are coefficients, and the first column is explicitly supplied ones. Our unknowns are the intercept and slope. We assume full column rank and $n>p$. Run cells from top to bottom; see [notebook setup](index.qmd).
+
+
+```{python}
+from pathlib import Path
+import json
+import numpy as np
+import pandas as pd
+from scipy.stats import t
+from IPython.display import Math, display
+
+def show_matrix(symbol, values):
+    """Render calculated numbers as a LaTeX matrix, with its dimensions."""
+    matrix = np.asarray(values)
+    if matrix.ndim == 1:
+        matrix = matrix[:, None]
+    rows = [" & ".join(f"{value:.6g}" for value in row) for row in matrix]
+    latex = r"\begin{bmatrix}" + r" \\ ".join(rows) + r"\end{bmatrix}"
+    display(Math(symbol + " = " + latex + rf"\quad({matrix.shape[0]}\times {matrix.shape[1]})"))
+
+def math_number(value):
+    number = f"{value:.8g}"
+    if "e" in number:
+        mantissa, exponent = number.split("e")
+        return mantissa + rf"\times10^{{{int(exponent)}}}"
+    return number
+
+def show_dot(symbol, left, right):
+    """Show the first two and last products, but sum every term."""
+    left, right = np.asarray(left), np.asarray(right)
+    assert left.ndim == right.ndim == 1 and left.shape == right.shape
+    terms = [rf"({math_number(a)})\cdot({math_number(b)})"
+             for a, b in zip(left, right)]
+    if len(terms) > 3:
+        terms = terms[:2] + [r"\cdots", terms[-1]]
+    display(Math(symbol + " = " + " + ".join(terms)
+                 + r"\approx " + math_number(left @ right)))
+
+# Run from the repository root or anywhere below it.
+ROOT = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / "Cargo.toml").exists())
+fixture = json.loads((ROOT / "tests/fixtures/ols-r.json").read_text())
+case = next(c for c in fixture["cases"] if c["name"] == "simulated_housing")
+X = np.array(case["x"], dtype=float)
+y = np.array(case["y"], dtype=float)
+n, p = X.shape
+observations = pd.read_csv(ROOT / "docs/data/housing.csv")
+np.testing.assert_array_equal(X[:, 1], observations["area_m2"])
+np.testing.assert_array_equal(y, observations["monthly_rent"])
+display(observations)
+display(observations.corr().rename_axis("Sample Pearson correlations"))
+```
+
+### Where these data come from
+
+Each row is a simulated apartment: `area_m2` is floor area in square metres,
+`bedrooms` is a correlated count, and `monthly_rent` is rent in fictional currency
+units per month. The generator uses seed `20261011` and saves the eight observations
+in [housing.csv](../data/housing.csv). See `tests/generate-learning-data.R` for the
+complete generation process. The saved CSV, rather than independently generated
+samples in each language, is the input to every implementation.
+
+We generate area uniformly between 35 and 110 square metres, then generate
+bedrooms from area plus noise, rounded and bounded to 1–4. Rent follows
+
+$$\mathrm{rent}_i=650+18\,\mathrm{area}_i+\epsilon_i,
+\qquad \epsilon_i\sim N(0,180^2).$$
+
+So the population intercept is 650, the slope is 18 currency units per additional
+square metre, and the error standard deviation is 180. We know these because
+we wrote the simulation, not because an estimator discovered them. Estimated
+coefficients differ from the generating values because this sample contains noise.
+
+The correlation table above reports **observed sample Pearson correlations**.
+Area and rent are associated, as are area and bedroom count. Eight observations
+keep the matrices readable; they are a teaching sample, not enough to make reliable
+claims about a housing market. Correlation alone does not establish causation.
+The first model uses area only; bedrooms become a second predictor in the
+[verification notebook](ols-verification.qmd). Bedrooms have no additional direct
+term in this simulated rent equation, despite their correlation with rent.
+
+### Read the matrices
+
+$X$ has $n=8$ rows (observations) and $p=2$ columns (intercept and slope).
+$y$ is a column vector, so its mathematical dimensions are $8\times1$.
+NumPy stores our vectors as one-dimensional arrays; we display them as columns.
+The second column contains the observed floor areas; the first column of ones
+is a constructed intercept column, not a measurement or a starting guess.
+The superscript $\top$ means **transpose**: swap rows and columns, without
+changing the values. In Python, `X.T` is $X^\top$.
+
+```{python}
+show_matrix("X", X)
+show_matrix("y", y)
+show_matrix(r"X^\top", X.T)
+```
+
+Matrix multiplication takes a row from the left matrix and a column from the
+right matrix, multiplies their corresponding entries, and adds the products.
+The inner dimensions must match: $(a\times b)(b\times c)$ produces $a\times c$.
+Numbers in these displays are rounded to six significant digits for readability;
+calculations and verification use the full precision values.
+
+## 1. What does fitting minimize?
+
+For a candidate $\beta$, fitted values are $X\beta$ and residuals are $r=y-X\beta$. The residual sum of squares is
+
+$$RSS(\beta)=r^\top r=\sum_i(y_i-x_i^\top\beta)^2.$$
+
+OLS chooses $\hat\beta=\arg\min_\beta RSS(\beta)$. Squaring makes large errors costly and gives a smooth quadratic. Differentiating gives $-2X^\top(y-X\beta)$; at the minimum,
+
+$$X^\top X\hat\beta=X^\top y.$$
+
+These normal equations explain the answer. Computing $(X^\top X)^{-1}$ directly is a poor numerical strategy: forming $X^\top X$ squares the condition number. The implementation solves through SVD instead.
+
+```{python}
+def rss_at(beta):
+    residuals = y - X @ np.asarray(beta)
+    return residuals @ residuals
+
+print("RSS at generating coefficients [650, 18]:", rss_at([650, 18]))
+print("Gradient there:", -2 * X.T @ (y - X @ np.array([650, 18])))
+```
+
+At the trial coefficients $\beta=[650,18]^\top$, each fitted outcome is
+$1\cdot650+\mathrm{area}_i\cdot18$. The residual is the observed outcome minus that fit.
+
+```{python}
+trial_beta = np.array([650., 18.])
+show_matrix(r"\beta_{\mathrm{trial}}", trial_beta)
+show_matrix(r"X\beta_{\mathrm{trial}}", X @ trial_beta)
+show_matrix(r"y-X\beta_{\mathrm{trial}}", y - X @ trial_beta)
+show_matrix(r"X^\top X", X.T @ X)
+show_matrix(r"X^\top y", X.T @ y)
+```
+
+Here $X^\top X$ has dimensions $(2\times8)(8\times2)=2\times2$.
+Its top-left entry is the sum of eight squared ones, hence 8; its top-right
+entry is the sum of the observed floor areas; its bottom-right entry is the sum
+of their squares. For example, its top-right calculation begins
+$1\cdot74.4+1\cdot57.4+\cdots+1\cdot93.9$.
+$X^\top y$ contains the sum of rents and the sum of area–rent products.
+The normal equations give two equations for the two unknown coefficients.
+We show these products to understand the mathematics; the numerical solver below
+uses SVD rather than the normal equations.
+
+### Expand the dot products
+
+Every entry in a matrix product is one row–column dot product. Below, we show
+the first two and last terms of long sums; $\cdots$ stands for the omitted
+terms. **The result includes all eight observations**, not just the displayed
+terms. Both factors and results are rounded for display, so the equals sign
+describes the operation and $\approx$ marks the displayed numerical result.
+
+```{python}
+for i in range(p):
+    for j in range(p):
+        show_dot(rf"(X^\top X)_{{{i+1},{j+1}}}", X[:, i], X[:, j])
+for j in range(p):
+    show_dot(rf"(X^\top y)_{{{j+1}}}", X[:, j], y)
+show_dot(r"(X\beta_{\mathrm{trial}})_1", X[0], trial_beta)
+```
+
+The subscripts here use mathematical indexing starting at 1 (Python indices
+start at 0). In particular, $(X^\top X)_{1,2}$ and $(X^\top X)_{2,1}$
+are equal: swapping the two factors in every scalar product does not change
+their sum. This is why $X^\top X$ is symmetric.
+
+## 2. SVD gives a stable solution and a rank check
+
+### What problem does SVD help us understand?
+
+**SVD means singular value decomposition.** A decomposition rewrites one matrix
+as a product of simpler matrices. It does not change the data or guess the
+coefficients. For our model, multiplying $X\beta$ takes two coefficient values
+and produces eight fitted rents. That is a map from a two-dimensional coefficient
+space into an eight-dimensional observation space.
+
+The possible fitted vectors form the **column space** of $X$: all linear
+combinations of its intercept and area columns. It is a two-dimensional plane
+through the origin inside that eight-dimensional space. The observed $y$ will
+generally lie outside this plane because it includes noise. Least squares seeks
+the point on the plane closest to $y$ in squared Euclidean distance.
+
+These are spaces of vectors, not a scatterplot of area against rent: the eight
+coordinates of an observation-space vector correspond to the eight apartments.
+
+### Why scale the columns first?
+
+Scale the columns with $D=\operatorname{diag}(\|X_j\|)$, so $A=XD^{-1}$. Decompose $A=USV^\top$. Then
+
+$$\hat\beta=D^{-1}VS^{-1}U^\top y.$$
+
+The notation $\|X_j\|=\sqrt{\sum_i X_{ij}^2}$ is the Euclidean length of
+column $j$. $D$ has those lengths on its diagonal and zeros elsewhere.
+Multiplying by $D^{-1}$ divides each column by its length, giving unit-length
+columns in $A$. This is column scaling, **not centering or z-score standardization**.
+The intercept column is scaled too; no observations are changed or removed.
+
+Define scaled coefficients $\theta=D\beta$. Then $A\theta=X\beta$, so this
+change of units preserves every possible fitted vector. We solve for $\theta$
+and recover $\beta=D^{-1}\theta$. Scaling prevents the numerical rank decision
+from being dominated simply by the choice of metres versus centimetres.
+
+### What do U, S and V mean?
+
+For our full-rank design, the thin SVD is
+
+$$A=USV^\top,\qquad
+U^\top U=I_2,\qquad V^\top V=VV^\top=I_2.$$
+
+$I_2$ is the $2\times2$ identity matrix: ones on its diagonal and zeros
+elsewhere. **Orthonormal** columns have length one and are perpendicular to
+one another; their dot products are therefore 1 with themselves and 0 with each
+other. Those equalities are exactly what the identity matrices say.
+
+| Matrix | Dimensions | Meaning |
+| --- | --- | --- |
+| $V$ | $2\times2$ | Its columns $v_j$ are orthonormal directions in scaled coefficient space. $V^\top$ expresses a coefficient vector in those directions. |
+| $S$ | $2\times2$ | Diagonal entries $s_j\ge0$ are singular values: the amount that $A$ stretches each corresponding direction. |
+| $U$ | $8\times2$ | Its columns $u_j$ are orthonormal directions spanning the possible fitted outcomes. |
+
+The key relationship for each direction is
+
+$$A v_j=s_j u_j.$$
+
+So an input direction $v_j$ of length one becomes an output direction $u_j$
+stretched to length $s_j$. Reading $A\theta=USV^\top\theta$ right to left:
+change coordinates using $V^\top$, scale them using $S$, and combine the
+observation-space directions using $U$. $V^\top$ is a rotation or reflection;
+the rectangular $U$ embeds two coordinates into the eight-dimensional fitted
+plane. The thin $U$ is not an invertible $8\times8$ rotation.
+
+Singular values are **not regression coefficients or error standard deviations**.
+They describe the design matrix, independent of the observed rents $y$.
+
+If a singular value is numerically zero, at least one coefficient cannot be uniquely identified. We reject the design. The threshold is $\epsilon\max(n,p)s_{max}$. Scaling makes this decision less dependent on predictor units. The Rust code calls nalgebra's `svd.solve()` for the scaled solution, then undoes the column scaling.
+
+```{python}
+scales = np.linalg.norm(X, axis=0)
+A = X / scales
+U, singular_values, Vt = np.linalg.svd(A, full_matrices=False)
+tolerance = np.finfo(float).eps * max(n, p) * singular_values[0]
+assert np.all(singular_values > tolerance)
+beta = (Vt.T @ ((U.T @ y) / singular_values)) / scales
+print("Singular values:", singular_values)
+print("Rank threshold:", tolerance)
+print("Coefficients:", beta)
+print("Normal-equation gradient (approximately zero):", -2 * X.T @ (y - X @ beta))
+```
+
+The thin SVD keeps only the $p=2$ needed columns of $U$. Here $U$ is $8\times2$,
+$S$ is $2\times2$, and $V^\top$ is $2\times2$. $S$ is diagonal: its only nonzero
+entries are the singular values. $D^{-1}$ undoes the original column scaling.
+
+```{python}
+D = np.diag(scales)
+D_inverse = np.diag(1 / scales)
+S = np.diag(singular_values)
+show_matrix("D", D)
+show_matrix(r"D^{-1}", D_inverse)
+show_matrix(r"A=XD^{-1}", A)
+show_matrix("U", U)
+show_matrix("S", S)
+show_matrix(r"V^\top", Vt)
+show_matrix(r"U^\top y", U.T @ y)
+show_matrix(r"S^{-1}U^\top y", (U.T @ y) / singular_values)
+show_matrix(r"VS^{-1}U^\top y", Vt.T @ ((U.T @ y) / singular_values))
+show_matrix(r"\hat\beta=D^{-1}VS^{-1}U^\top y", beta)
+np.testing.assert_allclose(U @ S @ Vt, A, atol=1e-14)
+np.testing.assert_allclose(X.T @ X @ beta, X.T @ y, atol=1e-8, rtol=1e-12)
+```
+
+Check those geometric claims using the actual matrices:
+
+```{python}
+show_matrix(r"U^\top U", U.T @ U)
+show_matrix(r"V^\top V", Vt @ Vt.T)
+show_matrix(r"Av_1", A @ Vt.T[:, 0])
+show_matrix(r"s_1u_1", singular_values[0] * U[:, 0])
+np.testing.assert_allclose(U.T @ U, np.eye(p), atol=1e-14)
+np.testing.assert_allclose(Vt @ Vt.T, np.eye(p), atol=1e-14)
+np.testing.assert_allclose(A @ Vt.T[:, 0], singular_values[0] * U[:, 0], atol=1e-14)
+```
+
+### Derive the least-squares solution from the decomposition
+
+First project the outcomes onto the columns of $U$:
+
+$$c=U^\top y,\qquad y_\parallel=Uc,\qquad
+y_\perp=y-Uc.$$
+
+Each $c_j=u_j^\top y$ is a dot product measuring how much of $y$ lies along
+direction $u_j$. $y_\parallel$ lies in the fitted plane, while $y_\perp$ is
+perpendicular to it. The model can fit the first part; no choice of coefficients
+can reproduce the second part. This is a geometric decomposition of the observed
+sample, not recovery of the true simulation errors.
+
+Write $z=V^\top\theta$. Because the two residual components are perpendicular,
+the Pythagorean theorem gives
+
+$$\|y-A\theta\|^2
+=\|c-Sz\|^2+\|y_\perp\|^2.$$
+
+The second term cannot change as we vary coefficients. The first term is
+minimized at zero by setting $z_j=c_j/s_j$. Thus
+
+$$\hat z=S^{-1}U^\top y,\qquad
+\hat\theta=V\hat z,\qquad
+\hat\beta=D^{-1}\hat\theta.$$
+
+This explains the solution formula rather than just prescribing a sequence
+of matrix multiplications. It also gives $\hat y=UU^\top y$ and
+$r=y-UU^\top y$. $UU^\top$ is a projection matrix, not the $8\times8$
+identity: it preserves vectors in the fitted plane and removes perpendicular
+components. There are two fitted directions and six residual directions,
+which is where $n-p=8-2=6$ comes from.
+
+```{python}
+coordinates = U.T @ y
+projected_y = U @ coordinates
+perpendicular_y = y - projected_y
+show_matrix(r"c=U^\top y", coordinates)
+show_matrix(r"y_\parallel=Uc", projected_y)
+show_matrix(r"y_\perp=y-Uc", perpendicular_y)
+show_matrix(r"U^\top y_\perp", U.T @ perpendicular_y)
+np.testing.assert_allclose(projected_y, X @ beta, atol=1e-10)
+np.testing.assert_allclose(U.T @ perpendicular_y, np.zeros(p), atol=1e-10)
+```
+
+Reading the final product from right to left: $U^\top y$ expresses the outcome
+in the left singular-vector directions; $S^{-1}$ divides by the singular values;
+$V$ converts back to scaled coefficient coordinates; $D^{-1}$ restores the
+original predictor units. Each intermediate coefficient vector is $2\times1$.
+The signs of corresponding singular vectors can differ across software while
+giving the same reconstructed matrix and coefficients.
+
+```{python}
+for j in range(p):
+    show_dot(rf"(U^\top y)_{{{j+1}}}", U[:, j], y)
+scaled_coordinates = (U.T @ y) / singular_values
+for j in range(p):
+    show_dot(rf"(VS^{-1}U^\top y)_{{{j+1}}}", Vt.T[j], scaled_coordinates)
+```
+
+$S^{-1}$ and $D^{-1}$ are diagonal, so multiplying by them simply divides
+each coordinate by its corresponding singular value or column scale.
+
+### Why small singular values matter
+
+If $s_j=0$, then $Av_j=0$: moving the coefficients along that nonzero direction
+does not change any fitted outcome. The data cannot distinguish those coefficient
+choices. For example, adding a second copy of area lets one area coefficient
+increase while the other decreases by the same amount. Only their sum matters.
+
+If $s_j$ is small but positive, division by $s_j$ amplifies changes in the
+outcome coordinates. The design is identifiable but coefficients can be sensitive
+to noise. The condition number $\kappa(A)=s_{\max}/s_{\min}$ measures that
+sensitivity in the scaled coordinates. Strongly correlated predictors often
+produce small singular values; full rank alone does not guarantee precise estimates.
+
+```{python}
+print("Condition number of scaled design:", singular_values[0] / singular_values[-1])
+duplicated = np.column_stack([X, X[:, 1]])
+duplicated_scaled = duplicated / np.linalg.norm(duplicated, axis=0)
+duplicate_singular_values = np.linalg.svd(duplicated_scaled, compute_uv=False)
+duplicate_threshold = (np.finfo(float).eps * max(duplicated.shape)
+                       * duplicate_singular_values[0])
+show_matrix(r"\text{singular values with duplicated area}", duplicate_singular_values)
+print("Smallest value:", duplicate_singular_values[-1])
+print("Numerical rank threshold:", duplicate_threshold)
+assert duplicate_singular_values[-1] <= duplicate_threshold
+```
+
+In floating-point arithmetic, an exact zero may appear as a tiny positive number.
+Our threshold treats such directions as numerically rank deficient and rejects
+the fit with a clear error. It does not silently discard a predictor or divide
+by a nearly zero value.
+
+Finally, $A^\top A=VS^2V^\top$, so forming the normal-equation matrix squares
+the singular values and its condition number is $\kappa(A)^2$. This can lose
+accuracy before a solve even begins. SVD works with $A$ directly and exposes
+its rank. It avoids that extra numerical damage; it cannot make redundant
+predictors identifiable or make noisy data informative.
+
+## 3. Residuals and degrees of freedom
+
+Full rank means we estimate $p$ coefficients, leaving $n-p$ independent residual directions. The unbiased variance estimate is
+
+$$s^2=\frac{RSS}{n-p},\qquad s=\sqrt{s^2}.$$
+
+The result fields are `fitted`, `residuals`, `rss`, `df_residual`, `residual_variance`, and `sigma`. We preserve actual floating-point residuals; we do not round nearly perfect fits to zero.
+
+```{python}
+fitted = X @ beta
+residuals = y - fitted
+rss = residuals @ residuals
+df = n - p
+variance = rss / df
+sigma = np.sqrt(variance)
+display(pd.DataFrame({"y": y, "fitted": fitted, "residual": residuals}))
+print(f"RSS={rss:.8f}; residual df={df}; variance={variance:.8f}; sigma={sigma:.8f}")
+assert rss_at(beta + np.array([0.1, 0])) > rss
+assert rss_at(beta + np.array([0, 0.1])) > rss
+```
+
+```{python}
+show_matrix(r"\hat y=X\hat\beta", fitted)
+show_matrix(r"r=y-\hat y", residuals)
+show_matrix(r"X^\top r", X.T @ residuals)
+display(Math(rf"r^\top r=\mathrm{{RSS}}={rss:.6g},\qquad n-p={df},\qquad s^2={variance:.6g}"))
+```
+
+$X\hat\beta$ multiplies a $8\times2$ matrix by a $2\times1$ vector, giving eight
+fitted outcomes. $r^\top r$ multiplies $(1\times8)(8\times1)$, giving a scalar:
+the sum of squared residuals. At the optimum, $X^\top r$ is approximately zero.
+This says the residual vector is perpendicular to every predictor column.
+
+```{python}
+show_dot(r"\hat y_1", X[0], beta)
+show_dot(r"\hat y_2", X[1], beta)
+show_dot(r"\mathrm{RSS}=r^\top r", residuals, residuals)
+for j in range(p):
+    show_dot(rf"(X^\top r)_{{{j+1}}}", X[:, j], residuals)
+```
+
+The first two expressions are predicted rents for the first two apartments.
+The RSS expression squares and sums all eight residuals. The last two dot
+products should be zero in exact arithmetic; tiny displayed values reflect
+floating-point roundoff, not additional unexplained effects.
+
+## 4. Covariance, standard errors and t-tests
+
+Under independent errors with constant variance,
+
+$$\widehat{\operatorname{Var}}(\hat\beta)=s^2(X^\top X)^{-1}
+=s^2D^{-1}VS^{-2}V^\top D^{-1}.$$
+
+The code computes the latter expression, without forming $X^\top X$. Standard errors are the square roots of the diagonal. Under Gaussian errors, $(\hat\beta_j-\beta_j)/SE_j$ has a Student t distribution with $n-p$ degrees of freedom. For $H_0:\beta_j=0$, the statistic is $t_j=\hat\beta_j/SE_j$, the two-sided p-value is $2P(T\ge |t_j|)$, and the 95% interval is $\hat\beta_j\pm t_{0.975,n-p}SE_j$.
+
+Use the survival function for upper tails to avoid subtracting a CDF close to one. These are conventional homoskedastic standard errors, not robust estimates.
+
+For the fixed 95% interval, Rust finds the critical value by bisection on
+$P(T>t)=0.025$. Large-sample checks found that statrs' inverse-beta quantile
+lost precision at high residual degrees of freedom. Solving on the survival
+function preserves agreement with R; this notebook independently uses SciPy's
+`t.ppf`. See the [large-data report](../benchmarks/ols.qmd) and the focused Rust
+critical-value test for the regression evidence.
+
+```{python}
+scaled_inverse = (Vt.T / singular_values) @ (Vt / singular_values[:, None])
+covariance = variance * scaled_inverse / scales[:, None] / scales[None, :]
+se = np.sqrt(np.diag(covariance))
+t_statistics = beta / se
+p_values = 2 * t.sf(np.abs(t_statistics), df)
+critical = t.ppf(0.975, df)
+conf_int = np.column_stack([beta - critical * se, beta + critical * se])
+display(pd.DataFrame(covariance, index=["intercept", "area_m2"], columns=["intercept", "area_m2"]))
+display(pd.DataFrame({"coefficient": beta, "SE": se, "t": t_statistics, "p": p_values,
+                      "lower 95%": conf_int[:, 0], "upper 95%": conf_int[:, 1]}, index=["intercept", "area_m2"]))
+```
+
+```{python}
+show_matrix(r"(X^\top X)^{-1}=D^{-1}VS^{-2}V^\top D^{-1}", covariance / variance)
+show_matrix(r"\widehat{\operatorname{Var}}(\hat\beta)", covariance)
+show_matrix(r"\operatorname{SE}(\hat\beta)", se)
+show_matrix("t", t_statistics)
+show_matrix(r"\text{95\% intervals (lower, upper)}", conf_int)
+```
+
+The covariance matrix is $2\times2$, one row and column per coefficient.
+Diagonal entries are the variances of the intercept and slope estimates;
+off-diagonal entries describe how the two estimates vary together.
+Taking the square root of each diagonal entry gives the $2\times1$ standard-error
+vector. The interval matrix has one row per coefficient and two columns:
+lower and upper bounds.
+
+## 5. R-squared and the intercept convention
+
+With a column of exact ones, use $TSS=\sum_i(y_i-\bar y)^2$ and $R^2=1-RSS/TSS$. Adjusted R-squared is $1-(1-R^2)(n-1)/(n-p)$.
+
+Without an intercept, use uncentered $TSS=\sum_i y_i^2$ and adjusted R-squared $1-(1-R^2)n/(n-p)$, matching R's no-intercept convention. Do not compare centered and uncentered R-squared as if they used the same baseline.
+
+```{python}
+has_intercept = bool(np.any(np.all(X == 1, axis=0)))
+tss = np.sum((y - y.mean()) ** 2) if has_intercept else y @ y
+r_squared = 1 - rss / tss
+adj_r_squared = 1 - (1 - r_squared) * (n - int(has_intercept)) / df
+print(f"R²={r_squared:.9f}; adjusted R²={adj_r_squared:.9f}")
+```
+
+## 6. Gaussian likelihood explains the same estimator
+
+For independent $y_i\sim N(x_i^\top\beta,\sigma^2)$, multiply the normal densities and take logs:
+
+$$\ell(\beta,\sigma^2)=-\frac n2\log(2\pi\sigma^2)-\frac{RSS(\beta)}{2\sigma^2}.$$
+
+At fixed positive variance, maximizing this expression minimizes RSS, so it gives the same OLS coefficients. Differentiate with respect to $v=\sigma^2$:
+
+$$\frac{\partial\ell}{\partial v}=-\frac{n}{2v}+\frac{RSS}{2v^2}=0
+\quad\Longrightarrow\quad\hat v_{ML}=RSS/n.$$
+
+This ML variance differs from $RSS/(n-p)$ used for standard errors. At the estimates,
+
+$$\ell(\hat\beta,\hat v_{ML})=-\frac n2[\log(2\pi)+\log(RSS/n)+1].$$
+
+```{python}
+ml_variance = rss / n
+log_likelihood = -n / 2 * (np.log(2 * np.pi) + np.log(ml_variance) + 1)
+def log_likelihood_at(candidate, v):
+    return -n / 2 * np.log(2 * np.pi * v) - rss_at(candidate) / (2 * v)
+print(f"ML variance={ml_variance:.8f}; inference variance={variance:.8f}")
+print(f"Log-likelihood={log_likelihood:.9f}")
+assert log_likelihood_at(beta, ml_variance) > log_likelihood_at(beta + [0, 0.1], ml_variance)
+assert log_likelihood_at(beta, ml_variance) > log_likelihood_at(beta, 2 * ml_variance)
+```
+
+## 7. Verify what we calculated
+
+These checks compare the independently displayed steps to the committed R reference. The [three implementation notebook](ols-verification.qmd) executes R, statsmodels and the PHP extension on the same data and checks every returned statistical field. Cross-implementation agreement is evidence; it does not replace understanding the formulas.
+
+```{python}
+calculated = dict(coefficients=beta, covariance=covariance, std_errors=se,
+                  t_statistics=t_statistics, p_values=p_values, conf_int=conf_int,
+                  fitted=fitted, residuals=residuals, rss=rss, residual_variance=variance,
+                  sigma=sigma, r_squared=r_squared, adj_r_squared=adj_r_squared,
+                  df_residual=df, log_likelihood=log_likelihood)
+for key, value in calculated.items():
+    np.testing.assert_allclose(value, case["expected"][key], atol=1e-9, rtol=1e-7, err_msg=key)
+print("All displayed calculations agree with the committed R fixture.")
+```
+
+## 8. Missing data, singularity and perfect fits
+
+The PHP call drops a whole row if any supplied predictor or its outcome is `null` or `NAN`, warns once on a successful fit, and reports original row positions. It applies all formulas above to the retained sample: $n$ and $n-p$ change. Use `missing: 'raise'` to reject missingness. Infinity, malformed values and rank failure remain errors. See [missing-data contract](../missing-data.qmd).
+
+Listwise deletion changes the estimation sample; it is not imputation and does not guarantee unbiased results when missingness is related to the outcome or predictors. Document why data are missing and which observations were retained.
+
+At exact zero RSS, standard errors are zero and the Gaussian log-likelihood has an infinite limit as variance approaches zero. A zero coefficient divided by a zero standard error is undefined (NaN); a nonzero coefficient gives infinite t and zero p. If TSS is also zero, R-squared is undefined. Decomposition roundoff can leave small residuals in mathematically perfect fits; unstable t-statistics and likelihoods should not be compared tightly across algorithms.

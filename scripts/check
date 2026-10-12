@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Offline release gate: Rust/PHP only. Reference refreshes and benchmarks are separate.
+set -euo pipefail
+workspace_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+cd "$workspace_root"
+export PHP="${PHP:-$(command -v php)}"
+export PHP_CONFIG="${PHP_CONFIG:-$(command -v php-config)}"
+php_runtime_version="$($PHP -n -r 'echo PHP_MAJOR_VERSION,".",PHP_MINOR_VERSION;')"
+php_headers_version="$($PHP_CONFIG --version)"
+if [[ "$php_headers_version" != "$php_runtime_version".* ]]; then
+    echo "PHP and php-config versions differ: $php_runtime_version / $php_headers_version" >&2
+    exit 1
+fi
+cargo fmt --all -- --check
+cargo clippy --workspace --all-targets --locked -- -D warnings
+cargo test --workspace --locked
+cargo build -p php-stats --release --locked
+case "$(uname -s)" in
+ Darwin) extension="$workspace_root/target/release/libphp_stats.dylib" ;;
+ Linux) extension="$workspace_root/target/release/libphp_stats.so" ;;
+ *) echo 'This release gate supports macOS/Linux' >&2; exit 1 ;;
+esac
+"$PHP" -n -d "extension=$extension" -r 'if (stats_hello() === "") exit(1);'
+"$PHP" -n -d "extension=$extension" scripts/php-stubs.php --check
+"$PHP" -n -l stubs/php-stats.php
+for suite in ols logistic probit poisson lmm r-compatibility lmm-expanded logistic-mixed stability; do
+    "$PHP" -n -d "extension=$extension" "tests/$suite.php"
+done
+for example in ols logistic probit poisson lmm lmm-slopes logistic-mixed; do
+    "$PHP" -n -d "extension=$extension" "examples/$example.php" >/dev/null
+done
+if command -v python3 >/dev/null 2>&1; then python3 scripts/reference-manifest.py --check; fi
+echo 'Rust/PHP release checks passed'

@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "setup": "./scripts/workspace-up",
+    "archive": "./scripts/workspace-down"
+  },
+  "preview": {
+    "url": "http://php-stats-{{folder}}.test",
+    "command": "./scripts/workspace-up && quarto preview docs --no-browser --no-serve",
+    "tunnel": true
+  }
+}

@@ -1,0 +1,4533 @@
+{
+  "schema_version": 1,
+  "purpose": "Reference provenance index; test sources and fixtures are authoritative, not a new snapshot of estimates.",
+  "fixtures": [
+    {
+      "path": "tests/fixtures/ols-r.json",
+      "sha256": "6a7586962b7052c852fe51041bd2232bc5052b32293db26cc4f59c90f2923bb2",
+      "generator": "tests/generate-fixtures.R",
+      "generator_sha256": "3012a7f261d769510da93d3706812ac09b74b5d49213f748baeff80ea5be7611",
+      "software_recorded_in_fixture": {
+        "reference": "R version 4.6.1 (2026-06-24)"
+      },
+      "tolerance_policy": "1e-9 + 1e-7*abs(reference); zero/perfect fit conventions tested separately",
+      "model_specification": "Explicit saved matrices/vectors/options in fixture; generator records reference formula, family, seed and controls.",
+      "cases": [
+        {
+          "name": "simulated_housing",
+          "inputs_sha256": "05faa2d1e5c5d88a5e2d27bb5926314bb82b892998ae2b85d5a472ea945e88ce",
+          "n": 8,
+          "p": 2,
+          "compared_quantities": [
+            "covariance",
+            "coefficients",
+            "std_errors",
+            "t_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "rss",
+            "residual_variance",
+            "sigma",
+            "r_squared",
+            "adj_r_squared",
+            "df_residual",
+            "log_likelihood"
+          ]
+        },
+        {
+          "name": "simulated_housing_multiple",
+          "inputs_sha256": "efd961d05c26e165eb7c3551047852b98aacce54779f91f9412f0a1d2cec9398",
+          "n": 8,
+          "p": 3,
+          "compared_quantities": [
+            "covariance",
+            "coefficients",
+            "std_errors",
+            "t_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "rss",
+            "residual_variance",
+            "sigma",
+            "r_squared",
+            "adj_r_squared",
+            "df_residual",
+            "log_likelihood"
+          ]
+        },
+        {
+          "name": "simple",
+          "inputs_sha256": "a17663dcb6019e81bb4ce39309fed6262cb48b84e949f2fd1428c726f70e5b7b",
+          "n": 5,
+          "p": 2,
+          "compared_quantities": [
+            "covariance",
+            "coefficients",
+            "std_errors",
+            "t_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "rss",
+            "residual_variance",
+            "sigma",
+            "r_squared",
+            "adj_r_squared",
+            "df_residual",
+            "log_likelihood"
+          ]
+        },
+        {
+          "name": "multiple",
+          "inputs_sha256": "c43650ed49599d197bd334517a09fd9b1c993ce212b12ff3415829d33568608c",
+          "n": 10,
+          "p": 3,
+          "compared_quantities": [
+            "covariance",
+            "coefficients",
+            "std_errors",
+            "t_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "rss",
+            "residual_variance",
+            "sigma",
+            "r_squared",
+            "adj_r_squared",
+            "df_residual",
+            "log_likelihood"
+          ]
+        },
+        {
+          "name": "no_intercept",
+          "inputs_sha256": "cad548007697b2f32356adbc4f767b7ebfd963db42172cf1ed50f833f6a97fed",
+          "n": 10,
+          "p": 2,
+          "compared_quantities": [
+            "covariance",
+            "coefficients",
+            "std_errors",
+            "t_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "rss",
+            "residual_variance",
+            "sigma",
+            "r_squared",
+            "adj_r_squared",
+            "df_residual",
+            "log_likelihood"
+          ]
+        },
+        {
+          "name": "correlated",
+          "inputs_sha256": "53eb307949e4672869dfe459f1f4776030ff583a3118a635389e4eb08533aee3",
+          "n": 10,
+          "p": 3,
+          "compared_quantities": [
+            "covariance",
+            "coefficients",
+            "std_errors",
+            "t_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "rss",
+            "residual_variance",
+            "sigma",
+            "r_squared",
+            "adj_r_squared",
+            "df_residual",
+            "log_likelihood"
+          ]
+        },
+        {
+          "name": "perfect",
+          "inputs_sha256": "de8cf7376918c0399261ef29e9d95370829a94bf238f072ce5d47ba5ca2accae",
+          "n": 5,
+          "p": 2,
+          "compared_quantities": [
+            "covariance",
+            "coefficients",
+            "std_errors",
+            "t_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "rss",
+            "residual_variance",
+            "sigma",
+            "r_squared",
+            "adj_r_squared",
+            "df_residual",
+            "log_likelihood"
+          ]
+        },
+        {
+          "name": "zero",
+          "inputs_sha256": "5ad94d8a8c02e23d2da9b43d56b43aeb541aabbb5afa33ca7af34de7f9b97994",
+          "n": 5,
+          "p": 2,
+          "compared_quantities": [
+            "covariance",
+            "coefficients",
+            "std_errors",
+            "t_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "rss",
+            "residual_variance",
+            "sigma",
+            "r_squared",
+            "adj_r_squared",
+            "df_residual",
+            "log_likelihood"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "tests/fixtures/logistic-r.json",
+      "sha256": "d343f76d11839ce788653dd40c10076af5fe592a3b9e5fd5a5bbab0004277d0d",
+      "generator": "tests/generate-logistic-fixtures.R",
+      "generator_sha256": "7b9eac27bb30d3ca21a993ef56328e5298ea7a5f009e38da651bef62e50a758e",
+      "software_recorded_in_fixture": {
+        "reference": "R version 4.6.1 (2026-06-24)"
+      },
+      "tolerance_policy": "1e-9 + 1e-7*abs(reference)",
+      "model_specification": "Explicit saved matrices/vectors/options in fixture; generator records reference formula, family, seed and controls.",
+      "cases": [
+        {
+          "name": "simulated_learning",
+          "inputs_sha256": "528f38701aa3c4bdde381ac9d9900c94d2651ddf2b7e25475f73f2c290cbf9d3",
+          "n": 80,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "simple",
+          "inputs_sha256": "087761036bf95da9f826d17efb3e91ec31ee79489394754d6de09926acbd6820",
+          "n": 80,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "no_intercept",
+          "inputs_sha256": "902c2b39bc52ff12e172779c962ccadddfd0c1c819aefd43b0a754d93dc51995",
+          "n": 80,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "intercept_only",
+          "inputs_sha256": "955e55aa1c8bb1e0c80fc255545b4bee7f7f1cc5935c548a7059e39f68d09d4b",
+          "n": 80,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "correlated",
+          "inputs_sha256": "b6d6e79c7859489b799087ef9054c10e32b734c6168c09099cb9db030d389faf",
+          "n": 80,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "imbalanced",
+          "inputs_sha256": "46f366f13761d0c289619043edc050abd42708490b8321e84fd05ea124b1f42a",
+          "n": 80,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "tests/fixtures/probit-r.json",
+      "sha256": "83409337f5517f2f1bcd9674d4ea256c8d6306f7d39f0cea72ec2b8c4ff8e679",
+      "generator": "tests/generate-probit-poisson-fixtures.R",
+      "generator_sha256": "231953010fa01cbcc8b048b8a00564338bbabcdd5781677633b4c675cfc75cde",
+      "software_recorded_in_fixture": {
+        "reference": "R version 4.6.1 (2026-06-24)"
+      },
+      "tolerance_policy": "1e-9 + 1e-7*abs(reference)",
+      "model_specification": "Explicit saved matrices/vectors/options in fixture; generator records reference formula, family, seed and controls.",
+      "cases": [
+        {
+          "name": "simulated_learning",
+          "inputs_sha256": "1cefd5227b090a819908485409cef1700ded1c0aa428d021e51e475ad1f8b4b3",
+          "n": 120,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "simple",
+          "inputs_sha256": "4d176dc06d11df02b9407f66dec53b6a2052bdd98943f1e994e1983d93f69ec6",
+          "n": 120,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "no_intercept",
+          "inputs_sha256": "6ffde797a1c2ea49800dc28be0720df8d720e95f6cfdc4ca25a48d681a188cee",
+          "n": 120,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "intercept_only",
+          "inputs_sha256": "4ea947d43b32a56cc2d2474d8c2d4212f57b985c20ea6baa50ada63c67542a31",
+          "n": 120,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "correlated",
+          "inputs_sha256": "8ef8158d164b18d19d54df435bad87c78aba2b401b8c8a074e288128a54d9c7f",
+          "n": 120,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "imbalanced",
+          "inputs_sha256": "c449da9a2d013f400ec473cba474fef68962d657157de6dd8c0790480f661db3",
+          "n": 120,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "tests/fixtures/poisson-r.json",
+      "sha256": "4269b419d22c214f5299975ac0c7923857aa3be93e140bc07be0db76c9a53b60",
+      "generator": "tests/generate-probit-poisson-fixtures.R",
+      "generator_sha256": "231953010fa01cbcc8b048b8a00564338bbabcdd5781677633b4c675cfc75cde",
+      "software_recorded_in_fixture": {
+        "reference": "R version 4.6.1 (2026-06-24)"
+      },
+      "tolerance_policy": "1e-9 + 1e-7*abs(reference)",
+      "model_specification": "Explicit saved matrices/vectors/options in fixture; generator records reference formula, family, seed and controls.",
+      "cases": [
+        {
+          "name": "simulated_clinic",
+          "inputs_sha256": "1b481b97b06b5c9173322a10cd4e1c74c5600bc47a3e5483541782c5aa721d6e",
+          "n": 120,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "simple",
+          "inputs_sha256": "da6e66400201e0bf171ed6133efdb12c8bb8c6112e8b7854b9d82227f53e65f8",
+          "n": 120,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "no_intercept",
+          "inputs_sha256": "a68a140a56d0a3b99d445e231d94e4980e988b05d5cea0174087947692143604",
+          "n": 120,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "intercept_only",
+          "inputs_sha256": "ae1766e3b066ccd691b5fb76b7de3142b4ea0f53d0c971acb0252d29fdbcbf13",
+          "n": 120,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "correlated",
+          "inputs_sha256": "d45fc3ca7762852a00feaa439d9bbaef6b3849044972747db4db34f48b9c534a",
+          "n": 120,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "sparse",
+          "inputs_sha256": "6e1626e5e9014c3f13a3a7671579ff360df95828ea434eb3cf9f6acb33d4dd50",
+          "n": 120,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "null_deviance",
+            "aic",
+            "df_residual"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "tests/fixtures/r-compatibility.json",
+      "sha256": "205c95e87a0b76a44f0862c207e9c02f2c7062c8efc454890893a61d9a34e7e6",
+      "generator": "tests/generate-r-compatibility-fixtures.R",
+      "generator_sha256": "59c9f5bd411d15320995d7d7161b0176b8a24648e32582b8a793adafc1aa564d",
+      "software_recorded_in_fixture": {
+        "r": "R version 4.6.1 (2026-06-24)"
+      },
+      "tolerance_policy": "1e-7 + 1e-6*abs(reference)",
+      "model_specification": "Explicit saved matrices/vectors/options in fixture; generator records reference formula, family, seed and controls.",
+      "cases": [
+        {
+          "name": "ols_intercept_individual",
+          "inputs_sha256": "f7578f5c49f66e89039dec0d971ce52eb3c2d8b2091e5cb7ca51ae3845a62c97",
+          "n": 180,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "p_values",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "df_residual",
+            "t_statistics",
+            "conf_int",
+            "rss",
+            "residual_variance",
+            "sigma",
+            "r_squared",
+            "adj_r_squared"
+          ]
+        },
+        {
+          "name": "ols_no_intercept_individual",
+          "inputs_sha256": "67fee340361791d674eb5d8e264677f60a46c63c5e126e4f19bff0ac98094a44",
+          "n": 180,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "p_values",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "df_residual",
+            "t_statistics",
+            "conf_int",
+            "rss",
+            "residual_variance",
+            "sigma",
+            "r_squared",
+            "adj_r_squared"
+          ]
+        },
+        {
+          "name": "logistic_intercept_individual",
+          "inputs_sha256": "7e9bc8b9ef267c97413b173d311cacd2ece45cf52374cc9e70ef4be56b073a83",
+          "n": 180,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "p_values",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "df_residual",
+            "z_statistics",
+            "conf_int",
+            "deviance",
+            "null_deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "logistic_intercept_grouped",
+          "inputs_sha256": "bccf600b3b93cf6712853936228b7a483be18d493686c3e72a21752aa7c9597b",
+          "n": 180,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "p_values",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "df_residual",
+            "z_statistics",
+            "conf_int",
+            "deviance",
+            "null_deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "logistic_no_intercept_individual",
+          "inputs_sha256": "430d95de891dc69387223c63f91b557fba11dc10156fb8ad6ba7f6ef52b5ffc6",
+          "n": 180,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "p_values",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "df_residual",
+            "z_statistics",
+            "conf_int",
+            "deviance",
+            "null_deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "logistic_no_intercept_grouped",
+          "inputs_sha256": "f882692a905ad4e74899a9bec70d6e159f2ab24488ce62835da94f5533c6f650",
+          "n": 180,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "p_values",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "df_residual",
+            "z_statistics",
+            "conf_int",
+            "deviance",
+            "null_deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "probit_intercept_individual",
+          "inputs_sha256": "4186c8a8d296e6596445e14b5132c42cb05e2861e20d2f1e07cdc4c5979f18e3",
+          "n": 180,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "p_values",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "df_residual",
+            "z_statistics",
+            "conf_int",
+            "deviance",
+            "null_deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "probit_intercept_grouped",
+          "inputs_sha256": "9da029edf37601c2c34c0a1c4946dcaacf937fa8b812b3ff7cce6127099afcae",
+          "n": 180,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "p_values",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "df_residual",
+            "z_statistics",
+            "conf_int",
+            "deviance",
+            "null_deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "probit_no_intercept_individual",
+          "inputs_sha256": "59682de1dd71fc5069d9e29ea04df9efb3876dbb0e3f3b0bfe3ac914122f4af8",
+          "n": 180,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "p_values",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "df_residual",
+            "z_statistics",
+            "conf_int",
+            "deviance",
+            "null_deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "probit_no_intercept_grouped",
+          "inputs_sha256": "46909cd99c6629d51d83f8aed4859a70194827c4be9d972a1daa873b103dc007",
+          "n": 180,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "p_values",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "df_residual",
+            "z_statistics",
+            "conf_int",
+            "deviance",
+            "null_deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "poisson_intercept_individual",
+          "inputs_sha256": "6a3a71a0e54d97272bc5580559d7317e0e75a389698e080f24109a8179c3ff1a",
+          "n": 180,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "p_values",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "df_residual",
+            "z_statistics",
+            "conf_int",
+            "deviance",
+            "null_deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "poisson_no_intercept_individual",
+          "inputs_sha256": "ad48caabb1e9a48cab792db05debab1833d6014e2b8c0ccde2316f650e36426f",
+          "n": 180,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "p_values",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "df_residual",
+            "z_statistics",
+            "conf_int",
+            "deviance",
+            "null_deviance",
+            "aic"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "tests/fixtures/lmm-r.json",
+      "sha256": "921fd6015675798579ceb57a63ae688938b88863252b568e3e85f61756d8c5c4",
+      "generator": "tests/generate-lmm-fixtures.R",
+      "generator_sha256": "d747b7216f410210fba8c38d5f4c46741f97fda0ecfecec8fb9cb63cbc922f45",
+      "software_recorded_in_fixture": {},
+      "tolerance_policy": "1e-7 + 1e-6*abs(reference)",
+      "model_specification": "Explicit saved matrices/vectors/options in fixture; generator records reference formula, family, seed and controls.",
+      "cases": [
+        {
+          "name": "simulated_schools",
+          "reference": {
+            "version": "R version 4.6.1 (2026-06-24)",
+            "lme4": "2.0.6"
+          },
+          "inputs_sha256": "06ed8ce6d61c32036a5bfbec725e3e41ca51742998932b87ad213b2e8a310062",
+          "n": 250,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "random_effects",
+            "residual_variance",
+            "random_intercept_variance",
+            "sigma",
+            "icc",
+            "log_likelihood",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "simple",
+          "reference": {
+            "version": "R version 4.6.1 (2026-06-24)",
+            "lme4": "2.0.6"
+          },
+          "inputs_sha256": "9232d39881ed423cd6004871a63fa8ba5b862662fefb96c4fbda79abcb8188a0",
+          "n": 250,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "random_effects",
+            "residual_variance",
+            "random_intercept_variance",
+            "sigma",
+            "icc",
+            "log_likelihood",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "no_intercept",
+          "reference": {
+            "version": "R version 4.6.1 (2026-06-24)",
+            "lme4": "2.0.6"
+          },
+          "inputs_sha256": "05cbb806a3af7fefb745868cb44c41d03c1f5bd03d652cb68b5773159a51e96b",
+          "n": 250,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "random_effects",
+            "residual_variance",
+            "random_intercept_variance",
+            "sigma",
+            "icc",
+            "log_likelihood",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "intercept_only",
+          "reference": {
+            "version": "R version 4.6.1 (2026-06-24)",
+            "lme4": "2.0.6"
+          },
+          "inputs_sha256": "28fecdebab098275c267b67098c515d93724f28d56de5fc585b9802bc6388917",
+          "n": 250,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "random_effects",
+            "residual_variance",
+            "random_intercept_variance",
+            "sigma",
+            "icc",
+            "log_likelihood",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "singleton_groups",
+          "reference": {
+            "version": "R version 4.6.1 (2026-06-24)",
+            "lme4": "2.0.6"
+          },
+          "inputs_sha256": "22aad0476053d2a3034b940196dd401da3b9f10aae135e2710fbfb03b98ed390",
+          "n": 250,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "random_effects",
+            "residual_variance",
+            "random_intercept_variance",
+            "sigma",
+            "icc",
+            "log_likelihood",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "boundary",
+          "reference": {
+            "version": "R version 4.6.1 (2026-06-24)",
+            "lme4": "2.0.6"
+          },
+          "inputs_sha256": "fae3a9c72a257251c32ff426bfcf1083fa51a5b262267c5ab81c848456295d8f",
+          "n": 12,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "random_effects",
+            "residual_variance",
+            "random_intercept_variance",
+            "sigma",
+            "icc",
+            "log_likelihood",
+            "aic",
+            "df_residual"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "tests/fixtures/lmm-public-r.json",
+      "sha256": "c298ad620a42fe219d06e22587a79a872c55ff1592c4c00c5e630d75f1fb97c9",
+      "generator": "tests/generate-lmm-public-fixtures.py",
+      "generator_sha256": "81ba6f760177ff43d150693c892a84807eb4469d9462f95fae83d1b667f5ee10",
+      "software_recorded_in_fixture": {},
+      "tolerance_policy": "per-case/per-quantity policy stored in fixture",
+      "model_specification": "Explicit saved matrices/vectors/options in fixture; generator records reference formula, family, seed and controls.",
+      "cases": [
+        {
+          "name": "sleepstudy",
+          "source": {
+            "name": "sleepstudy",
+            "package": "lme4",
+            "group": "Subject",
+            "outcome": "Reaction",
+            "documentation": "https://lme4.github.io/lme4/reference/sleepstudy.html",
+            "citation": "Belenky et al. (2003), Journal of Sleep Research 12, 1\u201312; doi:10.1046/j.1365-2869.2003.00337.x",
+            "formula": "Reaction ~ Days + (1 | Subject)",
+            "terms": [
+              "intercept",
+              "Days"
+            ],
+            "file": "sleepstudy.csv",
+            "sha256": "2918bbddf750e78003059efa97b94885b85c4d7927c22a19c29f7fa5a184c59d",
+            "n": 180,
+            "n_groups": 18,
+            "minimum_group_size": 10,
+            "maximum_group_size": 10,
+            "package_version": "2.0.6",
+            "package_license": "GPL (>= 2)",
+            "package_source": "https://cran.r-project.org/package=lme4",
+            "columns": [
+              "Reaction",
+              "Days",
+              "Subject"
+            ],
+            "selection": "All original rows; Hsb82 retains only the five columns used by the model."
+          },
+          "tolerance": {
+            "absolute": 1e-07,
+            "relative": 1e-06,
+            "quantity_absolute": {
+              "fitted": 1e-06,
+              "residuals": 1e-06,
+              "fixed_fitted": 1e-06,
+              "marginal_residuals": 1e-06
+            },
+            "quantity_relative": {
+              "log_likelihood": 1e-10,
+              "aic": 1e-10
+            }
+          },
+          "reference": {
+            "version": "R version 4.6.1 (2026-06-24)",
+            "lme4": "2.0.6",
+            "backend": "lme4",
+            "nlme": "unused"
+          },
+          "nlme_reference": {
+            "version": "R version 4.6.1 (2026-06-24)",
+            "lme4": "2.0.6",
+            "backend": "nlme",
+            "nlme": "3.1.169"
+          },
+          "inputs_sha256": "e416f8e12e6627a3230315e2c368637073b68db420bb52e5e34eaf2e14c2ff88",
+          "n": 180,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "random_effects",
+            "residual_variance",
+            "random_intercept_variance",
+            "sigma",
+            "icc",
+            "log_likelihood",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "Orthodont",
+          "source": {
+            "name": "Orthodont",
+            "package": "nlme",
+            "group": "Subject",
+            "outcome": "distance",
+            "documentation": "https://stat.ethz.ch/R-manual/R-devel/library/nlme/html/Orthodont.html",
+            "citation": "Potthoff and Roy (1964), Biometrika 51, 313\u2013326; Pinheiro and Bates (2000), Appendix A.17",
+            "formula": "distance ~ age * female + (1 | Subject)",
+            "terms": [
+              "intercept",
+              "age",
+              "female",
+              "age \u00d7 female"
+            ],
+            "file": "Orthodont.csv",
+            "sha256": "ca7c0296405bb2bd5959cd5fff7c50a5035606f16ac308c7797f58666fcd7aa1",
+            "n": 108,
+            "n_groups": 27,
+            "minimum_group_size": 4,
+            "maximum_group_size": 4,
+            "package_version": "3.1.169",
+            "package_license": "GPL (>= 2)",
+            "package_source": "https://cran.r-project.org/package=nlme",
+            "columns": [
+              "distance",
+              "age",
+              "Subject",
+              "Sex"
+            ],
+            "selection": "All original rows; Hsb82 retains only the five columns used by the model."
+          },
+          "tolerance": {
+            "absolute": 1e-07,
+            "relative": 1e-06,
+            "quantity_absolute": {
+              "fitted": 1e-06,
+              "residuals": 1e-06,
+              "fixed_fitted": 1e-06,
+              "marginal_residuals": 1e-06
+            },
+            "quantity_relative": {
+              "log_likelihood": 1e-10,
+              "aic": 1e-10
+            }
+          },
+          "reference": {
+            "version": "R version 4.6.1 (2026-06-24)",
+            "lme4": "2.0.6",
+            "backend": "lme4",
+            "nlme": "unused"
+          },
+          "nlme_reference": {
+            "version": "R version 4.6.1 (2026-06-24)",
+            "lme4": "2.0.6",
+            "backend": "nlme",
+            "nlme": "3.1.169"
+          },
+          "inputs_sha256": "69cb1e49737bb4edeb0a593ab1c3b5994702036aa22d3d8a6fdd3420705fee45",
+          "n": 108,
+          "p": 4,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "random_effects",
+            "residual_variance",
+            "random_intercept_variance",
+            "sigma",
+            "icc",
+            "log_likelihood",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "Machines",
+          "source": {
+            "name": "Machines",
+            "package": "nlme",
+            "group": "Worker",
+            "outcome": "score",
+            "documentation": "https://stat.ethz.ch/R-manual/R-devel/library/nlme/html/Machines.html",
+            "citation": "Milliken and Johnson (1992), Analysis of Messy Data, p.285; Pinheiro and Bates (2000), Appendix A.14",
+            "formula": "score ~ machine_B + machine_C + (1 | Worker)",
+            "terms": [
+              "intercept",
+              "machine B",
+              "machine C"
+            ],
+            "file": "Machines.csv",
+            "sha256": "943135b7736fda1b52d2d67412bd2917998877f2e905bc757c15ab267e2a5b13",
+            "n": 54,
+            "n_groups": 6,
+            "minimum_group_size": 9,
+            "maximum_group_size": 9,
+            "package_version": "3.1.169",
+            "package_license": "GPL (>= 2)",
+            "package_source": "https://cran.r-project.org/package=nlme",
+            "columns": [
+              "Worker",
+              "Machine",
+              "score"
+            ],
+            "selection": "All original rows; Hsb82 retains only the five columns used by the model."
+          },
+          "tolerance": {
+            "absolute": 1e-07,
+            "relative": 1e-06,
+            "quantity_absolute": {
+              "fitted": 1e-06,
+              "residuals": 1e-06,
+              "fixed_fitted": 1e-06,
+              "marginal_residuals": 1e-06
+            },
+            "quantity_relative": {
+              "log_likelihood": 1e-10,
+              "aic": 1e-10
+            }
+          },
+          "reference": {
+            "version": "R version 4.6.1 (2026-06-24)",
+            "lme4": "2.0.6",
+            "backend": "lme4",
+            "nlme": "unused"
+          },
+          "nlme_reference": {
+            "version": "R version 4.6.1 (2026-06-24)",
+            "lme4": "2.0.6",
+            "backend": "nlme",
+            "nlme": "3.1.169"
+          },
+          "inputs_sha256": "a9139736bfaccfe59b1dbd621082217139781a462040de84eb679a3a314de8e7",
+          "n": 54,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "random_effects",
+            "residual_variance",
+            "random_intercept_variance",
+            "sigma",
+            "icc",
+            "log_likelihood",
+            "aic",
+            "df_residual"
+          ]
+        },
+        {
+          "name": "Hsb82",
+          "source": {
+            "name": "Hsb82",
+            "package": "mlmRev",
+            "group": "school",
+            "outcome": "mAch",
+            "documentation": "https://cran.r-project.org/web/packages/mlmRev/mlmRev.pdf#page=11",
+            "citation": "Raudenbush and Bryk (2002), Hierarchical Linear Models, chapter 4; High School and Beyond (1982)",
+            "formula": "mAch ~ ses + meanses + catholic + (1 | school)",
+            "terms": [
+              "intercept",
+              "SES",
+              "school mean SES",
+              "Catholic school"
+            ],
+            "file": "Hsb82.csv",
+            "sha256": "1f6859ae674228a1ac673805b91c1be3dff8b1c6adce3ccd71bbf2a43f1af84a",
+            "n": 7185,
+            "n_groups": 160,
+            "minimum_group_size": 14,
+            "maximum_group_size": 67,
+            "package_version": "1.0.9",
+            "package_license": "GPL (>= 2)",
+            "package_source": "https://cran.r-project.org/package=mlmRev",
+            "columns": [
+              "school",
+              "ses",
+              "meanses",
+              "sector",
+              "mAch"
+            ],
+            "selection": "All original rows; Hsb82 retains only the five columns used by the model."
+          },
+          "tolerance": {
+            "absolute": 1e-07,
+            "relative": 1e-06,
+            "quantity_absolute": {
+              "fitted": 1e-06,
+              "residuals": 1e-06,
+              "fixed_fitted": 1e-06,
+              "marginal_residuals": 1e-06
+            },
+            "quantity_relative": {
+              "log_likelihood": 1e-10,
+              "aic": 1e-10
+            }
+          },
+          "reference": {
+            "version": "R version 4.6.1 (2026-06-24)",
+            "lme4": "2.0.6",
+            "backend": "lme4",
+            "nlme": "unused"
+          },
+          "nlme_reference": {
+            "version": "R version 4.6.1 (2026-06-24)",
+            "lme4": "2.0.6",
+            "backend": "nlme",
+            "nlme": "3.1.169"
+          },
+          "inputs_sha256": "e3df5e9d9ab794c542b715aa8937be43ae254f4ee71c5927133366b31fafa541",
+          "n": 7185,
+          "p": 4,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "random_effects",
+            "residual_variance",
+            "random_intercept_variance",
+            "sigma",
+            "icc",
+            "log_likelihood",
+            "aic",
+            "df_residual"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "tests/fixtures/lmm-expanded-r.json",
+      "sha256": "1087618ea9dcec28892dcacf477bc3f458b87889c4da515724df8e4256b39cf5",
+      "generator": "tests/generate-lmm-expanded-fixtures.R",
+      "generator_sha256": "3575cad9727454b5d8c1ac5f1ea522e88b550bb89b10286579075a73bae37454",
+      "software_recorded_in_fixture": {
+        "r": "R version 4.6.1 (2026-06-24)",
+        "lme4": "2.0.6",
+        "optimizers": [
+          "bobyqa",
+          "Nelder_Mead",
+          "nlminbwrap",
+          "nloptwrap"
+        ]
+      },
+      "tolerance_policy": "likelihood: 5e-6 + 1e-9*abs(reference); estimates versus R bobyqa: 1e-5 + 1e-5*abs(reference); other optimizers: 1e-3 + 3e-4*abs(reference)",
+      "model_specification": "Explicit saved matrices/vectors/options in fixture; generator records reference formula, family, seed and controls.",
+      "cases": [
+        {
+          "name": "random_slopes_ml",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "9ac54ad0813103896a2a68c186037086400101c6f4fc7321002d28e7308b8f70",
+          "n": 144,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "random_slopes_reml",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "b74227d43e31069269f53938560f2f442c5266a6fe0b8a741f6fcfb8809e9f8d",
+          "n": 144,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "independent_slopes",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "c72c1292b283b898061f42fc923e82f9ffad2701e998ac5ef917aaf43d8e63fb",
+          "n": 144,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "crossed",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "4914189baf878dd1182581ee2094b4c7436110990c10c9808930162f165ea532",
+          "n": 144,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "nested",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "b9baecc71422320ef27ff86b68fc387b2f4f2b3bd3bec29067e4fb73fb082254",
+          "n": 144,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "weighted_offset",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "8a51e0db487a83a89bae4fccdc0adfee96cc6fe209e38dd4f85547645ccce5b7",
+          "n": 144,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "no_intercept",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "ede00f2a7f51dc4a1388023fd572dc1c9e7dae5e13245dee710b880363a98ae9",
+          "n": 144,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "random_slope_only",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "fbb210f6d079823386899e906fefa0828f6cf0268b86bf45e4a51d38b2faeb55",
+          "n": 144,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "sleepstudy_ml",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "74185c321a21180b0ba7988c5ebe867b883755e77c85c439f8b99f04c2a352c2",
+          "n": 180,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "sleepstudy_reml",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "094174731987e6be10d1acbfe8b225e4bc43b733b6352f94b4a7bf8201e4550f",
+          "n": 180,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "boundary",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "511ee4a05448e55ffb74812e61a989b2d11d72d3957ffd662ff05ac59b4009bf",
+          "n": 48,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "nested_3_grouping_levels_ml",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": {
+                "rhobeg": 0.001,
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "b1e8113b523dbf0eb1c14d04e8c3b2023969eb41087d044eaebfff7a359bb1be",
+          "n": 256,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "nested_4_grouping_levels_ml",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": {
+                "rhobeg": 0.001,
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "7da118d0ad7d40711345ec6adfd2f2e741ae701d1539d74244061c99b4249a61",
+          "n": 256,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "nested_3_grouping_levels_reml",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": {
+                "rhobeg": 0.001,
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "5aeeb4d87cbb2c959d97937c139417c6fc45a5e0d4c664ae63f3eab5cfe91ef0",
+          "n": 256,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "nested_4_grouping_levels_reml",
+          "references": {
+            "bobyqa": {
+              "optimizer": "bobyqa",
+              "control": {
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": {
+                "rhobeg": 0.001,
+                "rhoend": 1e-09,
+                "maxfun": 100000
+              },
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "Nelder_Mead": {
+              "optimizer": "Nelder_Mead",
+              "control": {
+                "FtolAbs": 1e-10,
+                "XtolRel": 1e-09,
+                "maxfun": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nlminbwrap": {
+              "optimizer": "nlminbwrap",
+              "control": {
+                "iter.max": 10000,
+                "eval.max": 100000,
+                "rel.tol": 1e-09,
+                "x.tol": 1e-08
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            },
+            "nloptwrap": {
+              "optimizer": "nloptwrap",
+              "control": {
+                "xtol_abs": 1e-08,
+                "ftol_abs": 0,
+                "ftol_rel": 0,
+                "maxeval": 100000
+              },
+              "restart_control": [],
+              "boundary_tolerance": 0.001,
+              "messages": [],
+              "optimizer_code": [
+                0
+              ]
+            }
+          },
+          "inputs_sha256": "4cbc17ecfb6587845a02c8e2cf122874fb0f31499186733076076378be7c09a0",
+          "n": 256,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "residuals",
+            "marginal_residuals",
+            "terms",
+            "residual_variance",
+            "sigma",
+            "log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "tests/fixtures/logistic-mixed-r.json",
+      "sha256": "28bef6674696eabda634302f1b675ea29a6f35a2b527ea04da699d0e681ce5b7",
+      "generator": "tests/generate-logistic-mixed-fixtures.R",
+      "generator_sha256": "e0173d536b01cbce0cdcb30882772a2e2b0fb62f922ffb940e37956629cbdfd6",
+      "software_recorded_in_fixture": {
+        "r": "R version 4.6.1 (2026-06-24)",
+        "lme4": "2.0.6"
+      },
+      "tolerance_policy": "inference: 2e-5 + 2e-3*abs(reference); likelihood/AIC/BIC: 1e-6 + 1e-8*abs(reference); others: 2e-5 + 2e-4*abs(reference)",
+      "model_specification": "Explicit saved matrices/vectors/options in fixture; generator records reference formula, family, seed and controls.",
+      "cases": [
+        {
+          "name": "binary_1",
+          "dataset": "binary",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -106.51608227560456,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "a4061b43c4e6bb65f874faecf31dc289108e7f4c720dc18ef75e85f16a6b6b60",
+          "n": 185,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "binary_9",
+          "dataset": "binary",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -106.42373049039459,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "f41ce2e6660f4b1a7246e71962d3668930f38e2d8cfcb62251e5fc52fc48e583",
+          "n": 185,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "binary_25",
+          "dataset": "binary",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -106.42372852556416,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "260448005e24c0d4f297d74799d747b2ed195cac5254d0621cf665e5ef18a07e",
+          "n": 185,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "binary_61",
+          "dataset": "binary",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -106.42372852556402,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "5db50aef9fb315829cc761315bb28612cd3bef782d01e5945708183d2361e43b",
+          "n": 185,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "no_intercept_1",
+          "dataset": "no_intercept",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -113.82207298274378,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "9ae88c97c6b5984236d5b557804e84541a6688d10b552baf5f78281dfc45a9de",
+          "n": 185,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "no_intercept_9",
+          "dataset": "no_intercept",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -113.63306063064302,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "d928515b8345e644fe6d9c2bccc4a3db2a0f1e3f6f22d7b8261e03f67e617470",
+          "n": 185,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "no_intercept_25",
+          "dataset": "no_intercept",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -113.63296667469011,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "5f475e6809a5f1efd692543841e8f704e700c55aa6887e720243c62747d25f30",
+          "n": 185,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "no_intercept_61",
+          "dataset": "no_intercept",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -113.6329666729709,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "b2549ec66951c1f9b7a77452c557268181ea34ef9185faac6cdc4ed55f7d5603",
+          "n": 185,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "grouped_offset_1",
+          "dataset": "grouped_offset",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -350.4316056335382,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "1e144b1d26b82aa72de669e523db6eb9987feab02f5e2b1be1710dd2470ab614",
+          "n": 185,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "grouped_offset_9",
+          "dataset": "grouped_offset",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -121.8978349049485,
+            "log_likelihood_correction": -228.5121714091159
+          },
+          "inputs_sha256": "fb24dff252ef5edad7ebeaf808ea9aa631e88d06d1dfb3bf9a61179bdcece388",
+          "n": 185,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "grouped_offset_25",
+          "dataset": "grouped_offset",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -121.89782989288688,
+            "log_likelihood_correction": -228.5121714091159
+          },
+          "inputs_sha256": "65d3975876b3852a349d0415f3fa23b9d59b8b90cb74715655ea6c222a9a1687",
+          "n": 185,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "grouped_offset_61",
+          "dataset": "grouped_offset",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -121.8978298928652,
+            "log_likelihood_correction": -228.5121714091159
+          },
+          "inputs_sha256": "a3d157fd6ddf0cbccf40219749d184ce915d0804e24172ad464979f70573ee16",
+          "n": 185,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "rare_events_1",
+          "dataset": "rare_events",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -14.30921541130555,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "4f85901aaa403c4cfe6df0ec647e4122742fd53661a3c9fc8e57af5aa6427179",
+          "n": 96,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "rare_events_9",
+          "dataset": "rare_events",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -15.663747861360044,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "0f96d3178f00706bbb3e31986d0a2c0165721d605e6689ffb383cebe0000733e",
+          "n": 96,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "rare_events_25",
+          "dataset": "rare_events",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -15.707614492515496,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "0581b78cfa76cfc6cb41c821de63d69c0d469d98dd801f74d2c95dc988d756e5",
+          "n": 96,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "rare_events_61",
+          "dataset": "rare_events",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -15.707906364448215,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "bc423d0147060019df051742d418e944ac7849fcfc52a318d4cc4b1e7cf6fca8",
+          "n": 96,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "large_group_variation_1",
+          "dataset": "large_group_variation",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -60.96051304320481,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "c04590e40e599c3d7a4c9b38e7f920efc04e36f1c038732d2d16b0c133eb8048",
+          "n": 112,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "large_group_variation_9",
+          "dataset": "large_group_variation",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -60.65815085498482,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "21082ca89e1d8a1ecea828332fd7d135e0b574bcd625d10035620e157c3139f6",
+          "n": 112,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "large_group_variation_25",
+          "dataset": "large_group_variation",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -60.65818087001512,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "02bb61742cd322b59017a8be07ac9d8063cbfb8b4e47df05ce1dbfccc858c5e0",
+          "n": 112,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "large_group_variation_61",
+          "dataset": "large_group_variation",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -60.65818087653061,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "50819952dc82dbc453bd147eeda99c31e0cf71e1f5401b77e62e1abaa9b94f31",
+          "n": 112,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "boundary_1",
+          "dataset": "boundary",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -33.271064666877365,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "cf3b5984127d238f9fba6a086bc622d80a9a69c6f3dcfe8f60924203bd9637cd",
+          "n": 48,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "boundary_9",
+          "dataset": "boundary",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -33.27106466687737,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "abe5952a07e85c768f6ab49004d2f0633e67404f7ee4cb19f859b812897162b5",
+          "n": 48,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "boundary_25",
+          "dataset": "boundary",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -33.27106466687737,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "72210693d9fbe07bcff10d0f63bf564adf24197389ebd40ca1eff00166bf1399",
+          "n": 48,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "boundary_61",
+          "dataset": "boundary",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -33.27106466687737,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "bdf5fbb5203502f88f1e6353dfbf55284242dbe3cf280ad4d1a4fba7465dd322",
+          "n": 48,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "cbpp_1",
+          "dataset": "cbpp",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -92.02628187149719,
+            "log_likelihood_correction": 0
+          },
+          "inputs_sha256": "4c43d7f766a461b3236e202f11e23affd2a9f5debfb249eff9dcacaa265c7df1",
+          "n": 56,
+          "p": 4,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "cbpp_9",
+          "dataset": "cbpp",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -50.005018027399075,
+            "log_likelihood_correction": -41.97835376893558
+          },
+          "inputs_sha256": "97388e51cd983dcc62f88746d3b19587470c1e0013346963721e9573732a77d1",
+          "n": 56,
+          "p": 4,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "cbpp_25",
+          "dataset": "cbpp",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -50.00501526837499,
+            "log_likelihood_correction": -41.97835376893558
+          },
+          "inputs_sha256": "19b24cbc4ba2a83d7f59d1cd4ac8b6203c85a446c76de44f14d0ec149e0397c6",
+          "n": 56,
+          "p": 4,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        },
+        {
+          "name": "cbpp_61",
+          "dataset": "cbpp",
+          "reference": {
+            "optimizer": "bobyqa",
+            "tolPwrss": 1e-12,
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "warnings": [],
+            "reported_log_likelihood": -50.005015268375,
+            "log_likelihood_correction": -41.97835376893558
+          },
+          "inputs_sha256": "a1be4563c4d8282877d047b57250aa4bee693f9841f655f974c9b469fc4fe711",
+          "n": 56,
+          "p": 4,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "z_statistics",
+            "p_values",
+            "conf_int",
+            "fixed_fitted",
+            "fitted",
+            "linear_predictor",
+            "residuals",
+            "random_effects",
+            "random_intercept_sd",
+            "random_intercept_variance",
+            "log_likelihood",
+            "neg2_log_likelihood",
+            "aic",
+            "bic",
+            "n_parameters",
+            "df_residual",
+            "singular"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "tests/fixtures/stress-r.json",
+      "sha256": "e8ca302c8a7335515648098d699d20714b4af4be999d9b1bfdf3cab6c444bbd4",
+      "generator": "tests/generate-stress-fixtures.R",
+      "generator_sha256": "f670e1467f8258400aa4dd14015e7df64c358e07c7ff55090c051834bf061890",
+      "software_recorded_in_fixture": {
+        "reference": "R version 4.6.1 (2026-06-24)",
+        "generator": "tests/generate-stress-fixtures.R"
+      },
+      "tolerance_policy": "per-case absolute+relative; absolute scales with response_scale for estimates and its square for covariance; dimensionless quantities unscaled",
+      "model_specification": "Explicit saved matrices/vectors/options in fixture; generator records reference formula, family, seed and controls.",
+      "cases": [
+        {
+          "name": "nearly_collinear",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 1e-06
+          },
+          "response_scale": 3.3016200132671076,
+          "reference": {
+            "implementation": "base R lm",
+            "family": "ols",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "b58e358bc114e254fc2094ab97d2a62ac9595bceb22f6fdfb35926ec7823a762",
+          "n": 30,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood"
+          ]
+        },
+        {
+          "name": "poorly_scaled",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 1e-07
+          },
+          "response_scale": 3.3016200132671076,
+          "reference": {
+            "implementation": "base R lm",
+            "family": "ols",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "ed5fc48ad61caf4e76cd41a2c69c9f3ab1854f9e1768eb5e28a6b11113fef7d5",
+          "n": 30,
+          "p": 3,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood"
+          ]
+        },
+        {
+          "name": "small_outcome",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 1e-06
+          },
+          "response_scale": 3.301620013267107e-140,
+          "reference": {
+            "implementation": "base R lm",
+            "family": "ols",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "c09d279b86e0627dafa3937896a7369dff343d97d329910f00e5083e63253194",
+          "n": 30,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood"
+          ]
+        },
+        {
+          "name": "large_outcome",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 1e-06
+          },
+          "response_scale": 3.3016200132671087e+140,
+          "reference": {
+            "implementation": "base R lm",
+            "family": "ols",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "563d0f3e7716d269e05161d052ebe2498dcf2c445e9799f1fcbf810ba321050c",
+          "n": 30,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood"
+          ]
+        },
+        {
+          "name": "small_residual_variance",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 1e-06
+          },
+          "response_scale": 3.3999998023936753,
+          "reference": {
+            "implementation": "base R lm",
+            "family": "ols",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "7310b18ac2251b1b7ff4403a89c091d02feabce4ae8dba06c196db9b2279403a",
+          "n": 30,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood"
+          ]
+        },
+        {
+          "name": "weighted_no_intercept",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 1e-07
+          },
+          "response_scale": 3.3016200132671076,
+          "reference": {
+            "implementation": "base R lm",
+            "family": "ols",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "d35eda776be3946148b4815377b17cce31805553f2da36a9312f017fb850b83e",
+          "n": 30,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood"
+          ]
+        },
+        {
+          "name": "logistic_rare",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 2e-06
+          },
+          "response_scale": 1,
+          "reference": {
+            "implementation": "base R glm",
+            "family": "logistic",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "018c0fbede0b7c7e84392d1d990a20a095126f8c9a94e61960681a54787854af",
+          "n": 1000,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "logistic_offset_-1000",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 2e-06
+          },
+          "response_scale": 1,
+          "reference": {
+            "implementation": "base R glm",
+            "family": "logistic",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "9076c9677a3e024772b7b66687c0d6f18585b708e61a4a6e83d881154f9238d3",
+          "n": 20,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "logistic_offset_1000",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 2e-06
+          },
+          "response_scale": 1,
+          "reference": {
+            "implementation": "base R glm",
+            "family": "logistic",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "df6ef8ed09fe32f6618754f350b629e2238fa2bbb780533f25c32ae51417c63b",
+          "n": 20,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "probit_rare",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 2e-06
+          },
+          "response_scale": 1,
+          "reference": {
+            "implementation": "base R glm",
+            "family": "probit",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "901eae39e7310458a5218fc93a7e0ee28e239aae61d485a876921247d82b66d8",
+          "n": 1000,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "probit_offset_-1000",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 2e-06
+          },
+          "response_scale": 1,
+          "reference": {
+            "implementation": "base R glm",
+            "family": "probit",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "3b286bfded1e38dcccba03b6c0e007e9a632645000097ba1e6e5a00c9b7c1cf7",
+          "n": 20,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "probit_offset_1000",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 2e-06
+          },
+          "response_scale": 1,
+          "reference": {
+            "implementation": "base R glm",
+            "family": "probit",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "fde29ce041c5fae9d3989000ad89be2f92bc00c12e8af414f3d7882739d34360",
+          "n": 20,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "logistic_extreme_known_predictors",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 1e-06
+          },
+          "response_scale": 1,
+          "reference": {
+            "implementation": "base R glm",
+            "family": "logistic",
+            "formula": "y ~ x - 1",
+            "warnings": [
+              "glm.fit: fitted probabilities numerically 0 or 1 occurred"
+            ],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "ea62e8c15e6597525a2341b0424c9bf65f62aa9ae1f5ad878c897eb541482a53",
+          "n": 22,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "probit_extreme_known_predictors",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 1e-06
+          },
+          "response_scale": 1,
+          "reference": {
+            "implementation": "base R glm",
+            "family": "probit",
+            "formula": "y ~ x - 1",
+            "warnings": [
+              "glm.fit: fitted probabilities numerically 0 or 1 occurred"
+            ],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "5f7f54154f25291a283513fa036ca31fe8ffc367bc97963f7d55d81aaf3b1f8c",
+          "n": 22,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "poisson_tiny_known_means",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 1e-06
+          },
+          "response_scale": 1,
+          "reference": {
+            "implementation": "base R glm",
+            "family": "poisson",
+            "formula": "y ~ x - 1",
+            "warnings": [
+              "glm.fit: fitted rates numerically 0 occurred"
+            ],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "8a1e465b680b528ed61fbe3dda945c03db53f0bdf990066fdc33f852e7b58dff",
+          "n": 4,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "poisson_sparse",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 1e-06
+          },
+          "response_scale": 1,
+          "reference": {
+            "implementation": "base R glm",
+            "family": "poisson",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "20ba6e674f66f720740101302af6bb32f6cd8011b70f39ea047308465c0b32e5",
+          "n": 30,
+          "p": 2,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "poisson_large",
+          "tolerance": {
+            "absolute": 0.005,
+            "relative": 1e-10
+          },
+          "response_scale": 1,
+          "reference": {
+            "implementation": "base R glm",
+            "family": "poisson",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "8e0a7d53925f9f61fa00b4b87cb82a4ca59f112e25c18b5e871b843f44d4202e",
+          "n": 6,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "poisson_offset_-1000",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 1e-06
+          },
+          "response_scale": 1,
+          "reference": {
+            "implementation": "base R glm",
+            "family": "poisson",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "484c0c94b5af94841174aaff0cc37f69b9ff8a776d2be5a61e330e2a4bc2c569",
+          "n": 20,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "aic"
+          ]
+        },
+        {
+          "name": "poisson_offset_1000",
+          "tolerance": {
+            "absolute": 1e-08,
+            "relative": 1e-06
+          },
+          "response_scale": 1,
+          "reference": {
+            "implementation": "base R glm",
+            "family": "poisson",
+            "formula": "y ~ x - 1",
+            "warnings": [],
+            "glm_epsilon": 1e-12,
+            "glm_maxit": 100,
+            "start": "intercept initialized at marginal link minus mean offset",
+            "seed": 20261011
+          },
+          "inputs_sha256": "b6d25dfbbc5ff91682d0449f16555213785015295384e3d38901685166e5f90b",
+          "n": 20,
+          "p": 1,
+          "compared_quantities": [
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "statistics",
+            "p_values",
+            "conf_int",
+            "fitted",
+            "residuals",
+            "log_likelihood",
+            "deviance",
+            "aic"
+          ]
+        }
+      ]
+    }
+  ]
+}

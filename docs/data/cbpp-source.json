@@ -1,0 +1,14 @@
+{
+  "dataset": "cbpp",
+  "package": "lme4",
+  "package_version": "2.0.6",
+  "r": "R version 4.6.1 (2026-06-24)",
+  "source": "https://lme4.github.io/lme4/reference/cbpp.html",
+  "research": "Lesnoff et al. (2004), Within-herd spread of contagious bovine pleuropneumonia in Ethiopian highlands, Preventive Veterinary Medicine 64, 27\u201340.",
+  "observations": 56,
+  "herds": 15,
+  "formula": "cbind(incidence, size-incidence) ~ period + (1 | herd)",
+  "transformation": "All package rows retained; baseline period 1, explicit indicators for periods 2/3/4; y=incidence/size and trial weights=size.",
+  "license": "lme4 GPL >= 2; license text in docs/data/lmm/COPYING",
+  "sha256": "2798bc7704a4bdb8ade4e164d8c3a6397efa7ba5fb25c1ec11f517b4ffb940a7"
+}

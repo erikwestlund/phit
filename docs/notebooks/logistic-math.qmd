@@ -1,0 +1,404 @@
+---
+title: "Binary logistic regression: from probabilities to maximum likelihood"
+jupyter: python3
+---
+
+This executable walkthrough uses saved **simulated students**, not real student
+records. It derives the Bernoulli likelihood, shows the matrices and dot products,
+and follows Newton/IRLS iterations to the result returned by `stats_logistic()`.
+Production calculations live in `crates/stats-core/src/logistic.rs`; Python here
+makes the intermediate values visible. See [setup](index.qmd).
+
+## 1. Observations, parameters and probabilities
+
+Each observation has study hours, a practice score and an observed pass/fail
+outcome. Those input values are data, not coefficient guesses. The supplied
+column of ones is constructed to estimate an intercept. We simulate 80 students
+using R seed `20261012`, with practice scores correlated with study hours:
+
+$$\mathrm{score}_i=\operatorname{clip}(45+3\,\mathrm{hours}_i+e_i,20,95),
+\qquad e_i\sim N(0,8^2).$$
+
+Hours are uniform between 1 and 12; hours and scores are rounded to two decimals.
+The true generating coefficients are $[-3.28,0.22,0.018]^\top$:
+
+$$\eta_i=-3.28+0.22\,\mathrm{hours}_i+0.018\,\mathrm{score}_i,
+\qquad \pi_i=\frac{1}{1+e^{-\eta_i}},\qquad y_i\sim\operatorname{Bernoulli}(\pi_i).$$
+
+A Bernoulli outcome is either 0 or 1. A probability such as 0.6 means a 60% chance
+of success under the model; the observed outcome is still a single 0 or 1.
+The generator is `tests/generate-logistic-fixtures.R`; the shared observations
+are in [learning.csv](../data/learning.csv). Known generating coefficients and
+estimated coefficients are different objects: estimates vary with the random sample.
+
+The hand-worked iteration below deliberately uses zero starting coefficients to
+make the first weights and dot products easy to inspect. Since the v0.1
+stabilization, the native implementation uses a finite marginal intercept start
+for extreme inputs when a ones column is present, which cancels a large common offset.
+Ordinary inputs retain the original zero start; the finite intercept fallback
+is used only for extreme offsets/counts described in the release notes.
+Starting values change the iteration path, not the declared likelihood or
+converged estimates. See [the release notes](../v0.1.qmd).
+
+```{python}
+from pathlib import Path
+import json
+import numpy as np
+import pandas as pd
+from scipy.special import expit
+from scipy.stats import norm
+from IPython.display import Math, display
+
+ROOT = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / "Cargo.toml").exists())
+observations = pd.read_csv(ROOT / "docs/data/learning.csv")
+X = np.column_stack([np.ones(len(observations)), observations[["study_hours", "practice_score"]]])
+y = observations["passed"].to_numpy(dtype=float)
+n, p = X.shape
+fixture = json.loads((ROOT / "tests/fixtures/logistic-r.json").read_text())
+case = next(c for c in fixture["cases"] if c["name"] == "simulated_learning")
+np.testing.assert_array_equal(X, case["x"])
+np.testing.assert_array_equal(y, case["y"])
+display(observations.head(8))
+display(observations.corr().rename_axis("Sample Pearson correlations"))
+print("Observed successes:", int(y.sum()), "of", n)
+
+def number(value):
+    text = f"{value:.6g}"
+    if "e" in text:
+        mantissa, exponent = text.split("e")
+        return mantissa + rf"\times10^{{{int(exponent)}}}"
+    return text
+
+def show_matrix(symbol, values, limit=6):
+    matrix = np.asarray(values)
+    if matrix.ndim == 1:
+        matrix = matrix[:, None]
+    indices = list(range(len(matrix))) if len(matrix) <= limit else [0,1,2,None,len(matrix)-1]
+    columns = list(range(matrix.shape[1])) if matrix.shape[1] <= limit else [0,1,2,None,matrix.shape[1]-1]
+    rows = [" & ".join(r"\ddots" if j is None else r"\vdots" for j in columns) if i is None
+            else " & ".join(r"\cdots" if j is None else number(matrix[i,j]) for j in columns) for i in indices]
+    display(Math(symbol + r"=\begin{bmatrix}" + r" \\ ".join(rows)
+                 + r"\end{bmatrix}" + rf"\quad({matrix.shape[0]}\times{matrix.shape[1]})"))
+
+def show_dot(symbol, left, right):
+    terms = [rf"({number(a)})\cdot({number(b)})" for a,b in zip(left,right)]
+    if len(terms) > 3:
+        terms = terms[:2] + [r"\cdots", terms[-1]]
+    display(Math(symbol + "=" + "+".join(terms) + r"\approx" + number(np.asarray(left) @ right)))
+
+show_matrix("X", X)
+show_matrix("y", y)
+show_matrix(r"X^\top", X.T)
+```
+
+Every calculation uses all 80 observations. Long matrix displays omit middle
+rows using $\vdots$ and columns using $\cdots$; dot products show the first two and last terms using
+$\cdots$. Numbers are rounded for readability; calculations use full precision.
+Correlations are sample associations, not evidence of causation.
+
+## 2. Why model log-odds instead of the outcome directly?
+
+OLS can produce fitted values outside $[0,1]$. Here the linear predictor
+$\eta_i=x_i^\top\beta$ is mapped through the sigmoid, so $0<\pi_i<1$ in exact
+arithmetic. Rearranging gives
+
+$$\frac{\pi_i}{1-\pi_i}=e^{\eta_i},\qquad
+\log\frac{\pi_i}{1-\pi_i}=x_i^\top\beta.$$
+
+The fraction is the **odds**, while its logarithm is the **logit**. A probability
+of 0.75 gives odds $0.75/0.25=3$: three successes per failure in the model's
+long-run proportions. Holding other predictors fixed, increasing predictor $j$
+by one unit adds $\beta_j$ to log-odds and multiplies odds by $e^{\beta_j}$.
+It does not add a fixed amount to probability.
+
+```{python}
+true_beta = np.array([-3.28, 0.22, 0.018])
+show_dot(r"\eta_1\text{ at generating coefficients}", X[0], true_beta)
+display(pd.DataFrame({"study hours": [2,6,10], "practice score (held fixed)": [65]*3,
+                      "generating probability": expit(-3.28+0.22*np.array([2,6,10])+0.018*65)}))
+print("Generating odds multiplier for one additional study hour:", np.exp(0.22))
+```
+
+## 3. Write the likelihood
+
+For one independent Bernoulli observation,
+
+$$P(y_i\mid x_i,\beta)=\pi_i^{y_i}(1-\pi_i)^{1-y_i}.$$
+
+If $y_i=1$, its likelihood contribution is $\pi_i$; if $y_i=0$, it is
+$1-\pi_i$. Multiply contributions across students and take logs:
+
+$$\ell(\beta)=\sum_i\left[y_i\log\pi_i+(1-y_i)\log(1-\pi_i)\right]
+=\sum_i\left[y_i\eta_i-\log(1+e^{\eta_i})\right].$$
+
+We maximize this likelihood, rather than minimize squared outcome errors.
+There is no separate Gaussian error variance: the Bernoulli variance is
+$\pi_i(1-\pi_i)$. Dispersion is fixed at 1.
+
+Naively evaluating exponentials can overflow. Rust uses a stable sigmoid and
+$\operatorname{softplus}(a)=\max(a,0)+\log(1+e^{-|a|})$; a success contributes
+$-\operatorname{softplus}(-\eta_i)$ and a failure contributes
+$-\operatorname{softplus}(\eta_i)$. These expressions also avoid cancellation.
+
+```{python}
+def log_likelihood(beta):
+    eta = X @ beta
+    return -np.logaddexp(0, np.where(y == 1, -eta, eta)).sum()
+
+initial_beta = np.zeros(p)
+initial_eta = X @ initial_beta
+initial_prob = expit(initial_eta)
+show_matrix(r"\beta^{(0)}", initial_beta)
+show_matrix(r"\pi^{(0)}", initial_prob)
+print("Initial log-likelihood:", log_likelihood(initial_beta))
+print("At generating coefficients:", log_likelihood(true_beta))
+```
+
+Zero initial coefficients are **starting guesses**. They imply probability 0.5
+for every student. They are distinct from the observed $X$ and $y$.
+
+## 4. Derivatives give the Newton step
+
+For one row, write $\ell_i=y_i\eta_i-\log(1+e^{\eta_i})$.
+The derivative with respect to $\eta_i$ is $y_i-\pi_i$, because
+$d\log(1+e^{\eta_i})/d\eta_i=\pi_i$. Also
+$d\eta_i/d\beta_j=x_{ij}$. The chain rule therefore gives
+
+$$\frac{\partial\ell}{\partial\beta_j}=\sum_i x_{ij}(y_i-\pi_i).$$
+
+Differentiate again using $d\pi_i/d\eta_i=\pi_i(1-\pi_i)$:
+
+$$\frac{\partial^2\ell}{\partial\beta_j\partial\beta_k}
+=-\sum_i x_{ij}\pi_i(1-\pi_i)x_{ik}.$$
+
+These sums are exactly the dot products in the matrix score (gradient) and Hessian:
+
+$$g=X^\top(y-\pi),\qquad H=-X^\top W X,
+\qquad W=\operatorname{diag}\{\pi_i(1-\pi_i)\}.$$
+
+$g$ is $3\times1$; $H$ is $3\times3$; $W$ is an $80\times80$ diagonal matrix.
+The negative Hessian $I=X^\top W X$ is the information matrix. It is positive
+definite for an identifiable finite fit, making the log-likelihood concave.
+Newton's method solves
+
+$$I\,\Delta\beta=g,\qquad \beta_{\mathrm{next}}=\beta+\Delta\beta.$$
+
+We show the information matrix to understand the arithmetic, but the production
+solver avoids forming/inverting it. It scales columns just as OLS does, then
+solves a weighted least-squares problem using SVD.
+
+```{python}
+initial_residual = y-initial_prob
+initial_weights = initial_prob*(1-initial_prob)
+gradient = X.T @ initial_residual
+information = X.T @ (initial_weights[:,None]*X)
+show_matrix(r"y-\pi^{(0)}", initial_residual)
+show_matrix(r"W^{(0)}_{1:5,1:5}\text{ (top-left block)}", np.diag(initial_weights[:5]))
+show_matrix(r"g^{(0)}=X^\top(y-\pi^{(0)})", gradient)
+show_matrix(r"I^{(0)}=X^\top W^{(0)}X", information)
+for j in range(p):
+    show_dot(rf"g_{{{j+1}}}", X[:,j], initial_residual)
+show_dot(r"I_{2,3}", X[:,1], initial_weights*X[:,2])
+```
+
+At the start, every weight is $0.5(1-0.5)=0.25$. The gradient's first entry
+sums observed minus predicted successes. Its other entries weight those
+differences by hours or practice scores. $I_{2,3}$ is a weighted dot product of
+the two predictor columns. Subscripts in the equations start at 1.
+
+## 5. Weighted SVD, IRLS and step halving
+
+Let $D$ contain column lengths, $A=XD^{-1}$ and $\theta=D\beta$.
+The Newton increment is the least-squares solution to
+
+$$B\Delta\theta\approx q,\qquad B=W^{1/2}A,
+\qquad q=W^{-1/2}(y-\pi).$$
+
+Taking its normal equations produces
+$A^\top W A\Delta\theta=A^\top(y-\pi)$, the scaled Newton equation.
+For $B=USV^\top$ we get $\Delta\theta=VS^{-1}U^\top q$, then
+$\Delta\beta=D^{-1}\Delta\theta$. See the [SVD explanation](ols-math.qmd#what-problem-does-svd-help-us-understand)
+for the geometry of these factors.
+
+This is **iteratively reweighted least squares (IRLS)**: probabilities and weights
+change after each fit. Equivalently, a working response
+$z_i=\eta_i+(y_i-\pi_i)/w_i$, where $w_i=\pi_i(1-\pi_i)$, is fitted using weighted least squares. We solve for the
+increment directly to avoid unnecessarily large working-response values.
+
+```{python}
+scales = np.linalg.norm(X, axis=0)
+A = X/scales
+theta = np.zeros(p)
+history = []
+for iteration in range(1,101):
+    eta = A @ theta
+    probability = expit(eta)
+    exponential = np.exp(-np.abs(eta))
+    root_weights = np.sqrt(exponential)/(1+exponential)
+    score_residual = np.where(y == 1, expit(-eta), -expit(eta))
+    B = root_weights[:,None]*A
+    q = score_residual/root_weights
+    U, singular_values, Vt = np.linalg.svd(B, full_matrices=False)
+    assert np.all(singular_values > np.finfo(float).eps*max(n,p)*singular_values[0])
+    step = Vt.T @ ((U.T @ q)/singular_values)
+    old_ll = log_likelihood(theta/scales)
+    fraction = 1.0
+    for _ in range(31):
+        candidate = theta+fraction*step
+        new_ll = log_likelihood(candidate/scales)
+        if new_ll >= old_ll-16*np.finfo(float).eps*(1+abs(old_ll)):
+            break
+        fraction /= 2
+    else:
+        raise RuntimeError("No improving Newton step")
+    if iteration == 1:
+        show_matrix(r"B^{(0)}=W^{1/2}A",B)
+        show_matrix(r"q^{(0)}=W^{-1/2}(y-\pi)",q)
+        show_matrix(r"U^\top q",U.T @ q)
+        show_matrix(r"\Delta\theta",step)
+        show_matrix(r"\Delta\beta=D^{-1}\Delta\theta",step/scales)
+        np.testing.assert_allclose(information @ (step/scales),gradient,atol=1e-10)
+    history.append({"iteration":iteration,"step fraction":fraction,"log-likelihood":new_ll,
+                    "intercept":candidate[0]/scales[0],"hours coefficient":candidate[1]/scales[1],
+                    "score coefficient":candidate[2]/scales[2],"largest full scaled step":np.max(np.abs(step))})
+    small_step = np.all(np.abs(step) <= 1e-8*(1+np.abs(candidate)))
+    small_ll = abs(new_ll-old_ll) <= 1e-10*(1+abs(old_ll))
+    theta = candidate
+    if small_step and small_ll:
+        break
+else:
+    raise RuntimeError("Not converged")
+beta = theta/scales
+display(pd.DataFrame(history))
+show_matrix(r"\hat\beta",beta)
+assert np.all(np.diff([row["log-likelihood"] for row in history]) >= -1e-10)
+```
+
+Near the optimum, full Newton steps usually work. If a step lowers the
+likelihood, Rust halves it, with at most 30 halvings. This is a logistic-specific
+line search, not a general optimizer. Success requires a small **full** step in
+every scaled coefficient coordinate and a small likelihood change; a tiny
+accepted fraction alone is not convergence. The public limit is 100 iterations.
+
+## 6. Probabilities, residuals and uncertainty
+
+The fitted outputs are $\hat\pi=\operatorname{sigmoid}(X\hat\beta)$, not labels
+obtained by a 0.5 threshold. Response residuals are $y-\hat\pi$.
+For conventional maximum-likelihood inference,
+
+$$\widehat{\operatorname{Var}}(\hat\beta)=(X^\top\hat W X)^{-1},
+\qquad \operatorname{SE}_j=\sqrt{\widehat{\operatorname{Var}}(\hat\beta)_{jj}}.$$
+
+Information is recalculated at the final estimate. There is no multiplication by
+$\mathrm{RSS}/(n-p)$. Large-sample Wald inference uses
+
+$$z_j=\hat\beta_j/\operatorname{SE}_j,\qquad
+p_j=2P(Z\ge|z_j|),\qquad
+\operatorname{CI}_{95\%,j}=\hat\beta_j\pm1.959964\,\operatorname{SE}_j.$$
+
+Here $Z$ is standard normal: these are asymptotic z-tests, not the exact Gaussian
+t-tests used for OLS. Sparse outcomes or near-separation can make Wald inference
+unreliable even if a finite fit exists. Coefficient intervals are on the log-odds
+scale; exponentiating their endpoints gives Wald intervals for odds ratios.
+
+```{python}
+eta = X @ beta
+fitted = expit(eta)
+residuals = y-fitted
+exponential = np.exp(-np.abs(eta))
+root_weights = np.sqrt(exponential)/(1+exponential)
+_, singular_values, Vt = np.linalg.svd(root_weights[:,None]*A,full_matrices=False)
+inverse = (Vt.T/singular_values) @ (Vt/singular_values[:,None])
+covariance = inverse/scales[:,None]/scales[None,:]
+se = np.sqrt(np.diag(covariance))
+z_statistics = beta/se
+p_values = 2*norm.sf(np.abs(z_statistics))
+conf_int = np.column_stack([beta-norm.ppf(.975)*se,beta+norm.ppf(.975)*se])
+show_matrix(r"\hat\pi",fitted)
+show_matrix(r"\widehat{\operatorname{Var}}(\hat\beta)",covariance)
+show_matrix(r"X^\top(y-\hat\pi)",X.T @ residuals)
+show_dot(r"\hat\eta_1",X[0],beta)
+display(pd.DataFrame({"estimate":beta,"SE":se,"z":z_statistics,"p":p_values,
+                      "lower 95%":conf_int[:,0],"upper 95%":conf_int[:,1],"odds ratio":np.exp(beta)},
+                     index=["intercept","study_hours","practice_score"]))
+display(pd.DataFrame({"observed":y,"probability":fitted,"response residual":residuals}).head(8))
+```
+
+## 7. Likelihood, deviance and AIC
+
+For individual binary observations, the saturated model fits every outcome with
+probability 0 or 1 and has limiting log-likelihood zero. Thus
+
+$$D=-2\ell(\hat\beta),\qquad \mathrm{AIC}=2p-2\ell(\hat\beta).$$
+
+With an explicit ones column, the null model estimates a constant probability
+$\bar y$. Without that column, our null convention has no coefficients and
+fixed probability 0.5. `null_deviance` is minus twice that null log-likelihood.
+`df_residual` is $n-p$, but it is not used to estimate a Bernoulli dispersion or
+select a t distribution. The result intentionally has no OLS R-squared or sigma.
+
+```{python}
+ll = log_likelihood(beta)
+null_ll = np.sum(y*np.log(y.mean())+(1-y)*np.log1p(-y.mean()))
+calculated = dict(coefficients=beta,covariance=covariance,std_errors=se,z_statistics=z_statistics,
+                  p_values=p_values,conf_int=conf_int,fitted=fitted,residuals=residuals,
+                  log_likelihood=ll,deviance=-2*ll,null_deviance=-2*null_ll,aic=2*p-2*ll,df_residual=n-p)
+for key,value in calculated.items():
+    np.testing.assert_allclose(value,case["expected"][key],atol=1e-9,rtol=1e-7,err_msg=key)
+print({key:calculated[key] for key in ["log_likelihood","deviance","null_deviance","aic","df_residual"]})
+print("Every displayed statistical result agrees with the committed R fixture.")
+```
+
+R's `confint(glm_fit)` normally produces profile-likelihood intervals. Our
+comparison explicitly uses `confint.default()` for the Wald intervals implemented
+here. The [verification notebook](logistic-verification.qmd) fits these same data
+in R, statsmodels and PHP.
+
+## 8. Separation, assumptions and things to try
+
+If a predictor combination puts every success on one side and every failure on
+the other, coefficients can grow without bound while likelihood improves. This
+is **complete separation**: there is no finite unpenalized MLE. Quasi-complete
+separation allows some observations on the boundary. The implementation checks
+whether an encountered coefficient vector certifies separation; it also rejects
+rank-deficient information and iteration exhaustion. It is not an exhaustive
+linear-programming separation detector and does not guarantee detection of every
+numerically difficult case. It never returns a `converged: false` partial fit.
+
+This first version requires both classes, finite full-rank inputs, and $n>p$.
+It supports individual 0/1 outcomes only: no grouped trials, sample weights,
+penalties, Firth correction, or automatic threshold selection. The model assumes
+independent observations and linear log-odds in the supplied predictors.
+Missing-data deletion occurs before estimation and warns as in OLS; see the
+[contract](../contracts.qmd#binary-logistic-regression).
+
+Try predicting the result before changing the notebook: set all outcomes to 1;
+replace the outcome by `study_hours > 6`; duplicate a predictor; convert hours to
+minutes; or remove the ones column. Which change causes an error, changes the
+meaning of a coefficient, or changes the null model? Comparing these cases is a
+way to connect estimation, identifiability and units.
+
+## Rust connections
+
+`fit_logistic` takes ownership of `Vec<Vec<f64>>` and `Vec<f64>`, then converts
+them into nalgebra's dynamic `DMatrix` and `DVector`. The matrix constructor
+explicitly reads the supplied row order; nalgebra stores its matrix internally
+by columns. Expressions such as `&scaled * &candidate` borrow those matrices
+for an operation so subsequent iterations can reuse them. Iterators build
+weights, score residuals and output vectors without PHP types entering the core.
+
+`LogisticResult` is a struct holding the complete fit. `Result<LogisticResult,
+StatsError>` makes unsuccessful estimation explicit; the `?` operator propagates
+failed decomposition or line-search operations. There is no mutable model object
+or general optimizer interface. The dedicated loop updates trial coefficients,
+checks progress, then recomputes information at the accepted final coefficients.
+
+The binding validates PHP integer/float values, removes missing rows according
+to policy, calls this owned Rust function, and inserts its vectors and scalars
+into a PHP associative array. Core errors become PHP exceptions, and deletion
+produces a warning with row metadata. See the [OLS Rust learning notes](../ols-math.qmd)
+for more explanation of the shared language constructs.
+
+Sources: [R glm](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/glm.html),
+[R summary.glm](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/summary.glm.html),
+[separation and finite estimates](https://www.stat.ethz.ch/CRAN/web/packages/detectseparation/vignettes/separation.html).

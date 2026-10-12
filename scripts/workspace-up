@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+workspace_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+workspace_site="php-stats-$(basename -- "$workspace_root")"
+
+for dependency in quarto herd; do
+    if ! command -v "$dependency" >/dev/null 2>&1; then
+        echo "Workspace preview requires $dependency on PATH." >&2
+        exit 1
+    fi
+done
+
+cd "$workspace_root"
+# Reuse the repository's frozen results; no Rust/PHP/R build is required.
+quarto render docs
+(cd docs/_site && herd link "$workspace_site")
+echo "Documentation preview: http://$workspace_site.test"

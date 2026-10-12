@@ -1,0 +1,1 @@
+Sitemap: https://erikwestlund.github.io/php-stat-models/sitemap.xml

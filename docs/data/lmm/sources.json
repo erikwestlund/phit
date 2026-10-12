@@ -1,0 +1,125 @@
+{
+  "datasets": [
+    {
+      "name": "sleepstudy",
+      "package": "lme4",
+      "group": "Subject",
+      "outcome": "Reaction",
+      "documentation": "https://lme4.github.io/lme4/reference/sleepstudy.html",
+      "citation": "Belenky et al. (2003), Journal of Sleep Research 12, 1\u201312; doi:10.1046/j.1365-2869.2003.00337.x",
+      "formula": "Reaction ~ Days + (1 | Subject)",
+      "terms": [
+        "intercept",
+        "Days"
+      ],
+      "file": "sleepstudy.csv",
+      "sha256": "2918bbddf750e78003059efa97b94885b85c4d7927c22a19c29f7fa5a184c59d",
+      "n": 180,
+      "n_groups": 18,
+      "minimum_group_size": 10,
+      "maximum_group_size": 10,
+      "package_version": "2.0.6",
+      "package_license": "GPL (>= 2)",
+      "package_source": "https://cran.r-project.org/package=lme4",
+      "columns": [
+        "Reaction",
+        "Days",
+        "Subject"
+      ],
+      "selection": "All original rows; Hsb82 retains only the five columns used by the model."
+    },
+    {
+      "name": "Orthodont",
+      "package": "nlme",
+      "group": "Subject",
+      "outcome": "distance",
+      "documentation": "https://stat.ethz.ch/R-manual/R-devel/library/nlme/html/Orthodont.html",
+      "citation": "Potthoff and Roy (1964), Biometrika 51, 313\u2013326; Pinheiro and Bates (2000), Appendix A.17",
+      "formula": "distance ~ age * female + (1 | Subject)",
+      "terms": [
+        "intercept",
+        "age",
+        "female",
+        "age \u00d7 female"
+      ],
+      "file": "Orthodont.csv",
+      "sha256": "ca7c0296405bb2bd5959cd5fff7c50a5035606f16ac308c7797f58666fcd7aa1",
+      "n": 108,
+      "n_groups": 27,
+      "minimum_group_size": 4,
+      "maximum_group_size": 4,
+      "package_version": "3.1.169",
+      "package_license": "GPL (>= 2)",
+      "package_source": "https://cran.r-project.org/package=nlme",
+      "columns": [
+        "distance",
+        "age",
+        "Subject",
+        "Sex"
+      ],
+      "selection": "All original rows; Hsb82 retains only the five columns used by the model."
+    },
+    {
+      "name": "Machines",
+      "package": "nlme",
+      "group": "Worker",
+      "outcome": "score",
+      "documentation": "https://stat.ethz.ch/R-manual/R-devel/library/nlme/html/Machines.html",
+      "citation": "Milliken and Johnson (1992), Analysis of Messy Data, p.285; Pinheiro and Bates (2000), Appendix A.14",
+      "formula": "score ~ machine_B + machine_C + (1 | Worker)",
+      "terms": [
+        "intercept",
+        "machine B",
+        "machine C"
+      ],
+      "file": "Machines.csv",
+      "sha256": "943135b7736fda1b52d2d67412bd2917998877f2e905bc757c15ab267e2a5b13",
+      "n": 54,
+      "n_groups": 6,
+      "minimum_group_size": 9,
+      "maximum_group_size": 9,
+      "package_version": "3.1.169",
+      "package_license": "GPL (>= 2)",
+      "package_source": "https://cran.r-project.org/package=nlme",
+      "columns": [
+        "Worker",
+        "Machine",
+        "score"
+      ],
+      "selection": "All original rows; Hsb82 retains only the five columns used by the model."
+    },
+    {
+      "name": "Hsb82",
+      "package": "mlmRev",
+      "group": "school",
+      "outcome": "mAch",
+      "documentation": "https://cran.r-project.org/web/packages/mlmRev/mlmRev.pdf#page=11",
+      "citation": "Raudenbush and Bryk (2002), Hierarchical Linear Models, chapter 4; High School and Beyond (1982)",
+      "formula": "mAch ~ ses + meanses + catholic + (1 | school)",
+      "terms": [
+        "intercept",
+        "SES",
+        "school mean SES",
+        "Catholic school"
+      ],
+      "file": "Hsb82.csv",
+      "sha256": "1f6859ae674228a1ac673805b91c1be3dff8b1c6adce3ccd71bbf2a43f1af84a",
+      "n": 7185,
+      "n_groups": 160,
+      "minimum_group_size": 14,
+      "maximum_group_size": 67,
+      "package_version": "1.0.9",
+      "package_license": "GPL (>= 2)",
+      "package_source": "https://cran.r-project.org/package=mlmRev",
+      "columns": [
+        "school",
+        "ses",
+        "meanses",
+        "sector",
+        "mAch"
+      ],
+      "selection": "All original rows; Hsb82 retains only the five columns used by the model."
+    }
+  ],
+  "encoding": "UTF-8 CSV; row order preserved; explicit indicator columns constructed in the fixture generator"
+}

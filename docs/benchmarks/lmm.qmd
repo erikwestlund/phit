@@ -1,0 +1,174 @@
+---
+title: "Random-intercept Gaussian ML scale validation and performance"
+jupyter: python3
+---
+
+The release PHP extension, R lme4 lmer and Python statsmodels MixedLM fit identical
+synthetic observations, with marginal ML (not REML), one random intercept and
+plug-in GLS fixed-effect inference. The [raw report](lmm-results.json) records
+versions, machine/thread settings, artifact/data hashes and every measurement.
+
+## Recorded results
+
+```{python}
+from pathlib import Path
+import json,sys
+import pandas as pd
+ROOT=next(p for p in [Path.cwd(),*Path.cwd().parents] if (p/'Cargo.toml').exists())
+report=json.loads((ROOT/'docs/benchmarks/lmm-results.json').read_text())
+assert report['model']=='lmm'
+print('Recorded:',report['recorded_at'],'Machine:',report['cpu'],report['platform'])
+print('Repeats:',report['repeats'],'Warm-ups:',report['warmups'])
+print('Tolerance policy:',report['tolerance'])
+def ordered_table(rows):
+    table=pd.DataFrame(rows)
+    table['implementation']=pd.Categorical(table['implementation'],categories=['R','statsmodels','PHP'],ordered=True)
+    return table.sort_values(['observations','coefficients','implementation']).reset_index(drop=True)
+rows=[];memory=[]
+for case in report['cases']:
+    assert case['agreement_passed']
+    for name,fit in case['implementations'].items():
+        rows.append(dict(observations=case['n'],coefficients=case['p'],groups=case['data']['n_groups'],implementation=name,version=fit['version'],median_fit_ms=1000*fit['median_fit_seconds'],minimum_fit_ms=1000*fit['min_fit_seconds']))
+        memory.append(dict(observations=case['n'],coefficients=case['p'],implementation=name,CSV_load_seconds=fit['load_seconds'],whole_process_seconds=fit['process_seconds'],peak_RSS_MiB=fit['peak_rss_bytes']/2**20 if fit['peak_rss_bytes'] else None))
+display(ordered_table(rows))
+```
+
+Cases cover 1,000, 100,000 and one million observations with three fixed
+coefficients, and 100,000 observations with eleven fixed coefficients.
+There are min(100, n/20) groups; coefficient counts include the fixed intercept.
+Group count and group size affect mixed-model work, so these timings should not
+be generalized to many thousands of small groups or random slopes.
+
+## Visual comparison
+
+```{python}
+#| echo: false
+sys.path.insert(0,str(ROOT/'docs/benchmarks'))
+from plots import render_charts
+render_charts(report,'lmm')
+```
+
+![Random-intercept ML full-fit times; bars are medians and dots are individual repetitions.](figures/lmm-fit-time.svg)
+
+![Random-intercept ML peak whole-process memory.](figures/lmm-memory.svg)
+
+Each panel uses its own labeled linear scale. Order/colors remain R, statsmodels,
+PHP. Download timing [SVG](figures/lmm-fit-time.svg)/[PNG](figures/lmm-fit-time.png)
+and memory [SVG](figures/lmm-memory.svg)/[PNG](figures/lmm-memory.png).
+
+## Native Rust optimization
+
+The first implementation repeatedly whitened and SVD-factorized all n rows
+at every trial variance ratio. The optimized implementation follows lme4's
+penalized least-squares elimination idea: separate within-group deviations
+from group means and cache an augmented QR square-root summary. Each trial now
+factors p+1+G rows. Covariance is computed only for the selected solution.
+The same grid, score root refinements, ML objective, rank threshold, input/output
+contract and numerical tolerances are retained; this is a computational change.
+The [walkthrough](../notebooks/lmm-math.qmd#cache-a-square-root-reduction-following-the-lme4-idea)
+derives the reduction and checks its residual norms numerically.
+
+```{python}
+baseline=json.loads((ROOT/'docs/benchmarks/lmm-baseline-results.json').read_text())
+old_cases={(c['n'],c['p']):c for c in baseline['cases']}
+comparison=[]
+for case in sorted(report['cases'],key=lambda c:(c['n'],c['p'])):
+    old=old_cases[(case['n'],case['p'])]
+    assert old['data']['sha256']==case['data']['sha256']
+    before=old['implementations']['PHP']['median_fit_seconds']
+    after=case['implementations']['PHP']['median_fit_seconds']
+    comparison.append(dict(observations=case['n'],coefficients=case['p'],
+                           previous_full_fit_ms=1000*before,optimized_full_fit_ms=1000*after,
+                           speedup=before/after))
+display(pd.DataFrame(comparison))
+print('Baseline recorded:',baseline['recorded_at'])
+```
+
+The [baseline report](lmm-baseline-results.json) preserves all original timings
+and artifact hashes. These are separate runs on the same machine and identical
+seeded CSVs, so timing ratios remain subject to system noise. Both reports time
+complete PHP calls, including conversion and all observation-length outputs.
+This is native nalgebra QR/SVD, with no BLAS/LAPACK or sparse backend dependency.
+lme4 uses a general sparse Cholesky implementation; our specialized square-root
+reduction reuses its mathematical elimination idea while retaining SVD rank checks.
+
+## Timing boundaries and methods
+
+Each worker loads one CSV, warms up once and fits five times. Timed calls include
+estimation, fixed-effect covariance and normal Wald inference, variance components,
+ICC, likelihood/AIC, all population/conditional fits and both residual vectors,
+and all conditional group estimates. PHP also validates/copies inputs and converts
+all output arrays and group/sample metadata inside the timer. Startup, CSV parsing,
+data generation and final compact JSON serialization are excluded.
+
+R uses lmer REML=FALSE with bobyqa rhoend=1e-10. Python uses MixedLM ML BFGS with
+gtol=1e-10 and recalculates plug-in GLS covariance to align with the documented
+convention. Its native joint observed-Hessian covariance is not compared as though
+it were identical. Rust scans a log-ratio profile grid and refines analytic-score
+roots with compact weighted SVD GLS fits, after a one-time QR reduction. These algorithms and stopping rules differ.
+The comparison measures complete declared API behavior, not a single common solver.
+
+```{python}
+display(ordered_table(memory))
+```
+
+Whole-process time includes startup/imports, CSV loading, warm-up and all five
+fits. Peak RSS covers that entire process, not only the numerical solver. PHP's
+memory limit is disabled for these large nested arrays. Thread environment variables
+are set to one, worker order alternates, and runtimes execute separately. Timer
+resolution, system activity and caches can affect results. See the
+[OLS timing discussion](ols.qmd#timing-boundaries).
+
+## Simulation and numerical checks
+
+NumPy RNG seed 20261011 generates correlated study hours and prior scores,
+independent standard-normal extra predictors, and schools with roughly equal
+sizes. Outcomes follow
+
+$$y_i=50+1.8\,\mathrm{hours}_i+0.2\,\mathrm{prior}_i
++0.5\sum_j\mathrm{extra}_{ij}+b_{g(i)}+\epsilon_i,
+\quad b_g\sim N(0,6^2),\quad\epsilon_i\sim N(0,5^2).$$
+
+This sample is separate from the saved small teaching dataset. Identical
+17-significant-digit CSVs are used by every worker. All coefficient-level fields,
+variance components, ICC, likelihood/AIC and all group effects are checked.
+Observation-length outputs are fully materialized, but cross-runtime checks sample
+ten evenly spaced rows; small fixtures check every row.
+
+Benchmark absolute tolerance is 1e-7. Relative tolerance is 1e-6 for ordinary
+outputs, 1e-5 for covariance, SE, z-statistics, variance components, sigma and ICC,
+and 1e-9 for likelihood/AIC. Small saved references use the tighter uniform
+1e-7 + 1e-6 × abs(reference) policy.
+
+The first 100,000-row check found R's between-group variance differed from the
+analytic-score solution by about 2.6e-6 relative while log-likelihood differed
+by only about 8e-10. The log-ratio profile score was approximately 2.55e-4 in R,
+-1.88e-6 in Python and 3.12e-11 in Rust. A flat likelihood and floating-point
+objective resolution limit independently optimized variance-component agreement;
+the variance-sensitive benchmark tolerances reflect that measured distinction.
+They do not replace the closed-form ML check or justify relaxing likelihood
+agreement. The finite Rust profile grid itself is not a global-optimum proof.
+
+```{python}
+display(ordered_table([dict(observations=case['n'],coefficients=case['p'],implementation=name,
+                           largest_absolute_difference_vs_R=max(errors.values()))
+                      for case in report['cases'] for name,errors in case['max_absolute_errors_vs_R'].items()]))
+```
+
+## Reproduce
+
+```sh
+export PHP=/opt/homebrew/bin/php
+export PHP_CONFIG=/opt/homebrew/bin/php-config
+cargo build -p php-stats --release --locked
+.context/notebooks-venv/bin/python tests/benchmarks/run.py --model lmm
+QUARTO_PYTHON="$PWD/.context/notebooks-venv/bin/python" quarto render docs/benchmarks/lmm.qmd
+quarto render docs
+```
+
+R requires lme4 as a development package. Use matching PHP tools and `.so` on
+Linux. For a quick check preserving the published report, add
+`--cases 1000:3 --repeats 2 --output .context/lmm-smoke.json`.
+Numerical failures abort before publication. Ordinary renders read saved results
+and do not rerun these timings. See the [contract](../contracts.qmd#gaussian-random-intercept-mixed-model)
+for model and inference limits.

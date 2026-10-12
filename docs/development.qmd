@@ -1,0 +1,130 @@
+---
+title: "Development and installation"
+---
+
+Run commands from the checkout containing Cargo.toml, crates/, and examples/.
+Polyscope workspaces are separate checkouts from the original project directory.
+Source changes and build outputs in a workspace do not automatically appear in
+another checkout. The gitignored target/ directory must be rebuilt there after
+transferring source changes.
+
+## Environment
+
+
+Following the official [ext-php-rs installation guide](https://ext-php.rs/getting-started/installation.html)
+and [Hello World build workflow](https://ext-php.rs/getting-started/hello_world.html):
+
+```sh
+# macOS: Xcode command-line tools, Rust, PHP (includes headers), libclang
+xcode-select --install
+brew install rust php llvm
+export PHP="$(brew --prefix php)/bin/php"
+export PHP_CONFIG="$(brew --prefix php)/bin/php-config"
+export PATH="$(brew --prefix php)/bin:$PATH"
+# If bindgen cannot find libclang:
+export LIBCLANG_PATH="$(brew --prefix llvm)/lib"
+```
+
+Linux (Debian/Ubuntu with PHP 8.3+ available in the configured repositories):
+
+```sh
+sudo apt-get update
+sudo apt-get install build-essential clang libclang-dev php-cli php-dev curl
+# Install stable Rust using https://rustup.rs, then source ~/.cargo/env.
+export PHP="$(command -v php)"
+export PHP_CONFIG="$(command -v php-config)"
+```
+
+Check `php -v`, `php-config --version`, and `rustc --version`. PHP and php-config
+must belong to the same installation (including architecture, ZTS/NTS and debug
+mode). On this development machine the default Herd PHP 8.4 does not match
+Homebrew's headers: use `/opt/homebrew/bin/php` and `/opt/homebrew/bin/php-config`.
+The macOS linker configuration permits symbols resolved by PHP when it loads the
+extension; Linux needs no macOS linker flags.
+
+## Build and run
+
+Run from the repository root with the environment above:
+
+```sh
+cargo test --workspace --locked
+cargo build -p php-stats --locked
+# macOS:
+export STATS_EXTENSION="$PWD/target/debug/libphp_stats.dylib"
+# Linux instead:
+# export STATS_EXTENSION="$PWD/target/debug/libphp_stats.so"
+php -n -d "extension=$STATS_EXTENSION" -m
+php -n -d "extension=$STATS_EXTENSION" -r 'echo stats_hello(), PHP_EOL;'
+php -n -d "extension=$STATS_EXTENSION" tests/ols.php
+php -n -d "extension=$STATS_EXTENSION" tests/logistic.php
+php -n -d "extension=$STATS_EXTENSION" tests/probit.php
+php -n -d "extension=$STATS_EXTENSION" tests/poisson.php
+php -n -d "extension=$STATS_EXTENSION" tests/lmm.php
+php -n -d "extension=$STATS_EXTENSION" tests/r-compatibility.php
+php -n -d "extension=$STATS_EXTENSION" tests/lmm-expanded.php
+php -n -d "extension=$STATS_EXTENSION" tests/logistic-mixed.php
+php -n -d "extension=$STATS_EXTENSION" examples/ols.php
+php -n -d "extension=$STATS_EXTENSION" examples/logistic.php
+php -n -d "extension=$STATS_EXTENSION" examples/probit.php
+php -n -d "extension=$STATS_EXTENSION" examples/poisson.php
+php -n -d "extension=$STATS_EXTENSION" examples/lmm.php
+php -n -d "extension=$STATS_EXTENSION" examples/lmm-slopes.php
+php -n -d "extension=$STATS_EXTENSION" examples/logistic-mixed.php
+```
+
+For persistent installation, the official optional [cargo-php workflow](https://ext-php.rs/getting-started/cargo-php.html)
+is `cargo install cargo-php --locked`, then from `crates/php-extension`,
+`cargo php install --release`. Back up php.ini first. Alternatively build with
+`cargo build -p php-stats --release --locked` and add
+`extension=/absolute/path/to/target/release/libphp_stats.dylib` (Linux: `.so`)
+to the CLI php.ini shown by `php --ini`. Then `php examples/ols.php` runs directly.
+Rebuild for each PHP version; `-n` skips ini files for isolated development tests.
+
+## Running in an application
+
+Build the release extension against the PHP installation used by the application.
+Deploy the library for that OS, architecture, PHP version and build configuration;
+a macOS dylib cannot be used by a Linux server. Keep the deployed library at a
+permanent absolute path and enable it in the relevant PHP configuration.
+
+CLI and PHP-FPM may read different ini files. Enable the extension for FPM as well
+as CLI when serving web requests, and restart FPM after installation or replacement.
+Verify `extension_loaded('php-stats')` and `function_exists('stats_ols')` and `function_exists('stats_logistic')` in the
+actual application runtime. Once enabled, application code calls stats_ols(), stats_logistic(), stats_probit() or stats_poisson()
+directly. There is no per-call import, autoloader or Composer dependency.
+
+PHP loads the library when it starts. Each call synchronously converts PHP arrays
+into owned Rust numeric vectors, fits the model, and returns an associative array.
+It does not launch R, a subprocess, or an external service. The deployed runtime
+needs the compiled library and its platform dependencies; Rust/Cargo and R are
+build/development tools.
+
+## Numerical dependency policy
+
+The engine uses nalgebra's Rust-native SVD and QR. There is one maintained numerical
+path, with no BLAS/LAPACK dependency or backend selection. We defer external
+numerical backends until a concrete requirement justifies the additional build
+and deployment work. The earlier Accelerate trial is retained as
+[historical benchmark evidence](benchmarks/ols.qmd#apple-accelerate-experiment);
+its Cargo feature and foreign-call wrapper have been removed.
+
+## Changing the implementation
+
+Keep statistical calculations in crates/stats-core and PHP conversion in
+crates/php-extension. Work in small increments with established numerical crates.
+Check APIs against the dependency versions in Cargo.lock. Explain important
+mathematical steps near the code, and update contracts and reference tests when
+behavior changes. Do not add abstractions for hypothetical models.
+
+Follow [verification.qmd](verification.qmd) for the checks appropriate to a change.
+The tested baseline is Apple Silicon, Rust 1.99 and Homebrew PHP 8.5.10. Linux and
+other PHP versions have setup instructions but have not yet been verified here.
+
+The general mixed fitter also uses pinned Rust-native `bobyqa` and `argmin`
+(Nelder–Mead). These add no C/Fortran, BLAS or LAPACK runtime requirements.
+See [R compatibility](r-compatibility.qmd) for reference regeneration and the
+remaining native optimizer backend work.
+
+See the [v0.1 stabilization assessment](v0.1.qmd) for the offline `scripts/check` gate,
+IDE stubs, structured diagnostics, stress fixtures, provenance manifest,
+performance preservation and remaining release/deployment gates.

@@ -1,0 +1,144 @@
+---
+title: "Design philosophy"
+---
+
+## A plain numerical interface
+
+The native interface should be as vanilla as possible: ordinary PHP arrays of
+numbers in, an associative array of numbers and numeric arrays out. A caller
+should be able to understand a fit from the function signature, the data shapes,
+and the documented statistical conventions. Loading the extension makes the
+functions available without application-specific imports or model classes.
+
+For all estimators, the raw interface is a supplied design matrix x and outcome vector y.
+Each row is an observation and each column is a coefficient. The caller supplies
+the intercept as a column of ones. The extension checks those inputs and performs
+the estimation; it does not infer how the application's source data should be
+interpreted. Invalid values produce errors. Missing null/NAN values use documented listwise
+deletion with a warning and sample metadata; callers can choose strict rejection.
+
+Use explicit numerical defaults and document them. Current inference is
+homoskedastic OLS with 95% t intervals, and logistic, probit and Poisson
+maximum likelihood with 95% normal Wald intervals; rank deficiency is rejected.
+Undefined statistics remain NAN/INF in the raw output. Missing-data handling
+is explicit in the contract and observable in every fit result. Keep the mathematical
+calculations visible and understandable in the Rust core.
+
+## Convenience belongs around the raw call
+
+Other packages, application code, or optional helpers from this project can make
+input preparation easier. They might select columns from records, read CSV data,
+convert numeric strings under an explicit policy, add a column of ones, handle
+missing observations, or attach coefficient labels. These are possible helper
+responsibilities, not features currently implemented or a commitment to build them.
+
+Whatever the source, preparation should finish with the same x and y arrays
+accepted by stats_ols(), stats_logistic(), stats_probit(), stats_poisson() or stats_lmm(). A user can construct those arrays directly and get the
+same estimation behavior without a helper. Helpers must make choices visible,
+especially column order, intercept insertion, missing-value handling and row
+alignment. They should preserve the raw result or explain any transformation,
+such as replacing nonfinite values for JSON serialization.
+
+For example, application code can prepare observations with ordinary PHP:
+
+```php
+$x = [];
+$y = [];
+foreach ($observations as $observation) {
+    // This example assumes these fields are already validated numeric values.
+    $x[] = [1.0, $observation['size'], $observation['bedrooms']];
+    $y[] = $observation['price'];
+}
+$result = stats_ols(x: $x, y: $y);
+$coefficientLabels = ['intercept', 'size', 'bedrooms'];
+```
+
+The native function has no knowledge of those field names or their origin.
+
+## Implementation boundaries
+
+Use established Rust-native numerical crates by default. Keep the implementation
+and build straightforward until a concrete requirement calls for an external
+BLAS/LAPACK dependency. A backend change should address a demonstrated numerical,
+performance or deployment need and preserve the input/output contract and
+reference agreement. We tried Apple Accelerate without a speed advantage on our
+current workloads, then removed the experimental path. The
+[benchmark evidence](benchmarks/ols.qmd#apple-accelerate-experiment) remains documented.
+
+stats-core owns estimation, inference and numerical validation. It accepts Rust
+vectors and returns an a dedicated result struct or StatsError without PHP types. Established
+crates supply matrix decompositions and distributions; our code expresses the
+statistical formulas.
+
+php-extension owns PHP value inspection, numeric conversion, registration,
+exception conversion, missing-row filtering with warnings/accounting, and output
+construction. Keep it thin; missing-data handling does not change the estimator. Data ingestion and
+application presentation remain outside the statistical engine.
+
+Prefer the simplest correct solution, small focused functions, documented
+contracts and reference evidence. Numerical correctness, working software and
+educational clarity take priority over architecture or speculative extensibility.
+
+## Current scope and change decisions
+
+The current scope is OLS, binomial logistic/probit regression, Poisson count regression, and Gaussian mixed ML/REML with explicit random-design terms, and binomial random-intercept marginal ML. The user has expanded the goal toward R/lme4 compatibility; [the coverage ledger](r-compatibility.qmd) records implemented and remaining functionality. Each fitter is a dedicated implementation, without a general GLM framework. Keep data preparation and presentation around the plain numerical API. Expand numerical functionality through explicit contracts and reference evidence. Additional optimization algorithms now address actual multivariate variance estimation; they do not justify a general statistical framework. Avoid speculative layers, backend interfaces or a large PHP object API. Do not introduce generic
+Model, Family, Link or Optimizer traits for hypothetical future work.
+
+For a proposed feature, first ask whether it changes estimation or merely makes
+application data easier to prepare. Preparation belongs in an optional layer.
+A numerical feature needs a concrete use case, an explicit contract and suitable
+verification before it expands the engine. Extra dependencies and abstractions
+must solve a demonstrated problem.
+
+Keep [contracts.qmd](contracts.qmd) aligned with implementation and
+[verification.qmd](verification.qmd) aligned with actual test evidence. Each implemented
+estimator should have a math walkthrough notebook and a verification document
+showing equivalent fits in R, statsmodels and this extension where supported. This
+philosophy governs future work; it does not imply that helpers or additional
+models already exist.
+
+## Learning examples use meaningful simulated data
+
+Use reproducible simulations with named variables, units, plausible ranges,
+noise, and intentional relationships for the main learning examples. Label them
+as synthetic, state the generating equation and seed, and save the observations
+so Rust, PHP, R and statsmodels fit exactly the same sample. Report observed sample
+correlations rather than treating the intended relationship as an empirical result.
+Explain that correlation does not establish causation.
+
+Distinguish observed inputs, constructed columns (such as intercept ones), true
+generating parameters, trial coefficients, and estimated coefficients. Display
+matrix dimensions and intermediate values beside the mathematical steps. Use
+small samples for readable matrix displays and explain their statistical limits.
+Keep simple sequences and hand-checkable arrays for focused numerical tests where
+they help expose an edge case; they should not be the main story in a walkthrough.
+
+The current shared teaching sample is simulated housing in `docs/data/housing.csv`,
+generated by `tests/generate-learning-data.R`. Its correlations are intentional,
+and both one-predictor and correlated two-predictor fits have R reference fixtures.
+
+## Performance evidence
+
+Maintain a reproducible API-level benchmark against R and Python statsmodels for
+each implemented estimator where reference support exists. Verify numerical
+agreement on identical simulated inputs before publishing timings. Use release
+builds, materialize inference and observation-level outputs, and record versions,
+machine details, thread settings, raw measurements and timing boundaries.
+Separate fitting from loading and runtime startup; record process memory where
+available. Benchmarks are explicit development commands rather than unit tests.
+See the [OLS report](benchmarks/ols.qmd) and [logistic report](benchmarks/logistic.qmd). Measurements inform decisions; they do
+not justify speculative optimizations or additional runtime dependencies.
+
+The logistic teaching sample is saved in `docs/data/learning.csv`, generated by
+`tests/generate-logistic-fixtures.R`. It uses correlated study hours and practice
+scores, with Bernoulli pass/fail draws from explicitly stated generating probabilities.
+
+Mixed models begin with one Gaussian random intercept, a continuous outcome and
+explicit group labels. Keep marginal likelihood, variance components and conditional
+group estimates visible in code. REML, random slopes and multiple grouping factors now have separate contracts, R optimizer fixtures and an executed math walkthrough. Native BOBYQA and Nelder–Mead use established pinned Rust crates; exact NLopt/PORT backend support remains open.
+
+For non-Gaussian mixed models, distinguish implementation agreement from
+integration accuracy. Document the likelihood approximation, compare like methods
+against R, and assess node-count sensitivity with an independent integrator.
+The binomial random-intercept milestone makes this explicit before expanding
+Poisson likelihoods or general random-term designs.

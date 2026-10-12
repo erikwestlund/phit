@@ -1,0 +1,287 @@
+---
+title: "Probit: a normal latent variable and Fisher scoring"
+jupyter: python3
+---
+
+## 1. Meaningful simulated observations
+
+We observe **simulated students**, with study hours, a practice score and a
+binary pass/fail outcome. Inputs are observed data, not guesses. The column of
+ones is constructed to estimate an intercept. R seed 20261013 generates 120
+students: hours are uniform between 1 and 12, scores are clipped to 20–95 from
+45 + 3 × hours + normal noise with standard deviation 8. Both are rounded to two decimals.
+
+The underlying simulation is a **latent normal threshold** model:
+
+$$z_i^*=-1.9+0.13\,\mathrm{hours}_i+0.011\,\mathrm{score}_i+\epsilon_i,
+\quad \epsilon_i\sim N(0,1),\quad y_i=\mathbf{1}\{z_i^*>0\}.$$
+
+With $\eta_i=x_i^\top\beta$, symmetry of the standard normal gives
+$P(y_i=1)=P(\epsilon_i>-\eta_i)=\Phi(\eta_i)$. The latent value is a model
+construction: only the resulting 0 or 1 is supplied to the estimator. Fixing the
+latent variance to one identifies the coefficient scale; there is no sigma to estimate.
+
+The normal CDF $\Phi(a)$ is the area under a standard-normal density to the left
+of $a$. The density is $\phi(a)=e^{-a^2/2}/\sqrt{2\pi}$, and $\Phi'(a)=\phi(a)$.
+Unlike a logit coefficient, $e^{\beta_j}$ is **not** a constant odds multiplier.
+The local probability slope is $\phi(\eta_i)\beta_j$, so it varies by observation.
+
+The hand-worked iteration below deliberately uses zero starting coefficients to
+make the first weights and dot products easy to inspect. Since the v0.1
+stabilization, the native implementation uses a finite marginal intercept start
+for extreme inputs when a ones column is present, which cancels a large common offset.
+Ordinary inputs retain the original zero start; the finite intercept fallback
+is used only for extreme offsets/counts described in the release notes.
+Starting values change the iteration path, not the declared likelihood or
+converged estimates. See [the release notes](../v0.1.qmd).
+
+```{python}
+from pathlib import Path
+import json
+import numpy as np
+import pandas as pd
+from scipy.special import ndtr, log_ndtr, gammaln, xlogy
+from scipy.stats import norm
+from IPython.display import Math, display
+ROOT = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / "Cargo.toml").exists())
+observations = pd.read_csv(ROOT / "docs/data/probit-learning.csv")
+X = np.column_stack([np.ones(len(observations)), observations[['study_hours', 'practice_score']]])
+y = observations.iloc[:,-1].to_numpy(dtype=float)
+n,p = X.shape
+fixture = json.loads((ROOT / "tests/fixtures/probit-r.json").read_text())
+case = next(c for c in fixture["cases"] if c["name"] == "simulated_learning")
+np.testing.assert_array_equal(X,case["x"])
+np.testing.assert_array_equal(y,case["y"])
+display(observations.head(8))
+display(observations.corr().rename_axis("Sample correlations"))
+def number(value):
+    text = f"{value:.6g}"
+    if "e" in text:
+        mantissa, exponent = text.split("e")
+        return mantissa + rf"\times10^{{{int(exponent)}}}"
+    return text
+
+def show_matrix(symbol, values, limit=6):
+    matrix = np.asarray(values)
+    if matrix.ndim == 1:
+        matrix = matrix[:, None]
+    indices = list(range(len(matrix))) if len(matrix) <= limit else [0,1,2,None,len(matrix)-1]
+    columns = list(range(matrix.shape[1])) if matrix.shape[1] <= limit else [0,1,2,None,matrix.shape[1]-1]
+    rows = [" & ".join(r"\ddots" if j is None else r"\vdots" for j in columns) if i is None
+            else " & ".join(r"\cdots" if j is None else number(matrix[i,j]) for j in columns) for i in indices]
+    display(Math(symbol + r"=\begin{bmatrix}" + r" \\ ".join(rows)
+                 + r"\end{bmatrix}" + rf"\quad({matrix.shape[0]}\times{matrix.shape[1]})"))
+
+def show_dot(symbol, left, right):
+    terms = [rf"({number(a)})\cdot({number(b)})" for a,b in zip(left,right)]
+    if len(terms) > 3:
+        terms = terms[:2] + [r"\cdots", terms[-1]]
+    display(Math(symbol + "=" + "+".join(terms) + r"\approx" + number(np.asarray(left) @ right)))
+
+
+show_matrix("X",X)
+show_matrix("y",y)
+show_matrix(r"X^\top",X.T)
+```
+
+Matrix displays show dimensions and truncate middle rows/columns using dots.
+Calculations use every observation and full precision. Correlation does not
+establish causation. The saved dataset is shared by the PHP example and R fixtures;
+regeneration is explicit in `tests/generate-probit-poisson-fixtures.R`.
+
+## 2. Likelihood and derivatives
+
+For independent Bernoulli outcomes the log-likelihood is
+
+$$\ell(\beta)=\sum_i[y_i\log\Phi(\eta_i)+(1-y_i)\log\Phi(-\eta_i)].$$
+
+The complement is written $\Phi(-\eta)$ to avoid subtracting a CDF rounded to one.
+Taking a derivative with respect to $\eta_i$ gives
+
+$$s_i=\phi(\eta_i)\frac{y_i-\pi_i}{\pi_i(1-\pi_i)},\qquad
+\pi_i=\Phi(\eta_i),\qquad g=X^\top s.$$
+
+For a success this is $\phi/\Phi(\eta)$; for a failure it is
+$-\phi/\Phi(-\eta)$. These ratios are evaluated from log density minus log tail
+probability. Rust uses `erfc` for ordinary tails and a normal Mills-ratio continued
+fraction beyond -8, preserving finite log-likelihoods even when the CDF underflows.
+
+Expected negative curvature, or **Fisher information**, is
+
+$$I=X^\top W X,\qquad
+w_i=\frac{\phi(\eta_i)^2}{\pi_i(1-\pi_i)}.$$
+
+One way to see this is to square $s_i$ and take its expectation:
+$E[(y_i-\pi_i)^2]=\pi_i(1-\pi_i)$, leaving the expression above.
+Unlike canonical logistic regression, observed curvature and expected information
+need not agree at a finite probit sample. We use Fisher scoring and its covariance,
+matching R glm and statsmodels GLM; a discrete-model probit fit's observed-Hessian
+covariance can differ without either calculation being erroneous.
+
+## 3. Scoring, weighted matrices and SVD
+
+Fisher scoring solves $I\Delta\beta=g$ and updates coefficients. For Poisson
+this is also the Newton step, since information equals negative Hessian. To avoid
+forming and inverting the cross-product for fitting, define column scales $D$,
+$A=XD^{-1}$ and $\theta=D\beta$. Solve
+
+$$B\Delta\theta\approx q,\quad B=W^{1/2}A,\quad q=W^{-1/2}s,
+\qquad B=USV^\top,\quad \Delta\theta=VS^{-1}U^\top q.$$
+
+The weighted least-squares normal equations are
+$A^\top W A\Delta\theta=A^\top s$. This is the same update in scaled coordinates,
+with $\Delta\beta=D^{-1}\Delta\theta$. We display cross-products to understand
+them; the production solve uses weighted SVD. See the [OLS SVD explanation](ols-math.qmd#what-problem-does-svd-help-us-understand).
+
+Weights and scores change each iteration: this is IRLS. The full increment can
+overshoot, so a decreasing-likelihood step is halved, at most 30 times. Both a
+small full coefficient increment and a small likelihood change are required.
+A tiny damped step alone does not establish convergence; the limit is 100 updates.
+
+```{python}
+def values(eta):
+    log_density = -0.5*eta**2-0.5*np.log(2*np.pi)
+    probability = ndtr(eta)
+    root = np.exp(log_density-0.5*(log_ndtr(eta)+log_ndtr(-eta)))
+    score = np.where(y == 1, np.exp(log_density-log_ndtr(eta)), -np.exp(log_density-log_ndtr(-eta)))
+    return probability,root,score
+
+def log_likelihood(eta):
+    return np.where(y == 1,log_ndtr(eta),log_ndtr(-eta)).sum()
+
+scales = np.linalg.norm(X,axis=0)
+A = X/scales
+theta = np.zeros(p)
+history=[]
+for iteration in range(1,101):
+    eta=A@theta
+    fitted,root,score=values(eta)
+    B=root[:,None]*A
+    q=score/root
+    U,singular,Vt=np.linalg.svd(B,full_matrices=False)
+    assert np.all(singular > np.finfo(float).eps*max(n,p)*singular[0])
+    step=Vt.T@((U.T@q)/singular)
+    old_ll=log_likelihood(eta)
+    fraction=1.0
+    for _ in range(31):
+        candidate=theta+fraction*step
+        new_ll=log_likelihood(A@candidate)
+        if np.isfinite(new_ll) and new_ll >= old_ll-16*np.finfo(float).eps*(1+abs(old_ll)): break
+        fraction/=2
+    else: raise RuntimeError("No improving step")
+    if iteration==1:
+        show_matrix(r"\beta^{(0)}",theta/scales)
+        show_matrix(r"s^{(0)}",score)
+        show_matrix(r"W^{(0)}_{1:5,1:5}\text{ (top-left block)}",np.diag(root[:5]**2))
+        show_matrix(r"g^{(0)}=X^\top s",X.T@score)
+        show_matrix(r"I^{(0)}=X^\top W X",X.T@(root[:,None]**2*X))
+        for j in range(p): show_dot(rf"g_{{{j+1}}}",X[:,j],score)
+        show_dot(r"I_{2,3}",X[:,1],root**2*X[:,2])
+        show_matrix("B",B)
+        show_matrix("q",q)
+        show_matrix(r"U^\top q",U.T@q)
+        show_matrix(r"\Delta\beta",step/scales)
+    history.append({"iteration":iteration,"fraction":fraction,"log-likelihood":new_ll,
+                    "intercept":candidate[0]/scales[0],"predictor 1":candidate[1]/scales[1],"predictor 2":candidate[2]/scales[2]})
+    small=np.all(np.abs(step)<=1e-11*(1+np.abs(candidate)))
+    small_ll=abs(new_ll-old_ll)<=1e-13*(1+abs(old_ll))
+    theta=candidate
+    if small and small_ll: break
+else: raise RuntimeError("Did not converge")
+beta=theta/scales
+eta=X@beta
+fitted,root,score=values(eta)
+display(pd.DataFrame(history))
+show_matrix(r"\hat\beta",beta)
+show_matrix(r"X^\top s\text{ at final fit}",X.T@score)
+show_dot(r"\hat\eta_1",X[0],beta)
+print("First fitted probability:",fitted[0])
+```
+
+Starting coefficients are zero. They imply probability 0.5 and weights $2/\pi$ (about 0.63662) for every observation.
+These are starting guesses, not the observed predictors or outcomes.
+The first displayed gradient is a set of actual data dot products.
+
+## 4. Covariance and Wald inference
+
+Evaluate information at the final coefficients, then compute
+
+$$\widehat{\operatorname{Var}}(\hat\beta)=I(\hat\beta)^{-1},\quad
+\operatorname{SE}_j=\sqrt{\widehat{\operatorname{Var}}(\hat\beta)_{jj}},\quad
+z_j=\hat\beta_j/\operatorname{SE}_j.$$
+
+The SVD supplies the covariance as $D^{-1}VS^{-2}V^\top D^{-1}$.
+Two-sided p-values use $2P(Z\ge |z_j|)$ and 95% Wald limits use
+$\hat\beta_j\pm1.959964\operatorname{SE}_j$. These are asymptotic normal tests,
+not OLS Student t tests. We do not multiply covariance by RSS/(n-p).
+R `confint.default()` supplies equivalent Wald intervals; ordinary GLM `confint()`
+uses profile likelihood instead.
+
+```{python}
+_,singular,Vt=np.linalg.svd(root[:,None]*A,full_matrices=False)
+covariance=((Vt.T/singular)@(Vt/singular[:,None]))/scales[:,None]/scales[None,:]
+se=np.sqrt(np.diag(covariance))
+z=beta/se
+p_values=2*norm.sf(np.abs(z))
+conf_int=np.column_stack([beta-norm.ppf(.975)*se,beta+norm.ppf(.975)*se])
+show_matrix(r"\widehat{\operatorname{Var}}(\hat\beta)",covariance)
+show_matrix(r"\hat\mu\text{ or }\hat\pi",fitted)
+display(pd.DataFrame({"coefficient":beta,"SE":se,"z":z,"p":p_values,"95% lower":conf_int[:,0],"95% upper":conf_int[:,1]},index=["intercept",*observations.columns[:2]]))
+display(pd.DataFrame({"observed":y,"fitted":fitted,"response residual":y-fitted}).head(8))
+```
+
+## 5. Likelihood, deviance and AIC
+
+For individual binary outcomes the saturated likelihood is zero, giving
+$D=-2\ell(\hat\beta)$. The intercept-only null probability is the observed success
+proportion. Without a ones column, the null baseline is 0.5. Neither a latent
+variance nor an OLS residual variance is estimated. A probit coefficient is on
+the latent normal scale: multiplying it by a normal density converts it to a local
+probability slope, not an odds ratio.
+
+AIC is $2p-2\ell(\hat\beta)$; residual degrees of freedom are $n-p$, without an
+estimated dispersion parameter. Predictions are probabilities, and residuals
+are observed minus fitted. These vectors follow retained input row order.
+
+```{python}
+ll=log_likelihood(eta)
+null_ll=np.sum(y*np.log(y.mean())+(1-y)*np.log1p(-y.mean()))
+model_deviance=-2*ll
+null_deviance=-2*null_ll
+print("First local probability slope for predictor 1:",norm.pdf(eta[0])*beta[1])
+calculated=dict(coefficients=beta,covariance=covariance,std_errors=se,z_statistics=z,p_values=p_values,
+                conf_int=conf_int,fitted=fitted,residuals=y-fitted,log_likelihood=ll,
+                deviance=model_deviance,null_deviance=null_deviance,aic=2*p-2*ll,df_residual=n-p)
+for key,value in calculated.items():
+    np.testing.assert_allclose(value,case["expected"][key],atol=1e-9,rtol=1e-7,err_msg=key)
+print({key:calculated[key] for key in ["log_likelihood","deviance","null_deviance","aic","df_residual"]})
+print("Every statistical field agrees with the saved R fixture.")
+```
+
+## 6. Assumptions, failure modes and experiments
+
+Both observed classes must remain after missing-row deletion. Complete or quasi
+separation can make a finite MLE nonexistent; encountered separating directions
+are rejected, as are singular information and iteration exhaustion. This certificate
+check is not exhaustive separation detection. Near separation can produce poor
+Wald inference even for a converged fit. Try replacing passed by study_hours > 6:
+what would happen to the latent coefficient as the probabilities approach the labels?
+
+For both methods the retained design must have n > p and full numerical rank.
+Missing null/NAN rows are dropped with a warning unless missing: 'raise'. No partial
+unconverged result is returned. See the [contract](../contracts.qmd) and the
+[executed three-way comparison](probit-verification.qmd).
+
+## Rust connections
+
+`fit_probit` owns its input vectors and converts them to nalgebra matrices.
+Borrowed matrix operands remain available for later iterations; iterators construct
+weights and score residuals. A dedicated loop performs this estimator's updates.
+`Result` and `?` propagate validation/numerical failures. The returned struct holds
+numeric fields; the PHP binding converts those fields into an associative array
+and adds warning/sample metadata. No generic optimizer or family hierarchy is added.
+See [Rust learning notes](../ols-math.qmd) and `crates/stats-core/src/probit.rs`.
+
+Reference documentation: [R glm](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/glm.html),
+[R families](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/family.html),
+[statsmodels GLM](https://www.statsmodels.org/stable/glm.html).

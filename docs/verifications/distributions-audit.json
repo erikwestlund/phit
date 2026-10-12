@@ -1,0 +1,547 @@
+{
+  "recorded_at": "2026-10-12T15:19:02.110547+00:00",
+  "generator": "cargo run -p stats-core --release --locked --example statrs_audit",
+  "reference": "Saved R distribution fixtures; statrs 0.19 raw results, logarithms obtained from log(cdf)/log(sf)",
+  "cases": [
+    {
+      "distribution": "beta",
+      "operation": "cdf",
+      "worst_relative_error": "3.42e-13",
+      "case": "{\"alpha\":1000,\"beta\":1000} x=3e-1: 4.230925036906321e-78 vs R 4.230925036907766e-78"
+    },
+    {
+      "distribution": "beta",
+      "operation": "logcdf",
+      "worst_relative_error": "inf",
+      "case": "{\"alpha\":2,\"beta\":5} x=9.999999999999994e-301: -inf vs R -1.3788430055953252e3"
+    },
+    {
+      "distribution": "beta",
+      "operation": "logpdf",
+      "worst_relative_error": "1.18e-13",
+      "case": "{\"alpha\":50,\"beta\":200} x=2e-1: 2.7563326799894057e0 vs R 2.7563326799897316e0"
+    },
+    {
+      "distribution": "beta",
+      "operation": "logsf",
+      "worst_relative_error": "inf",
+      "case": "{\"alpha\":50,\"beta\":200} x=9.9e-1: -inf vs R -8.00797998602007e2"
+    },
+    {
+      "distribution": "beta",
+      "operation": "pdf",
+      "worst_relative_error": "4.26e-13",
+      "case": "{\"alpha\":1000,\"beta\":1000} x=3e-1: 8.079929070182192e-75 vs R 8.079929070185637e-75"
+    },
+    {
+      "distribution": "beta",
+      "operation": "quantile",
+      "worst_relative_error": "inf",
+      "case": "{\"alpha\":2,\"beta\":5} x=9.999999999999994e-301: NaN vs R 2.5819888974715525e-151"
+    },
+    {
+      "distribution": "beta",
+      "operation": "sf",
+      "worst_relative_error": "3.43e-13",
+      "case": "{\"alpha\":50,\"beta\":200} x=2e-1: 4.873762318488488e-1 vs R 4.8737623184868173e-1"
+    },
+    {
+      "distribution": "binomial",
+      "operation": "cdf",
+      "worst_relative_error": "4.84e-4",
+      "case": "{\"prob\":0.3,\"size\":1000000} x=3e5: 5.002509475333814e-1 vs R 5.004933190666792e-1"
+    },
+    {
+      "distribution": "binomial",
+      "operation": "logcdf",
+      "worst_relative_error": "inf",
+      "case": "{\"prob\":0.999,\"size\":1000} x=0e0: -inf vs R -6.907755278982136e3"
+    },
+    {
+      "distribution": "binomial",
+      "operation": "logpmf",
+      "worst_relative_error": "2.51e-10",
+      "case": "{\"prob\":0.3,\"size\":1000000} x=3e5: -7.046370253316127e0 vs R -7.04637025154654e0"
+    },
+    {
+      "distribution": "binomial",
+      "operation": "logsf",
+      "worst_relative_error": "inf",
+      "case": "{\"prob\":0.3,\"size\":1000000} x=5e5: -inf vs R -8.71841148100928e4"
+    },
+    {
+      "distribution": "binomial",
+      "operation": "pmf",
+      "worst_relative_error": "1.77e-9",
+      "case": "{\"prob\":0.3,\"size\":1000000} x=3e5: 8.70563153096143e-4 vs R 8.705631546366803e-4"
+    },
+    {
+      "distribution": "binomial",
+      "operation": "quantile",
+      "worst_relative_error": "inf",
+      "case": "{\"prob\":0.3,\"size\":1000000} x=5e-1: NaN vs R 3e5"
+    },
+    {
+      "distribution": "binomial",
+      "operation": "sf",
+      "worst_relative_error": "4.85e-4",
+      "case": "{\"prob\":0.3,\"size\":1000000} x=3e5: 4.9974905243746215e-1 vs R 4.9950668093332085e-1"
+    },
+    {
+      "distribution": "chisquare",
+      "operation": "cdf",
+      "worst_relative_error": "2.59e-10",
+      "case": "{\"df\":1000000} x=1e6: 5.001880630668614e-1 vs R 5.001880631966055e-1"
+    },
+    {
+      "distribution": "chisquare",
+      "operation": "logcdf",
+      "worst_relative_error": "inf",
+      "case": "{\"df\":4} x=9.999999999999994e-301: -inf vs R -1.383630497338107e3"
+    },
+    {
+      "distribution": "chisquare",
+      "operation": "logpdf",
+      "worst_relative_error": "3.86e-11",
+      "case": "{\"df\":1000000} x=9.929289321881345e5: -2.0725411226972938e1 vs R -2.0725411226172916e1"
+    },
+    {
+      "distribution": "chisquare",
+      "operation": "logsf",
+      "worst_relative_error": "inf",
+      "case": "{\"df\":0.5} x=1e4: -inf vs R -5.007676067377032e3"
+    },
+    {
+      "distribution": "chisquare",
+      "operation": "pdf",
+      "worst_relative_error": "8.00e-10",
+      "case": "{\"df\":1000000} x=9.929289321881345e5: 9.97856909677775e-10 vs R 9.97856910476079e-10"
+    },
+    {
+      "distribution": "chisquare",
+      "operation": "quantile",
+      "worst_relative_error": "9.31e290",
+      "case": "{\"df\":0.5} x=9.999999999999994e-301: 9.313225746154785e-10 vs R 0e0"
+    },
+    {
+      "distribution": "chisquare",
+      "operation": "sf",
+      "worst_relative_error": "2.65e-10",
+      "case": "{\"df\":1000000} x=1.0070710678118655e6: 3.0388070485601965e-7 vs R 3.0388070477558673e-7"
+    },
+    {
+      "distribution": "exponential",
+      "operation": "cdf",
+      "worst_relative_error": "1.00e0",
+      "case": "{\"rate\":1} x=1e-20: 0e0 vs R 1e-20"
+    },
+    {
+      "distribution": "exponential",
+      "operation": "logcdf",
+      "worst_relative_error": "inf",
+      "case": "{\"rate\":1} x=9.999999999999994e-301: -inf vs R -6.907755278982137e2"
+    },
+    {
+      "distribution": "exponential",
+      "operation": "logpdf",
+      "worst_relative_error": "1.46e-16",
+      "case": "{\"rate\":100000} x=1e0: -9.998848707453503e4 vs R -9.998848707453502e4"
+    },
+    {
+      "distribution": "exponential",
+      "operation": "logsf",
+      "worst_relative_error": "inf",
+      "case": "{\"rate\":1} x=8e2: -inf vs R -8e2"
+    },
+    {
+      "distribution": "exponential",
+      "operation": "pdf",
+      "worst_relative_error": "1.75e-16",
+      "case": "{\"rate\":100000} x=1e-3: 3.7200759760208364e-39 vs R 3.720075976020836e-39"
+    },
+    {
+      "distribution": "exponential",
+      "operation": "quantile",
+      "worst_relative_error": "2.10e-16",
+      "case": "{\"rate\":0.00001} x=5e-1: 6.931471805599453e4 vs R 6.931471805599451e4"
+    },
+    {
+      "distribution": "exponential",
+      "operation": "sf",
+      "worst_relative_error": "1.51e-16",
+      "case": "{\"rate\":0.00001} x=9.999999999999999e4: 3.678794411714424e-1 vs R 3.6787944117144233e-1"
+    },
+    {
+      "distribution": "f",
+      "operation": "cdf",
+      "worst_relative_error": "7.51e-6",
+      "case": "{\"df1\":5,\"df2\":0.5} x=1e20: 1e0 vs R 9.999924937016164e-1"
+    },
+    {
+      "distribution": "f",
+      "operation": "logcdf",
+      "worst_relative_error": "inf",
+      "case": "{\"df1\":4,\"df2\":40} x=9.999999999999995e-201: -inf vs R -9.202920998528889e2"
+    },
+    {
+      "distribution": "f",
+      "operation": "logpdf",
+      "worst_relative_error": "inf",
+      "case": "{\"df1\":4,\"df2\":40} x=9.999999999999995e-201: -inf vs R -4.590819340735198e2"
+    },
+    {
+      "distribution": "f",
+      "operation": "logsf",
+      "worst_relative_error": "inf",
+      "case": "{\"df1\":4,\"df2\":40} x=1e20: -inf vs R -8.71937812900014e2"
+    },
+    {
+      "distribution": "f",
+      "operation": "pdf",
+      "worst_relative_error": "inf",
+      "case": "{\"df1\":1,\"df2\":1} x=0e0: 0e0 vs R inf"
+    },
+    {
+      "distribution": "f",
+      "operation": "quantile",
+      "worst_relative_error": "inf",
+      "case": "{\"df1\":4,\"df2\":40} x=9.999999999999994e-301: NaN vs R 0e0"
+    },
+    {
+      "distribution": "f",
+      "operation": "sf",
+      "worst_relative_error": "1.00e0",
+      "case": "{\"df1\":1,\"df2\":1} x=1e20: 0e0 vs R 6.366197723675813e-11"
+    },
+    {
+      "distribution": "gamma",
+      "operation": "cdf",
+      "worst_relative_error": "1.27e-11",
+      "case": "{\"scale\":2,\"shape\":10000} x=1.9e4: 1.8624546517715994e-7 vs R 1.8624546517951638e-7"
+    },
+    {
+      "distribution": "gamma",
+      "operation": "logcdf",
+      "worst_relative_error": "inf",
+      "case": "{\"scale\":3,\"shape\":2} x=2.999999999999998e-300: -inf vs R -1.3822442029769873e3"
+    },
+    {
+      "distribution": "gamma",
+      "operation": "logpdf",
+      "worst_relative_error": "4.40e-12",
+      "case": "{\"scale\":2,\"shape\":10000} x=2e4: -6.217264233113383e0 vs R -6.2172642330860395e0"
+    },
+    {
+      "distribution": "gamma",
+      "operation": "logsf",
+      "worst_relative_error": "inf",
+      "case": "{\"scale\":3,\"shape\":2} x=6e3: -inf vs R -1.9923985976654162e3"
+    },
+    {
+      "distribution": "gamma",
+      "operation": "pdf",
+      "worst_relative_error": "inf",
+      "case": "{\"scale\":0.01,\"shape\":100} x=1e3: NaN vs R 0e0"
+    },
+    {
+      "distribution": "gamma",
+      "operation": "quantile",
+      "worst_relative_error": "9.31e290",
+      "case": "{\"scale\":1,\"shape\":0.5} x=9.999999999999994e-301: 9.313225746154785e-10 vs R 0e0"
+    },
+    {
+      "distribution": "gamma",
+      "operation": "sf",
+      "worst_relative_error": "2.45e-11",
+      "case": "{\"scale\":2,\"shape\":10000} x=2.1e4: 4.2758724549548663e-7 vs R 4.2758724550596453e-7"
+    },
+    {
+      "distribution": "logistic",
+      "operation": "cdf",
+      "worst_relative_error": "NaN",
+      "case": "unsupported parameters/distribution"
+    },
+    {
+      "distribution": "logistic",
+      "operation": "logcdf",
+      "worst_relative_error": "NaN",
+      "case": "unsupported parameters/distribution"
+    },
+    {
+      "distribution": "logistic",
+      "operation": "logpdf",
+      "worst_relative_error": "NaN",
+      "case": "unsupported parameters/distribution"
+    },
+    {
+      "distribution": "logistic",
+      "operation": "logsf",
+      "worst_relative_error": "NaN",
+      "case": "unsupported parameters/distribution"
+    },
+    {
+      "distribution": "logistic",
+      "operation": "pdf",
+      "worst_relative_error": "NaN",
+      "case": "unsupported parameters/distribution"
+    },
+    {
+      "distribution": "logistic",
+      "operation": "quantile",
+      "worst_relative_error": "NaN",
+      "case": "unsupported parameters/distribution"
+    },
+    {
+      "distribution": "logistic",
+      "operation": "sf",
+      "worst_relative_error": "NaN",
+      "case": "unsupported parameters/distribution"
+    },
+    {
+      "distribution": "lognormal",
+      "operation": "cdf",
+      "worst_relative_error": "5.24e-11",
+      "case": "{\"meanlog\":0,\"sdlog\":1} x=4.5399929762484854e-5: 7.619853024559641e-24 vs R 7.619853024160527e-24"
+    },
+    {
+      "distribution": "lognormal",
+      "operation": "logcdf",
+      "worst_relative_error": "inf",
+      "case": "{\"meanlog\":0,\"sdlog\":1} x=9.999999999999994e-301: -inf vs R -2.3859287172707668e5"
+    },
+    {
+      "distribution": "lognormal",
+      "operation": "logpdf",
+      "worst_relative_error": "1.43e-16",
+      "case": "{\"meanlog\":-5,\"sdlog\":3} x=9.999999999999994e-301: -2.5438357282038858e4 vs R -2.543835728203886e4"
+    },
+    {
+      "distribution": "lognormal",
+      "operation": "logsf",
+      "worst_relative_error": "inf",
+      "case": "{\"meanlog\":0,\"sdlog\":1} x=2.3538526683702e17: -inf vs R -8.046084420137538e2"
+    },
+    {
+      "distribution": "lognormal",
+      "operation": "pdf",
+      "worst_relative_error": "3.60e-16",
+      "case": "{\"meanlog\":-5,\"sdlog\":3} x=6.737946999085467e-3: 1.973609471132085e1 vs R 1.9736094711320856e1"
+    },
+    {
+      "distribution": "lognormal",
+      "operation": "quantile",
+      "worst_relative_error": "1.42e-14",
+      "case": "{\"meanlog\":-5,\"sdlog\":3} x=9.999999999999998e-101: 1.2932935535445346e-30 vs R 1.293293553544553e-30"
+    },
+    {
+      "distribution": "lognormal",
+      "operation": "sf",
+      "worst_relative_error": "5.24e-11",
+      "case": "{\"meanlog\":0,\"sdlog\":1} x=2.2026465794806718e4: 7.619853024559641e-24 vs R 7.619853024160527e-24"
+    },
+    {
+      "distribution": "nbinom",
+      "operation": "cdf",
+      "worst_relative_error": "5.78e-7",
+      "case": "{\"prob\":0.5,\"size\":100000} x=1e5: 5.008917715403256e-1 vs R 5.008920609429994e-1"
+    },
+    {
+      "distribution": "nbinom",
+      "operation": "logcdf",
+      "worst_relative_error": "inf",
+      "case": "{\"prob\":0.5,\"size\":100000} x=0e0: -inf vs R -6.931471805599453e4"
+    },
+    {
+      "distribution": "nbinom",
+      "operation": "logpmf",
+      "worst_relative_error": "inf",
+      "case": "{\"prob\":1,\"size\":2} x=0e0: NaN vs R 0e0"
+    },
+    {
+      "distribution": "nbinom",
+      "operation": "logsf",
+      "worst_relative_error": "inf",
+      "case": "{\"prob\":0.4,\"size\":3} x=1e4: -inf vs R -5.092871311309014e3"
+    },
+    {
+      "distribution": "nbinom",
+      "operation": "pmf",
+      "worst_relative_error": "inf",
+      "case": "{\"prob\":1,\"size\":2} x=0e0: NaN vs R 1e0"
+    },
+    {
+      "distribution": "nbinom",
+      "operation": "quantile",
+      "worst_relative_error": "inf",
+      "case": "{\"prob\":0.4,\"size\":3} x=1e0: 1.8446744073709552e19 vs R inf"
+    },
+    {
+      "distribution": "nbinom",
+      "operation": "sf",
+      "worst_relative_error": "5.80e-7",
+      "case": "{\"prob\":0.5,\"size\":100000} x=1e5: 4.991082284596744e-1 vs R 4.991079390570005e-1"
+    },
+    {
+      "distribution": "nbinom_mu",
+      "operation": "cdf",
+      "worst_relative_error": "1.01e-9",
+      "case": "{\"mu\":3,\"size\":1000000} x=2.5e0: 4.2319041676307567e-1 vs R 4.231904171890227e-1"
+    },
+    {
+      "distribution": "nbinom_mu",
+      "operation": "logcdf",
+      "worst_relative_error": "1.00e0",
+      "case": "{\"mu\":4.5,\"size\":2} x=5e2: 0e0 vs R -1.515794298857269e-78"
+    },
+    {
+      "distribution": "nbinom_mu",
+      "operation": "logpmf",
+      "worst_relative_error": "inf",
+      "case": "{\"mu\":0,\"size\":3} x=0e0: NaN vs R -0e0"
+    },
+    {
+      "distribution": "nbinom_mu",
+      "operation": "logsf",
+      "worst_relative_error": "inf",
+      "case": "{\"mu\":4.5,\"size\":2} x=1e4: -inf vs R -3.6695834157479517e3"
+    },
+    {
+      "distribution": "nbinom_mu",
+      "operation": "pmf",
+      "worst_relative_error": "inf",
+      "case": "{\"mu\":0,\"size\":3} x=0e0: NaN vs R 1e0"
+    },
+    {
+      "distribution": "nbinom_mu",
+      "operation": "quantile",
+      "worst_relative_error": "inf",
+      "case": "{\"mu\":4.5,\"size\":2} x=1e0: 1.8446744073709552e19 vs R inf"
+    },
+    {
+      "distribution": "nbinom_mu",
+      "operation": "sf",
+      "worst_relative_error": "1.12e-9",
+      "case": "{\"mu\":3,\"size\":1000000} x=4e0: 1.8473700772941265e-1 vs R 1.8473700752256725e-1"
+    },
+    {
+      "distribution": "normal",
+      "operation": "cdf",
+      "worst_relative_error": "8.57e-11",
+      "case": "{\"mean\":-2,\"sd\":1e-8} x=-2.00000001e0: 1.5865525541562733e-1 vs R 1.586552554020271e-1"
+    },
+    {
+      "distribution": "normal",
+      "operation": "logcdf",
+      "worst_relative_error": "inf",
+      "case": "{\"mean\":0,\"sd\":1} x=-1e10: -inf vs R -5e19"
+    },
+    {
+      "distribution": "normal",
+      "operation": "logsf",
+      "worst_relative_error": "inf",
+      "case": "{\"mean\":0,\"sd\":1} x=3.85e1: -inf vs R -7.45695270290411e2"
+    },
+    {
+      "distribution": "normal",
+      "operation": "pdf",
+      "worst_relative_error": "2.63e-16",
+      "case": "{\"mean\":-2,\"sd\":1e-8} x=-1.99999997e0: 4.4318483591274684e5 vs R 4.4318483591274696e5"
+    },
+    {
+      "distribution": "normal",
+      "operation": "quantile",
+      "worst_relative_error": "1.45e-15",
+      "case": "{\"mean\":3,\"sd\":2} x=2.5e-2: -9.19927969080109e-1 vs R -9.199279690801077e-1"
+    },
+    {
+      "distribution": "normal",
+      "operation": "sf",
+      "worst_relative_error": "8.57e-11",
+      "case": "{\"mean\":-2,\"sd\":1e-8} x=-1.99999999e0: 1.5865525541562733e-1 vs R 1.586552554020271e-1"
+    },
+    {
+      "distribution": "poisson",
+      "operation": "cdf",
+      "worst_relative_error": "NaN",
+      "case": "unsupported parameters/distribution"
+    },
+    {
+      "distribution": "poisson",
+      "operation": "logcdf",
+      "worst_relative_error": "NaN",
+      "case": "unsupported parameters/distribution"
+    },
+    {
+      "distribution": "poisson",
+      "operation": "logpmf",
+      "worst_relative_error": "NaN",
+      "case": "unsupported parameters/distribution"
+    },
+    {
+      "distribution": "poisson",
+      "operation": "logsf",
+      "worst_relative_error": "NaN",
+      "case": "unsupported parameters/distribution"
+    },
+    {
+      "distribution": "poisson",
+      "operation": "pmf",
+      "worst_relative_error": "NaN",
+      "case": "unsupported parameters/distribution"
+    },
+    {
+      "distribution": "poisson",
+      "operation": "quantile",
+      "worst_relative_error": "NaN",
+      "case": "unsupported parameters/distribution"
+    },
+    {
+      "distribution": "poisson",
+      "operation": "sf",
+      "worst_relative_error": "NaN",
+      "case": "unsupported parameters/distribution"
+    },
+    {
+      "distribution": "t",
+      "operation": "cdf",
+      "worst_relative_error": "7.98e-9",
+      "case": "{\"df\":1000000} x=1e-8: 5e-1 vs R 5.000000039894218e-1"
+    },
+    {
+      "distribution": "t",
+      "operation": "logcdf",
+      "worst_relative_error": "inf",
+      "case": "{\"df\":100} x=-1e10: -inf vs R -2.0755506072791786e3"
+    },
+    {
+      "distribution": "t",
+      "operation": "logpdf",
+      "worst_relative_error": "8.82e-10",
+      "case": "{\"df\":1000000} x=-1e-1: -9.239387873648965e-1 vs R -9.239387881796728e-1"
+    },
+    {
+      "distribution": "t",
+      "operation": "logsf",
+      "worst_relative_error": "inf",
+      "case": "{\"df\":100} x=1e5: -inf vs R -9.242580612772532e2"
+    },
+    {
+      "distribution": "t",
+      "operation": "pdf",
+      "worst_relative_error": "4.34e-10",
+      "case": "{\"df\":1000000} x=3e1: 1.8033900025386723e-196 vs R 1.8033900017556894e-196"
+    },
+    {
+      "distribution": "t",
+      "operation": "quantile",
+      "worst_relative_error": "inf",
+      "case": "{\"df\":0.5} x=9.999999999999994e-301: NaN vs R -inf"
+    },
+    {
+      "distribution": "t",
+      "operation": "sf",
+      "worst_relative_error": "7.98e-9",
+      "case": "{\"df\":1000000} x=1e-8: 5e-1 vs R 4.999999960105782e-1"
+    }
+  ]
+}

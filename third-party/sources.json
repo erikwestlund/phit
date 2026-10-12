@@ -30,5 +30,21 @@
     "source": "https://raw.githubusercontent.com/extphprs/ext-php-rs/7c64d6df1a4eb6396bd5602b04d834af1ee9a0ab/LICENSE_MIT",
     "sha256": "5087494cf5b576cbd17d337077975c7a59cad370d5c0febcd7dca0b39b977415",
     "license_choice": "MIT"
+  },
+  {
+    "package": "rand",
+    "version": "0.9.5",
+    "path": "third-party/rand-0.9.5/LICENSE-MIT",
+    "source": "https://static.crates.io/crates/rand/rand-0.9.5.crate",
+    "sha256": "209fbbe0ad52d9235e37badf9cadfe4dbdc87203179c0899e738b39ade42177b",
+    "license_choice": "MIT"
+  },
+  {
+    "package": "rand_chacha",
+    "version": "0.9.0",
+    "path": "third-party/rand_chacha-0.9.0/LICENSE-MIT",
+    "source": "https://static.crates.io/crates/rand_chacha/rand_chacha-0.9.0.crate",
+    "sha256": "209fbbe0ad52d9235e37badf9cadfe4dbdc87203179c0899e738b39ade42177b",
+    "license_choice": "MIT"
   }
 ]

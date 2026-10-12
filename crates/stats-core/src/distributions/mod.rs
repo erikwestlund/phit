@@ -15,12 +15,14 @@
 mod continuous;
 mod discrete;
 mod quantile;
+mod rng;
 mod special;
 
 pub use continuous::{
     Beta, ChiSquare, Exponential, FisherF, Gamma, LogNormal, Logistic, Normal, StudentT,
 };
 pub use discrete::{Binomial, MAX_BINOMIAL_SIZE, NegativeBinomial, Poisson};
+pub use rng::{MAX_RNG_DRAWS, sample_quantiles};
 
 use crate::{ErrorKind, StatsError};
 

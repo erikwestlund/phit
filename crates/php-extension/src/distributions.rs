@@ -93,11 +93,12 @@ macro_rules! pair {
     };
 }
 
-// All seven operations of one distribution plus its module registration.
+// Seven evaluation operations and explicitly seeded batch sampling.
 macro_rules! distribution {
     (
         $(#[$attr:meta])*
         register: $register:ident,
+        rng: $f_rng:ident,
         point: $point:ident, $points:ident, density: $density:ident, $log_density:ident,
         params: ($($param:ident: $ty:ty),*) => $build:expr,
         functions: [
@@ -114,6 +115,14 @@ macro_rules! distribution {
         pair!($(#[$attr])* $f_sf, $f_sf_array, $point, $points, evaluate, sf, ($($param: $ty),*) => $build);
         pair!($(#[$attr])* $f_logsf, $f_logsf_array, $point, $points, evaluate, logsf, ($($param: $ty),*) => $build);
         pair!($(#[$attr])* $f_quantile, $f_quantile_array, p, probabilities, evaluate_quantile, quantile, ($($param: $ty),*) => $build);
+        #[php_function]
+        $(#[$attr])*
+        pub fn $f_rng(n: i64, seed: i64, $($param: $ty),*) -> PhpResult<Vec<f64>> {
+            let distribution = $build.map_err(stats_exception)?;
+            let n = usize::try_from(n).map_err(|_| error(ErrorKind::InvalidInput, "n must be nonnegative"))?;
+            let seed = u64::try_from(seed).map_err(|_| error(ErrorKind::InvalidInput, "seed must be nonnegative"))?;
+            dist::sample_quantiles(n, seed, |p| distribution.quantile(p)).map_err(stats_exception)
+        }
         fn $register(module: ModuleBuilder) -> ModuleBuilder {
             module
                 .function(wrap_function!($f_density))
@@ -130,6 +139,7 @@ macro_rules! distribution {
                 .function(wrap_function!($f_logsf_array))
                 .function(wrap_function!($f_quantile))
                 .function(wrap_function!($f_quantile_array))
+                .function(wrap_function!($f_rng))
         }
     };
 }
@@ -137,6 +147,7 @@ macro_rules! distribution {
 distribution!(
     #[php(defaults(mean = 0.0, sd = 1.0))]
     register: register_normal,
+    rng: stats_normal_rng,
     point: x, values, density: pdf, logpdf,
     params: (mean: Real, sd: Real) => dist::Normal::new(mean.0, sd.0),
     functions: [
@@ -148,6 +159,7 @@ distribution!(
 );
 distribution!(
     register: register_t,
+    rng: stats_t_rng,
     point: x, values, density: pdf, logpdf,
     params: (df: Real) => dist::StudentT::new(df.0),
     functions: [
@@ -159,6 +171,7 @@ distribution!(
 );
 distribution!(
     register: register_chisquare,
+    rng: stats_chisquare_rng,
     point: x, values, density: pdf, logpdf,
     params: (df: Real) => dist::ChiSquare::new(df.0),
     functions: [
@@ -170,6 +183,7 @@ distribution!(
 );
 distribution!(
     register: register_f,
+    rng: stats_f_rng,
     point: x, values, density: pdf, logpdf,
     params: (df1: Real, df2: Real) => dist::FisherF::new(df1.0, df2.0),
     functions: [
@@ -181,6 +195,7 @@ distribution!(
 );
 distribution!(
     register: register_beta,
+    rng: stats_beta_rng,
     point: x, values, density: pdf, logpdf,
     params: (alpha: Real, beta: Real) => dist::Beta::new(alpha.0, beta.0),
     functions: [
@@ -193,6 +208,7 @@ distribution!(
 distribution!(
     #[php(defaults(scale = 1.0))]
     register: register_gamma,
+    rng: stats_gamma_rng,
     point: x, values, density: pdf, logpdf,
     params: (shape: Real, scale: Real) => dist::Gamma::new(shape.0, scale.0),
     functions: [
@@ -205,6 +221,7 @@ distribution!(
 distribution!(
     #[php(defaults(rate = 1.0))]
     register: register_exponential,
+    rng: stats_exponential_rng,
     point: x, values, density: pdf, logpdf,
     params: (rate: Real) => dist::Exponential::new(rate.0),
     functions: [
@@ -217,6 +234,7 @@ distribution!(
 distribution!(
     #[php(defaults(meanlog = 0.0, sdlog = 1.0))]
     register: register_lognormal,
+    rng: stats_lognormal_rng,
     point: x, values, density: pdf, logpdf,
     params: (meanlog: Real, sdlog: Real) => dist::LogNormal::new(meanlog.0, sdlog.0),
     functions: [
@@ -229,6 +247,7 @@ distribution!(
 distribution!(
     #[php(defaults(location = 0.0, scale = 1.0))]
     register: register_logistic,
+    rng: stats_logistic_rng,
     point: x, values, density: pdf, logpdf,
     params: (location: Real, scale: Real) => dist::Logistic::new(location.0, scale.0),
     functions: [
@@ -240,6 +259,7 @@ distribution!(
 );
 distribution!(
     register: register_binomial,
+    rng: stats_binomial_rng,
     point: k, counts, density: pmf, logpmf,
     params: (size: i64, prob: Real) => trials(size).and_then(|n| dist::Binomial::new(n, prob.0)),
     functions: [
@@ -251,6 +271,7 @@ distribution!(
 );
 distribution!(
     register: register_poisson,
+    rng: stats_poisson_rng,
     point: k, counts, density: pmf, logpmf,
     params: (lambda: Real) => dist::Poisson::new(lambda.0),
     functions: [
@@ -262,6 +283,7 @@ distribution!(
 );
 distribution!(
     register: register_nbinom,
+    rng: stats_nbinom_rng,
     point: k, counts, density: pmf, logpmf,
     params: (size: Real, prob: Real) => dist::NegativeBinomial::new(size.0, prob.0),
     functions: [
@@ -273,6 +295,7 @@ distribution!(
 );
 distribution!(
     register: register_nbinom_mu,
+    rng: stats_nbinom_mu_rng,
     point: k, counts, density: pmf, logpmf,
     params: (size: Real, mu: Real) => dist::NegativeBinomial::with_mean(size.0, mu.0),
     functions: [

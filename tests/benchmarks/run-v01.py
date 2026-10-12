@@ -6,11 +6,14 @@ import numpy as np
 from scipy.special import expit
 from run import dataset,worker,THREAD_ENV
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
-parser=argparse.ArgumentParser();parser.add_argument('--baseline',required=True,type=Path);parser.add_argument('--repeats',type=int,default=5);args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--baseline',required=True,type=Path);parser.add_argument('--repeats',type=int,default=5)
+parser.add_argument('--output',type=Path,default=ROOT/'docs/benchmarks/v01-preservation-results.json')
+parser.add_argument('--baseline-revision',help='Record the source revision used for the supplied baseline library')
+args=parser.parse_args()
 if args.repeats<3:parser.error('use at least three repetitions')
 ext=ROOT/'target/release'/('libphp_stats.dylib' if platform.system()=='Darwin' else 'libphp_stats.so')
 php=os.environ.get('PHP','php');env={**os.environ,**THREAD_ENV};report=dict(recorded_at=datetime.now(timezone.utc).isoformat(),platform=platform.platform(),thread_environment=THREAD_ENV,
- baseline_sha256=hashlib.sha256(args.baseline.read_bytes()).hexdigest(),extension_sha256=hashlib.sha256(ext.read_bytes()).hexdigest(),repeats=args.repeats,warmups=1,
+ baseline_sha256=hashlib.sha256(args.baseline.read_bytes()).hexdigest(),baseline_revision=args.baseline_revision,extension_sha256=hashlib.sha256(ext.read_bytes()).hexdigest(),repeats=args.repeats,warmups=1,
  timing='complete PHP function call including input/output conversion; JSON outside timed fit; peak RSS covers whole worker',
  tolerance=dict(absolute=1e-7,relative=1e-6),cases=[])
 with tempfile.TemporaryDirectory(dir=ROOT/'.context',prefix='v01-benchmark-') as tmp:
@@ -43,5 +46,6 @@ with tempfile.TemporaryDirectory(dir=ROOT/'.context',prefix='v01-benchmark-') as
   report['cases'].append(dict(model=model,n=n,p=3,input_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),implementations=results,
     fit_time_ratio=ratio,numerical_agreement=True,max_absolute_differences=errors))
   print(model,results['baseline']['median_fit_seconds'],results['v01']['median_fit_seconds'],'ratio',ratio,flush=True)
-(ROOT/'docs/benchmarks/v01-preservation-results.json').write_text(json.dumps(report,indent=2)+'\n')
+args.output.parent.mkdir(parents=True,exist_ok=True)
+args.output.write_text(json.dumps(report,indent=2)+'\n')
 print('All before/after numerical comparisons passed; report saved.')

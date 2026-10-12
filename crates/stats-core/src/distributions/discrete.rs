@@ -265,10 +265,22 @@ impl NegativeBinomial {
             ));
         }
         // p = size/(size + mu) and q = mu/(size + mu), each without cancellation.
+        // A finite size and mean can have an overflowing sum; do not turn that
+        // case into p=q=0 and falsely report a point mass at zero.
+        let total = size + mu;
+        let (p, q) = if total.is_finite() {
+            (size / total, mu / total)
+        } else if size >= mu {
+            let ratio = mu / size;
+            (1.0 / (1.0 + ratio), ratio / (1.0 + ratio))
+        } else {
+            let ratio = size / mu;
+            (ratio / (1.0 + ratio), 1.0 / (1.0 + ratio))
+        };
         Ok(Self {
             size,
-            p: size / (size + mu),
-            q: mu / (size + mu),
+            p,
+            q,
             ln_p: -(mu / size).ln_1p(),
             ln_q: if mu == 0.0 {
                 f64::NEG_INFINITY

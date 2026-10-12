@@ -94,6 +94,16 @@ function stats_beta_quantile(float $p, float $alpha, float $beta): float {}
 function stats_beta_quantile_array(array $probabilities, float $alpha, float $beta): array {}
 
 /**
+ * Beta(alpha, beta) on [0, 1]: explicitly seeded batch samples.
+ * Local ChaCha20 + inverse CDF; same seed/parameters reproduce prefixes within the pinned version.
+ * @param int $n Sample count in [0, 1000000]; empty batches still validate parameters.
+ * @param int $seed Nonnegative PHP integer; every call restarts its own stream.
+ * @return list<float> Finite samples; discrete counts are floats.
+ * @throws \Exception Invalid input (1001), nonfinite parameter/sample (1003) or unsupported count/size (1007).
+ */
+function stats_beta_rng(int $n, int $seed, float $alpha, float $beta): array {}
+
+/**
  * Beta(alpha, beta) on [0, 1]: survival P(X > x), computed directly.
  * @throws \Exception Invalid parameter (1001), NAN input (1003) or numerical failure (1006).
  */
@@ -197,6 +207,16 @@ function stats_binomial_quantile(float $p, int $size, float $prob): float {}
  * @throws \Exception Invalid parameter (1001), NAN input (1003) or numerical failure (1006).
  */
 function stats_binomial_quantile_array(array $probabilities, int $size, float $prob): array {}
+
+/**
+ * Binomial: successes in size trials with success probability prob: explicitly seeded batch samples.
+ * Local ChaCha20 + inverse CDF; same seed/parameters reproduce prefixes within the pinned version.
+ * @param int $n Sample count in [0, 1000000]; empty batches still validate parameters.
+ * @param int $seed Nonnegative PHP integer; every call restarts its own stream.
+ * @return list<float> Finite samples; discrete counts are floats.
+ * @throws \Exception Invalid input (1001), nonfinite parameter/sample (1003) or unsupported count/size (1007).
+ */
+function stats_binomial_rng(int $n, int $seed, int $size, float $prob): array {}
 
 /**
  * Binomial: successes in size trials with success probability prob: survival P(X > x), computed directly.
@@ -304,6 +324,16 @@ function stats_chisquare_quantile(float $p, float $df): float {}
 function stats_chisquare_quantile_array(array $probabilities, float $df): array {}
 
 /**
+ * Chi-square with df degrees of freedom: explicitly seeded batch samples.
+ * Local ChaCha20 + inverse CDF; same seed/parameters reproduce prefixes within the pinned version.
+ * @param int $n Sample count in [0, 1000000]; empty batches still validate parameters.
+ * @param int $seed Nonnegative PHP integer; every call restarts its own stream.
+ * @return list<float> Finite samples; discrete counts are floats.
+ * @throws \Exception Invalid input (1001), nonfinite parameter/sample (1003) or unsupported count/size (1007).
+ */
+function stats_chisquare_rng(int $n, int $seed, float $df): array {}
+
+/**
  * Chi-square with df degrees of freedom: survival P(X > x), computed directly.
  * @throws \Exception Invalid parameter (1001), NAN input (1003) or numerical failure (1006).
  */
@@ -321,6 +351,7 @@ function stats_chisquare_sf_array(array $values, float $df): array {}
 /**
  * Pearson correlation; NAN when either input is constant.
  * null/NAN are missing: missing 'raise' (default) rejects them, 'drop' removes them (pairwise for two arrays).
+ * Nonfinite arithmetic raises 1003; constant-input correlation remains NAN.
  * @param array<int|float|null> $x
  * @param array<int|float|null> $y
  * @throws \Exception Input error (codes 1001–1003).
@@ -330,11 +361,46 @@ function stats_correlation(array $x, array $y, string $missing = 'raise'): float
 /**
  * Covariance; type 'sample' (n - 1) or 'population' (n).
  * null/NAN are missing: missing 'raise' (default) rejects them, 'drop' removes them (pairwise for two arrays).
+ * Nonfinite arithmetic raises 1003; constant-input correlation remains NAN.
  * @param array<int|float|null> $x
  * @param array<int|float|null> $y
  * @throws \Exception Input error (codes 1001–1003).
  */
 function stats_covariance(array $x, array $y, string $type = 'sample', string $missing = 'raise'): float {}
+
+/**
+ * Apply y = A*x + b to each draw: Y = X*A^T + b. Square invertible A; return log(abs(det(A))). Numerical rank tolerance in docs/draw-numerics.qmd.
+ * Rows are draws; columns are parameters. Preserves iteration order; no row deletion or intercept insertion.
+ * null/NAN/INF and nonnumeric elements are rejected.
+ * @param array<array<int|float>> $draws
+ * @param array<array<int|float>> $matrix
+ * @param array<int|float> $shift
+ * @return array{draws: list<list<float>>, log_abs_det: float}
+ * @throws \Exception Input/numerical error (codes 1001–1005).
+ */
+function stats_draw_affine(array $draws, array $matrix, array $shift): array {}
+
+/**
+ * Cholesky/triangular-solve map A: A * source * A^T = target. Finite symmetric positive-definite covariances of equal size; tolerances in docs/draw-numerics.qmd. Failure is explicit; no regularization.
+ * Rows are draws; columns are parameters. Preserves iteration order; no row deletion or intercept insertion.
+ * null/NAN/INF and nonnumeric elements are rejected.
+ * @param array<array<int|float>> $source_covariance
+ * @param array<array<int|float>> $target_covariance
+ * @return array{matrix: list<list<float>>, log_abs_det: float}
+ * @throws \Exception Input/numerical error (codes 1001–1005).
+ */
+function stats_draw_covariance_map(array $source_covariance, array $target_covariance): array {}
+
+/**
+ * Weighted draw mean and covariance; weights normalized internally. Normalization 'population' or 'unbiased' (reliability weights, never frequency counts). Singular covariance is valid.
+ * Rows are draws; columns are parameters. Preserves iteration order; no row deletion or intercept insertion.
+ * null/NAN/INF and nonnumeric elements are rejected.
+ * @param array<array<int|float>> $draws
+ * @param array<int|float>|null $weights
+ * @return array{mean: list<float>, covariance: list<list<float>>}
+ * @throws \Exception Input/numerical error (codes 1001–1005).
+ */
+function stats_draw_moments(array $draws, ?array $weights = NULL, string $normalization = 'population'): array {}
 
 /**
  * Exponential with rate (mean 1/rate): P(X <= x).
@@ -425,6 +491,16 @@ function stats_exponential_quantile(float $p, float $rate = 1.0): float {}
  * @throws \Exception Invalid parameter (1001), NAN input (1003) or numerical failure (1006).
  */
 function stats_exponential_quantile_array(array $probabilities, float $rate = 1.0): array {}
+
+/**
+ * Exponential with rate (mean 1/rate): explicitly seeded batch samples.
+ * Local ChaCha20 + inverse CDF; same seed/parameters reproduce prefixes within the pinned version.
+ * @param int $n Sample count in [0, 1000000]; empty batches still validate parameters.
+ * @param int $seed Nonnegative PHP integer; every call restarts its own stream.
+ * @return list<float> Finite samples; discrete counts are floats.
+ * @throws \Exception Invalid input (1001), nonfinite parameter/sample (1003) or unsupported count/size (1007).
+ */
+function stats_exponential_rng(int $n, int $seed, float $rate = 1.0): array {}
 
 /**
  * Exponential with rate (mean 1/rate): survival P(X > x), computed directly.
@@ -532,6 +608,16 @@ function stats_f_quantile(float $p, float $df1, float $df2): float {}
 function stats_f_quantile_array(array $probabilities, float $df1, float $df2): array {}
 
 /**
+ * F with numerator df1 and denominator df2 degrees of freedom: explicitly seeded batch samples.
+ * Local ChaCha20 + inverse CDF; same seed/parameters reproduce prefixes within the pinned version.
+ * @param int $n Sample count in [0, 1000000]; empty batches still validate parameters.
+ * @param int $seed Nonnegative PHP integer; every call restarts its own stream.
+ * @return list<float> Finite samples; discrete counts are floats.
+ * @throws \Exception Invalid input (1001), nonfinite parameter/sample (1003) or unsupported count/size (1007).
+ */
+function stats_f_rng(int $n, int $seed, float $df1, float $df2): array {}
+
+/**
  * F with numerator df1 and denominator df2 degrees of freedom: survival P(X > x), computed directly.
  * @throws \Exception Invalid parameter (1001), NAN input (1003) or numerical failure (1006).
  */
@@ -635,6 +721,16 @@ function stats_gamma_quantile(float $p, float $shape, float $scale = 1.0): float
  * @throws \Exception Invalid parameter (1001), NAN input (1003) or numerical failure (1006).
  */
 function stats_gamma_quantile_array(array $probabilities, float $shape, float $scale = 1.0): array {}
+
+/**
+ * Gamma with shape and scale (mean shape*scale): explicitly seeded batch samples.
+ * Local ChaCha20 + inverse CDF; same seed/parameters reproduce prefixes within the pinned version.
+ * @param int $n Sample count in [0, 1000000]; empty batches still validate parameters.
+ * @param int $seed Nonnegative PHP integer; every call restarts its own stream.
+ * @return list<float> Finite samples; discrete counts are floats.
+ * @throws \Exception Invalid input (1001), nonfinite parameter/sample (1003) or unsupported count/size (1007).
+ */
+function stats_gamma_rng(int $n, int $seed, float $shape, float $scale = 1.0): array {}
 
 /**
  * Gamma with shape and scale (mean shape*scale): survival P(X > x), computed directly.
@@ -917,6 +1013,16 @@ function stats_logistic_quantile(float $p, float $location = 0.0, float $scale =
 function stats_logistic_quantile_array(array $probabilities, float $location = 0.0, float $scale = 1.0): array {}
 
 /**
+ * Logistic(location, scale): explicitly seeded batch samples.
+ * Local ChaCha20 + inverse CDF; same seed/parameters reproduce prefixes within the pinned version.
+ * @param int $n Sample count in [0, 1000000]; empty batches still validate parameters.
+ * @param int $seed Nonnegative PHP integer; every call restarts its own stream.
+ * @return list<float> Finite samples; discrete counts are floats.
+ * @throws \Exception Invalid input (1001), nonfinite parameter/sample (1003) or unsupported count/size (1007).
+ */
+function stats_logistic_rng(int $n, int $seed, float $location = 0.0, float $scale = 1.0): array {}
+
+/**
  * Logistic(location, scale): survival P(X > x), computed directly.
  * @throws \Exception Invalid parameter (1001), NAN input (1003) or numerical failure (1006).
  */
@@ -1022,6 +1128,16 @@ function stats_lognormal_quantile(float $p, float $meanlog = 0.0, float $sdlog =
 function stats_lognormal_quantile_array(array $probabilities, float $meanlog = 0.0, float $sdlog = 1.0): array {}
 
 /**
+ * Log-normal: ln X ~ Normal(meanlog, sdlog): explicitly seeded batch samples.
+ * Local ChaCha20 + inverse CDF; same seed/parameters reproduce prefixes within the pinned version.
+ * @param int $n Sample count in [0, 1000000]; empty batches still validate parameters.
+ * @param int $seed Nonnegative PHP integer; every call restarts its own stream.
+ * @return list<float> Finite samples; discrete counts are floats.
+ * @throws \Exception Invalid input (1001), nonfinite parameter/sample (1003) or unsupported count/size (1007).
+ */
+function stats_lognormal_rng(int $n, int $seed, float $meanlog = 0.0, float $sdlog = 1.0): array {}
+
+/**
  * Log-normal: ln X ~ Normal(meanlog, sdlog): survival P(X > x), computed directly.
  * @throws \Exception Invalid parameter (1001), NAN input (1003) or numerical failure (1006).
  */
@@ -1039,6 +1155,7 @@ function stats_lognormal_sf_array(array $values, float $meanlog = 0.0, float $sd
 /**
  * Arithmetic mean.
  * null/NAN are missing: missing 'raise' (default) rejects them, 'drop' removes them (pairwise for two arrays).
+ * Nonfinite arithmetic raises 1003; constant-input correlation remains NAN.
  * @param array<int|float|null> $values
  * @throws \Exception Input error (codes 1001–1003).
  */
@@ -1047,6 +1164,7 @@ function stats_mean(array $values, string $missing = 'raise'): float {}
 /**
  * Median (type 7 quantile at 0.5).
  * null/NAN are missing: missing 'raise' (default) rejects them, 'drop' removes them (pairwise for two arrays).
+ * Nonfinite arithmetic raises 1003; constant-input correlation remains NAN.
  * @param array<int|float|null> $values
  * @throws \Exception Input error (codes 1001–1003).
  */
@@ -1203,6 +1321,16 @@ function stats_nbinom_mu_quantile(float $p, float $size, float $mu): float {}
 function stats_nbinom_mu_quantile_array(array $probabilities, float $size, float $mu): array {}
 
 /**
+ * Negative binomial with mean mu and size (variance mu + mu^2/size): explicitly seeded batch samples.
+ * Local ChaCha20 + inverse CDF; same seed/parameters reproduce prefixes within the pinned version.
+ * @param int $n Sample count in [0, 1000000]; empty batches still validate parameters.
+ * @param int $seed Nonnegative PHP integer; every call restarts its own stream.
+ * @return list<float> Finite samples; discrete counts are floats.
+ * @throws \Exception Invalid input (1001), nonfinite parameter/sample (1003) or unsupported count/size (1007).
+ */
+function stats_nbinom_mu_rng(int $n, int $seed, float $size, float $mu): array {}
+
+/**
  * Negative binomial with mean mu and size (variance mu + mu^2/size): survival P(X > x), computed directly.
  * @throws \Exception Invalid parameter (1001), NAN input (1003) or numerical failure (1006).
  */
@@ -1246,6 +1374,16 @@ function stats_nbinom_quantile(float $p, float $size, float $prob): float {}
  * @throws \Exception Invalid parameter (1001), NAN input (1003) or numerical failure (1006).
  */
 function stats_nbinom_quantile_array(array $probabilities, float $size, float $prob): array {}
+
+/**
+ * Negative binomial: failures before the size-th success, success probability prob: explicitly seeded batch samples.
+ * Local ChaCha20 + inverse CDF; same seed/parameters reproduce prefixes within the pinned version.
+ * @param int $n Sample count in [0, 1000000]; empty batches still validate parameters.
+ * @param int $seed Nonnegative PHP integer; every call restarts its own stream.
+ * @return list<float> Finite samples; discrete counts are floats.
+ * @throws \Exception Invalid input (1001), nonfinite parameter/sample (1003) or unsupported count/size (1007).
+ */
+function stats_nbinom_rng(int $n, int $seed, float $size, float $prob): array {}
 
 /**
  * Negative binomial: failures before the size-th success, success probability prob: survival P(X > x), computed directly.
@@ -1351,6 +1489,16 @@ function stats_normal_quantile(float $p, float $mean = 0.0, float $sd = 1.0): fl
  * @throws \Exception Invalid parameter (1001), NAN input (1003) or numerical failure (1006).
  */
 function stats_normal_quantile_array(array $probabilities, float $mean = 0.0, float $sd = 1.0): array {}
+
+/**
+ * Normal(mean, sd): explicitly seeded batch samples.
+ * Local ChaCha20 + inverse CDF; same seed/parameters reproduce prefixes within the pinned version.
+ * @param int $n Sample count in [0, 1000000]; empty batches still validate parameters.
+ * @param int $seed Nonnegative PHP integer; every call restarts its own stream.
+ * @return list<float> Finite samples; discrete counts are floats.
+ * @throws \Exception Invalid input (1001), nonfinite parameter/sample (1003) or unsupported count/size (1007).
+ */
+function stats_normal_rng(int $n, int $seed, float $mean = 0.0, float $sd = 1.0): array {}
 
 /**
  * Normal(mean, sd): survival P(X > x), computed directly.
@@ -1524,6 +1672,16 @@ function stats_poisson_quantile(float $p, float $lambda): float {}
 function stats_poisson_quantile_array(array $probabilities, float $lambda): array {}
 
 /**
+ * Poisson with mean lambda: explicitly seeded batch samples.
+ * Local ChaCha20 + inverse CDF; same seed/parameters reproduce prefixes within the pinned version.
+ * @param int $n Sample count in [0, 1000000]; empty batches still validate parameters.
+ * @param int $seed Nonnegative PHP integer; every call restarts its own stream.
+ * @return list<float> Finite samples; discrete counts are floats.
+ * @throws \Exception Invalid input (1001), nonfinite parameter/sample (1003) or unsupported count/size (1007).
+ */
+function stats_poisson_rng(int $n, int $seed, float $lambda): array {}
+
+/**
  * Poisson with mean lambda: survival P(X > x), computed directly.
  * @throws \Exception Invalid parameter (1001), NAN input (1003) or numerical failure (1006).
  */
@@ -1574,6 +1732,7 @@ function stats_probit(array $x, array $y, string $missing = 'drop', ?array $weig
 /**
  * Sample quantile, R's default type 7 (linear interpolation).
  * null/NAN are missing: missing 'raise' (default) rejects them, 'drop' removes them (pairwise for two arrays).
+ * Nonfinite arithmetic raises 1003; constant-input correlation remains NAN.
  * @param array<int|float|null> $values
  * @throws \Exception Input error (codes 1001–1003).
  */
@@ -1582,6 +1741,7 @@ function stats_quantile(array $values, float $p, string $missing = 'raise'): flo
 /**
  * Several type 7 quantiles from one sort.
  * null/NAN are missing: missing 'raise' (default) rejects them, 'drop' removes them (pairwise for two arrays).
+ * Nonfinite arithmetic raises 1003; constant-input correlation remains NAN.
  * @param array<int|float|null> $values
  * @param array<int|float|null> $probabilities
  * @return list<float>
@@ -1592,6 +1752,7 @@ function stats_quantile_array(array $values, array $probabilities, string $missi
 /**
  * Standard deviation: square root of stats_variance.
  * null/NAN are missing: missing 'raise' (default) rejects them, 'drop' removes them (pairwise for two arrays).
+ * Nonfinite arithmetic raises 1003; constant-input correlation remains NAN.
  * @param array<int|float|null> $values
  * @throws \Exception Input error (codes 1001–1003).
  */
@@ -1688,6 +1849,16 @@ function stats_t_quantile(float $p, float $df): float {}
 function stats_t_quantile_array(array $probabilities, float $df): array {}
 
 /**
+ * Student's t with df degrees of freedom: explicitly seeded batch samples.
+ * Local ChaCha20 + inverse CDF; same seed/parameters reproduce prefixes within the pinned version.
+ * @param int $n Sample count in [0, 1000000]; empty batches still validate parameters.
+ * @param int $seed Nonnegative PHP integer; every call restarts its own stream.
+ * @return list<float> Finite samples; discrete counts are floats.
+ * @throws \Exception Invalid input (1001), nonfinite parameter/sample (1003) or unsupported count/size (1007).
+ */
+function stats_t_rng(int $n, int $seed, float $df): array {}
+
+/**
  * Student's t with df degrees of freedom: survival P(X > x), computed directly.
  * @throws \Exception Invalid parameter (1001), NAN input (1003) or numerical failure (1006).
  */
@@ -1705,14 +1876,16 @@ function stats_t_sf_array(array $values, float $df): array {}
 /**
  * Variance; type 'sample' divides by n - 1, 'population' by n.
  * null/NAN are missing: missing 'raise' (default) rejects them, 'drop' removes them (pairwise for two arrays).
+ * Nonfinite arithmetic raises 1003; constant-input correlation remains NAN.
  * @param array<int|float|null> $values
  * @throws \Exception Input error (codes 1001–1003).
  */
 function stats_variance(array $values, string $type = 'sample', string $missing = 'raise'): float {}
 
 /**
- * Weighted mean sum(w*x)/sum(w); weights must be nonnegative with a positive sum.
+ * Weighted mean sum(w*x)/sum(w); weights must be nonnegative with a positive sum. Negative weights reject before missing deletion.
  * null/NAN are missing: missing 'raise' (default) rejects them, 'drop' removes them (pairwise for two arrays).
+ * Nonfinite arithmetic raises 1003; constant-input correlation remains NAN.
  * @param array<int|float|null> $values
  * @param array<int|float|null> $weights
  * @throws \Exception Input error (codes 1001–1003).
@@ -1720,8 +1893,9 @@ function stats_variance(array $values, string $type = 'sample', string $missing 
 function stats_weighted_mean(array $values, array $weights, string $missing = 'raise'): float {}
 
 /**
- * Weighted variance; type 'frequency' (W - 1), 'reliability' (W - sum(w^2)/W) or 'population' (W).
+ * Weighted variance; type 'frequency' (W - 1), 'reliability' (W - sum(w^2)/W) or 'population' (W). Negative weights reject before missing deletion.
  * null/NAN are missing: missing 'raise' (default) rejects them, 'drop' removes them (pairwise for two arrays).
+ * Nonfinite arithmetic raises 1003; constant-input correlation remains NAN.
  * @param array<int|float|null> $values
  * @param array<int|float|null> $weights
  * @throws \Exception Input error (codes 1001–1003).

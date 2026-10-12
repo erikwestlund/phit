@@ -1,6 +1,7 @@
 //! Pure Rust statistical calculations, independent of PHP.
 pub mod descriptive;
 pub mod distributions;
+pub mod draws;
 pub mod logistic;
 pub mod ols;
 pub use logistic::{LogisticResult, fit_logistic};

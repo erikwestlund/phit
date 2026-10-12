@@ -10,6 +10,13 @@ project:
     - verifications/v01-validation.json
     - verifications/reference-manifest.json
     - benchmarks/v01-preservation-results.json
+    - benchmarks/draws-results.json
+    - benchmarks/distributions-results.json
+    - benchmarks/rng-results.json
+    - benchmarks/v02-preservation-results.json
+    - verifications/distributions-results.json
+    - verifications/distributions-audit.json
+    - verifications/distributions-reuse.json
     - benchmarks/ols-results.json
     - benchmarks/ols-accelerate-results.json
     - benchmarks/ols-accelerate-baseline.json
@@ -71,6 +78,7 @@ website:
           - visualization.qmd
           - licensing.qmd
           - v0.1.qmd
+          - v0.2.qmd
           - design-philosophy.qmd
           - contracts.qmd
           - r-compatibility.qmd
@@ -78,9 +86,19 @@ website:
           - development.qmd
           - deployment.qmd
           - verification.qmd
+          - draw-numerics.qmd
+          - benchmarks/draws.qmd
           - documentation.qmd
       - href: notebooks/index.qmd
         text: Walkthrough index
+      - section: "Probability distributions & statistical utilities"
+        contents:
+          - distributions.qmd
+          - descriptive.qmd
+          - rng.qmd
+          - benchmarks/rng.qmd
+          - verifications/distributions.qmd
+          - benchmarks/distributions.qmd
       - section: "OLS"
         contents:
           - href: notebooks/ols-math.qmd

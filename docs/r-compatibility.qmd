@@ -14,6 +14,20 @@ PHP impersonate R. A helper can construct designs, proportions/trial counts and
 nested grouping identifiers without changing the estimator. See the
 [contracts](contracts.qmd) and [design philosophy](design-philosophy.qmd).
 
+## Distribution and statistical utility compatibility
+
+The [v0.2 probability APIs](distributions.qmd) cover the planned distribution
+families with scalar/batch density, mass, tail and quantile operations.
+[Descriptive statistics](descriptive.qmd) follow sample variance/covariance and
+R type-7 quantiles, with explicit frequency/reliability/population weight definitions.
+R and independent 60-digit mpmath fixtures verify ordinary and extreme values;
+[the comparison record](verifications/distributions.qmd) documents intentional
+point-mass/endpoint differences, R inaccuracies and SciPy peer discrepancies.
+This numerical coverage does not implement R recycling, coercion, vector names
+or formulas. Seeded sampling uses [local ChaCha20 state](rng.qmd); its sequences
+are independent of R's RNG algorithms/state. Existing model paths and their behavior remain unchanged;
+the estimator reuse experiment is recorded in the [v0.2 assessment](v0.2.qmd).
+
 ## Implemented and verified
 
 | Estimator | Added numerical capabilities | Reference |

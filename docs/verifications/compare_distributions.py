@@ -21,6 +21,7 @@ Outputs:
 Usage: python3 docs/verifications/compare_distributions.py [--php-results FILE]
 """
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -430,6 +431,8 @@ def error(actual, reference, op):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--php-results', type=Path)
+    parser.add_argument('--stored-references', action='store_true',
+                        help='Re-evaluate PHP against immutable saved SciPy/mpmath values; do not regenerate reference fixtures')
     args = parser.parse_args()
     fixture = json.loads((ROOT / 'tests/fixtures/distributions-r.json').read_text())
     if args.php_results:
@@ -441,24 +444,40 @@ def main():
             [os.environ.get('PHP', 'php'), '-n', '-d', f'extension={extension}',
              str(ROOT / 'docs/verifications/distributions.php')],
             check=True, capture_output=True, text=True).stdout)
+    assert len(fixture['cases']) == len(php['results']), 'native case count differs'
+    stored = {}
+    if args.stored_references:
+        for name in ('scipy','mpmath'):
+            path = ROOT/f'tests/fixtures/distributions-{name}.json'
+            stored[name] = json.loads(path.read_text())
+            assert len(stored[name]['cases']) == len(fixture['cases'])
+            for original, independent in zip(fixture['cases'], stored[name]['cases']):
+                assert all(original[k] == independent[k] for k in ('distribution','params','operation','input'))
     scipy_cases, mpmath_cases, report_cases = [], [], []
-    for case, ours in zip(fixture['cases'], php['results']):
+    for case_index, (case, ours) in enumerate(zip(fixture['cases'], php['results'])):
         name, op, params = case['distribution'], case['operation'], case['params']
         ref = Reference(name, params)
         dist = scipy_distribution(name, params)
         inputs = [number(v) for v in case['input']]
         r_values = [number(v) for v in case['expected']]
-        with np.errstate(all='ignore'):
-            sp_values = [float(getattr(dist, SCIPY_METHOD[op])(x)) for x in inputs]
+        if args.stored_references:
+            sp_values = [number(v) for v in stored['scipy']['cases'][case_index]['expected']]
+        else:
+            with np.errstate(all='ignore'):
+                sp_values = [float(getattr(dist, SCIPY_METHOD[op])(x)) for x in inputs]
         php_values = [v if isinstance(v, dict) else number(v) for v in ours['values']]
-        references = []
-        for i, x in enumerate(inputs):
-            if op == 'quantile':
-                starts = [v for v in (php_values[i], r_values[i], sp_values[i]) if not isinstance(v, dict)]
-                reference = bounded(ref.quantile, x, starts)
-            else:
-                reference = bounded(ref.value, op, mp.mpf(x))
-            references.append(round_reference(reference))
+        assert len(php_values) == len(inputs), 'native point count differs'
+        if args.stored_references:
+            references = [None if v is None else number(v) for v in stored['mpmath']['cases'][case_index]['expected']]
+        else:
+            references = []
+            for i, x in enumerate(inputs):
+                if op == 'quantile':
+                    starts = [v for v in (php_values[i], r_values[i], sp_values[i]) if not isinstance(v, dict)]
+                    reference = bounded(ref.quantile, x, starts)
+                else:
+                    reference = bounded(ref.value, op, mp.mpf(x))
+                references.append(round_reference(reference))
         errors = {label: [error(v, r, op) for v, r in zip(values, references)]
                   for label, values in (('php', php_values), ('r', r_values), ('scipy', sp_values))}
         errors = {k: [encode(e) if e is not None and math.isinf(e) else e for e in v] for k, v in errors.items()}
@@ -475,23 +494,30 @@ def main():
         print(f"{name:11} {op:9} {json.dumps(params):38} php={fmt(summary['php'])} r={fmt(summary['r'])} "
               f"scipy={fmt(summary['scipy'])} missing={missing}", flush=True)
     meta = dict(recorded_at=datetime.now(timezone.utc).isoformat(), generator='docs/verifications/compare_distributions.py')
-    (ROOT / 'tests/fixtures/distributions-scipy.json').write_text(json.dumps(dict(
-        reference=f'SciPy {scipy.__version__}, NumPy {np.__version__}', **meta,
-        conventions='scipy.stats frozen distributions; quantile is ppf; nonfinite numbers are strings',
-        cases=scipy_cases), separators=(',', ':')) + '\n')
-    (ROOT / 'tests/fixtures/distributions-mpmath.json').write_text(json.dumps(dict(
-        reference=f'mpmath {mp.__version__} at {mp.mp.dps} digits', **meta,
-        conventions='correctly rounded double of the exact value; null where no reference was computed',
-        cases=mpmath_cases), separators=(',', ':')) + '\n')
+    if not args.stored_references:
+        (ROOT / 'tests/fixtures/distributions-scipy.json').write_text(json.dumps(dict(
+            reference=f'SciPy {scipy.__version__}, NumPy {np.__version__}', **meta,
+            conventions='scipy.stats frozen distributions; quantile is ppf; nonfinite numbers are strings',
+            cases=scipy_cases), separators=(',', ':')) + '\n')
+        (ROOT / 'tests/fixtures/distributions-mpmath.json').write_text(json.dumps(dict(
+            reference=f'mpmath {mp.__version__} at {mp.mp.dps} digits', **meta,
+            conventions='correctly rounded double of the exact value; null where no reference was computed',
+            cases=mpmath_cases), separators=(',', ':')) + '\n')
     report = dict(**meta, platform=platform.platform(), php=php.get('php'), r=fixture['reference'],
                   scipy=scipy.__version__, numpy=np.__version__, mpmath=mp.__version__,
                   mpmath_digits=mp.mp.dps, method=__doc__.strip().split('\n\nOutputs:')[0],
                   error_definition='relative error vs the rounded mpmath reference; for log values and quantiles '
                                    'the denominator is max(|reference|, 1) and max(|reference|, 1e-300)',
                   cases=report_cases)
+    if args.stored_references:
+        report.update(native_refreshed_at=meta['recorded_at'],
+            native_refresh_method='Re-evaluated every native scalar/batch against immutable saved R/SciPy/60-digit mpmath references. No reference values were recomputed.',
+            reference_metadata={name:{k:v for k,v in data.items() if k!='cases'} for name,data in stored.items()},
+            reference_sha256={name:hashlib.sha256((ROOT/f'tests/fixtures/distributions-{name}.json').read_bytes()).hexdigest() for name in ('r','scipy','mpmath')})
+    report['release_gate_policy']='Original operation-specific PHP tolerances retained; independent mpmath adjudicates saved R disagreements. Documented boundary conventions have separate assertions.'
     (ROOT / 'docs/verifications/distributions-results.json').write_text(
         json.dumps(report, indent=1, default=encode) + '\n')
-    print('saved fixtures and docs/verifications/distributions-results.json')
+    print('Saved native comparison report' if args.stored_references else 'Saved fixtures and native comparison report')
 
 
 if __name__ == '__main__':

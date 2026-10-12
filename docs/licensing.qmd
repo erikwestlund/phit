@@ -14,6 +14,9 @@ This does not relicense third-party material:
   [dataset provenance](data/lmm/sources.json), and
   [cbpp provenance](data/cbpp-source.json).
 - Rust dependencies retain the licenses declared in their own packages.
+  The explicit sampling dependencies `rand 0.9.5` and `rand_chacha 0.9.0` use the
+  MIT option of their dual licenses; notices and source hashes are retained under
+  `third-party/` and `third-party/sources.json`.
 - Vendored Quarto web assets retain their embedded third-party notices.
 - R, ggplot2 and other development tools retain their own licenses; they are not
   runtime dependencies of the PHP extension.

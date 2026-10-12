@@ -1423,6 +1423,8 @@ dependencies = [
  "bobyqa",
  "cdflib",
  "nalgebra",
+ "rand",
+ "rand_chacha",
  "serde_json",
  "statrs",
 ]

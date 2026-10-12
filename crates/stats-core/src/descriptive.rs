@@ -20,6 +20,17 @@ fn error(kind: ErrorKind, message: &str) -> StatsError {
     StatsError::new(kind, message)
 }
 
+fn computed(value: f64) -> Result<f64, StatsError> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(error(
+            ErrorKind::Nonfinite,
+            "descriptive calculation exceeded floating-point range",
+        ))
+    }
+}
+
 fn check(values: &[f64], minimum: usize, what: &str) -> Result<(), StatsError> {
     if values.iter().any(|v| !v.is_finite()) {
         return Err(error(ErrorKind::Nonfinite, "values must be finite"));
@@ -74,22 +85,23 @@ fn plain_mean(values: &[f64]) -> f64 {
 /// Arithmetic mean.
 pub fn mean(values: &[f64]) -> Result<f64, StatsError> {
     check(values, 1, "mean")?;
-    Ok(plain_mean(values))
+    computed(plain_mean(values))
 }
 
 // Corrected two-pass sum of squared deviations from the mean.
-fn squared_deviations(values: &[f64]) -> f64 {
+fn squared_deviations(values: &[f64]) -> Result<f64, StatsError> {
     let m = plain_mean(values);
     let ss = sum(values.iter().map(|v| (v - m) * (v - m)));
     let s = sum(values.iter().map(|v| v - m));
-    (ss - s * s / values.len() as f64).max(0.0)
+    // Check before max: f64::max(NAN, 0) would hide overflow as zero variance.
+    Ok(computed(ss - s * s / values.len() as f64)?.max(0.0))
 }
 
 /// Variance with denominator n - 1 (sample) or n (population).
 pub fn variance(values: &[f64], population: bool) -> Result<f64, StatsError> {
     check(values, if population { 1 } else { 2 }, "variance")?;
     let n = values.len() as f64;
-    Ok(squared_deviations(values) / if population { n } else { n - 1.0 })
+    computed(squared_deviations(values)? / if population { n } else { n - 1.0 })
 }
 
 /// Standard deviation: the square root of [`variance`].
@@ -98,33 +110,34 @@ pub fn sd(values: &[f64], population: bool) -> Result<f64, StatsError> {
 }
 
 // Sums of centered cross-products (Sxy, Sxx, Syy).
-fn cross_products(x: &[f64], y: &[f64]) -> (f64, f64, f64) {
+fn cross_products(x: &[f64], y: &[f64]) -> Result<(f64, f64, f64), StatsError> {
     let (mx, my) = (plain_mean(x), plain_mean(y));
     let n = x.len() as f64;
     let dx = || x.iter().map(move |v| v - mx);
     let dy = || y.iter().map(move |v| v - my);
     let (sx, sy) = (sum(dx()), sum(dy()));
-    let sxy = sum(dx().zip(dy()).map(|(a, b)| a * b)) - sx * sy / n;
-    let sxx = (sum(dx().map(|a| a * a)) - sx * sx / n).max(0.0);
-    let syy = (sum(dy().map(|b| b * b)) - sy * sy / n).max(0.0);
-    (sxy, sxx, syy)
+    let sxy = computed(sum(dx().zip(dy()).map(|(a, b)| a * b)) - sx * sy / n)?;
+    let sxx = computed(sum(dx().map(|a| a * a)) - sx * sx / n)?.max(0.0);
+    let syy = computed(sum(dy().map(|b| b * b)) - sy * sy / n)?.max(0.0);
+    Ok((sxy, sxx, syy))
 }
 
 /// Covariance with denominator n - 1 (sample) or n (population).
 pub fn covariance(x: &[f64], y: &[f64], population: bool) -> Result<f64, StatsError> {
     check_pair(x, y, "covariance")?;
     let n = x.len() as f64;
-    Ok(cross_products(x, y).0 / if population { n } else { n - 1.0 })
+    computed(cross_products(x, y)?.0 / if population { n } else { n - 1.0 })
 }
 
 /// Pearson correlation; NaN when either input has zero variance (undefined).
 pub fn correlation(x: &[f64], y: &[f64]) -> Result<f64, StatsError> {
     check_pair(x, y, "correlation")?;
-    let (sxy, sxx, syy) = cross_products(x, y);
+    let (sxy, sxx, syy) = cross_products(x, y)?;
     if sxx == 0.0 || syy == 0.0 {
         return Ok(f64::NAN);
     }
-    Ok((sxy / (sxx.sqrt() * syy.sqrt())).clamp(-1.0, 1.0))
+    // Sequential division avoids overflow of the product of standard deviations.
+    Ok(computed((sxy / sxx.sqrt()) / syy.sqrt())?.clamp(-1.0, 1.0))
 }
 
 fn check_probability(p: f64) -> Result<(), StatsError> {
@@ -192,7 +205,7 @@ fn check_weights(values: &[f64], weights: &[f64]) -> Result<f64, StatsError> {
             "weights must be nonnegative",
         ));
     }
-    let total = sum(weights.iter().copied());
+    let total = computed(sum(weights.iter().copied()))?;
     if total <= 0.0 {
         return Err(error(
             ErrorKind::InvalidInput,
@@ -210,7 +223,7 @@ fn plain_weighted_mean(values: &[f64], weights: &[f64], total: f64) -> f64 {
 /// Weighted mean Σw x / Σw.
 pub fn weighted_mean(values: &[f64], weights: &[f64]) -> Result<f64, StatsError> {
     let total = check_weights(values, weights)?;
-    Ok(plain_weighted_mean(values, weights, total))
+    computed(plain_weighted_mean(values, weights, total))
 }
 
 /// Weighted variance under the chosen [`WeightKind`] definition.
@@ -226,12 +239,12 @@ pub fn weighted_variance(
         .zip(weights)
         .map(|(v, w)| w * (v - m) * (v - m)));
     let s = sum(values.iter().zip(weights).map(|(v, w)| w * (v - m)));
-    let ss = (ss - s * s / total).max(0.0);
-    let denominator = match kind {
+    let ss = computed(ss - s * s / total)?.max(0.0);
+    let denominator = computed(match kind {
         WeightKind::Frequency => total - 1.0,
         WeightKind::Reliability => total - sum(weights.iter().map(|w| w * w)) / total,
         WeightKind::Population => total,
-    };
+    })?;
     if denominator <= 0.0 {
         return Err(error(
             ErrorKind::InvalidInput,
@@ -241,7 +254,7 @@ pub fn weighted_variance(
             },
         ));
     }
-    Ok(ss / denominator)
+    computed(ss / denominator)
 }
 
 #[cfg(test)]

@@ -1,0 +1,4 @@
+# Development-only benchmarks and independent verification, never PHP runtime.
+numpy==2.5.4
+scipy==1.18.1
+mpmath==1.4.1

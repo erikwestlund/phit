@@ -1,0 +1,123 @@
+---
+title: "Seeded batch sampling"
+---
+
+Every supported distribution has a `stats_{family}_rng()` function that returns
+ordinary PHP numeric arrays. Sampling uses mature Rust RNG libraries already in
+the dependency graph: pinned `rand 0.9.5` and `rand_chacha 0.9.0`, now explicit
+stats-core dependencies. No package versions were upgraded. Each call owns and
+restarts its own ChaCha20 state from the supplied seed.
+
+## API and state ownership
+
+The signature is `stats_{family}_rng(int $n, int $seed, ...distribution parameters): array`.
+The family parameters and defaults are exactly those of the corresponding
+[probability API](distributions.qmd#families-and-parameterizations).
+
+```php
+$normal = stats_normal_rng(n: 5, seed: 42); // Default mean 0, SD 1.
+$measurements = stats_normal_rng(n: 8, seed: 20261012, mean: 10, sd: .5);
+$counts = stats_poisson_rng(n: 8, seed: 20261013, lambda: 3.2);
+$beta = stats_beta_rng(n: 8, seed: 17, alpha: 2, beta: 5);
+```
+
+| Function | Parameters after n and seed |
+| --- | --- |
+| `stats_normal_rng` | mean = 0, sd = 1 |
+| `stats_t_rng` | df |
+| `stats_chisquare_rng` | df |
+| `stats_f_rng` | df1, df2 |
+| `stats_beta_rng` | alpha, beta |
+| `stats_gamma_rng` | shape, scale = 1 |
+| `stats_exponential_rng` | rate = 1 |
+| `stats_lognormal_rng` | meanlog = 0, sdlog = 1 |
+| `stats_logistic_rng` | location = 0, scale = 1 |
+| `stats_binomial_rng` | size, prob |
+| `stats_poisson_rng` | lambda |
+| `stats_nbinom_rng` | size, prob |
+| `stats_nbinom_mu_rng` | size, mu |
+
+`n` is an integer in `[0,1000000]`; `seed` is a nonnegative PHP integer, including
+zero, up to PHP_INT_MAX (2^63−1 on the supported 64-bit platforms). Both arguments
+are required. Every successful result is a packed `list<float>` of exactly n
+finite values; discrete counts are also floats. There is no scalar sampling form
+or additional `_array` suffix because sampling is already a batch operation.
+
+The same seed and parameters reproduce exactly the same result within the same
+build. Asking for fewer samples returns the prefix of a longer call. Calls for
+other families or seeds do not advance a shared stream. PHP's `mt_srand()` and
+application RNG state are not read or changed.
+
+Because a seed selects the same underlying uniform sequence across families,
+reusing it deliberately couples results through their quantiles. Use distinct
+seeds for separate batches when independent streams are intended. There is no
+implicit time-based seed, OS entropy lookup, retained RNG object or hidden global
+state. The runnable `examples/rng.php` verifies repeatability and prefix behavior.
+
+## Numerical method and reproducibility
+
+For every output, ChaCha20 provides a 64-bit word; rand's `Open01<f64>` maps its
+upper 52 bits to a midpoint strictly inside `(0,1)`. The value is transformed by
+the existing validated inverse CDF. The algorithm consumes one uniform per sample,
+including point masses. This uses the established numerical quantile kernels for
+all 13 parameterizations, without introducing a separate distribution backend.
+
+The open interval excludes infinite support endpoints. The finite uniform grid
+also limits represented tail probabilities: its minimum is 2^-53 and its maximum
+is 1−2^-53. This implementation favors a small, consistent numerical path over
+distribution-specific rejection samplers; [benchmarks](benchmarks/rng.qmd) record
+the cost for normal, beta and Poisson batches.
+
+The pinned rand_core `seed_from_u64` expands the integer with its documented PCG32
+mapping into the 256-bit ChaCha key. Exact uniform vectors are checked independently
+in Python. Dependency or quantile-algorithm changes can change seeded samples and
+must be reviewed as reproducibility changes. Bitwise transformed-sample agreement
+across different library versions, compilers or platform math libraries is not
+promised; seeds are not claimed to match R or NumPy's unrelated default engines.
+The full dependency lock and algorithm are recorded for reproducible runs.
+
+## Validation
+
+Distribution parameter domains match probability evaluation. They are validated
+even when n is zero; valid empty requests return `[]`. Negative n/seed raises
+1001, a request above one million raises 1007, and nonfinite distribution parameters
+raise 1003. Scalar argument conversion/type failures follow the repository's
+runtime-error convention (code zero) rather than StatsError categories.
+
+A quantile that exceeds binary64 range raises 1003 and rejects the entire batch;
+no partial results, dropped samples or replacement infinities are returned. Very
+heavy tails/extreme scales can therefore fail even with finite parameters. Count
+precision follows the existing discrete-quantile convention and binary64 limits.
+The sampling limit bounds a single output allocation; callers retain control of
+overall workload and parameter coordinates.
+
+## Independent verification
+
+`tests/generate-rng-fixtures.py` independently implements the ChaCha20 block
+equations, PCG seed expansion and Open01 mapping. It never calls the extension or
+rand. `tests/generate-rng-fixtures.R` maps those saved uniforms through base-R
+quantiles. Python preserves full integer seeds and exact uniform bits while R
+supplies the independent transformed reference values.
+
+The saved `tests/fixtures/rng-python-r.json` contains **25 cases, 2,000 values**:
+384 exact uniform values at four seeds (including zero and PHP_INT_MAX), all 13
+families, three additional normal seed cases, and five point masses. Rust checks
+all values; PHP checks the 1,616 transformed references. Uniform/discrete values
+match exactly; continuous reference tolerance is `1e-15 + 1e-12*abs(reference)`.
+Both suites check repeatability, prefixes, state isolation, domains/limits and
+nonfinite samples. Deterministic normal/Poisson moment checks complement the
+reference vectors. PHP additionally verifies parameter names/defaults and strict
+seed/count types.
+
+```sh
+python3 tests/generate-rng-fixtures.py # Intentional Python/R reference refresh
+python3 scripts/reference-manifest.py
+cargo test -p stats-core --locked --test rng
+php -n -d "extension=$STATS_EXTENSION" tests/rng.php
+PHP=/path/to/matching/php PHP_CONFIG=/path/to/php-config ./scripts/check
+```
+
+The offline release gate needs neither Python RNG packages nor R for sampling
+tests. Fixture provenance includes the Python and R generators, versions, seeds,
+uniform inputs, expected quantities and hashes. The MIT license notices for the
+new direct dependencies are retained under `third-party/`.

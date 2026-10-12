@@ -31,6 +31,46 @@ build with --release and run the PHP scripts against target/release instead.
 For documentation-only changes, check links, commands and claims against source;
 rerun numerical tests when behavior or implementation changes.
 
+## Probability and descriptive APIs
+
+The offline release gate runs `tests/distributions.php`, `tests/descriptive.php`
+and `examples/distributions.php`, along with the Rust distribution/descriptive
+suites. Distribution checks include 8,618 reference comparisons, 25 independent
+mpmath adjudications and 43 documented boundary differences. Descriptive tests
+add 145 R quantities, type-7 scalar/batch identities, strict/explicit-drop missing
+policies, pairwise alignment, weight definitions and arithmetic overflow errors.
+The [distribution record](verifications/distributions.qmd) describes provenance,
+reference limitations and operation-specific tolerances. The [utility contract](descriptive.qmd)
+documents undefined correlation separately from numerical failure.
+
+Refresh PHP error evidence without changing independent expected values:
+
+```sh
+PHP=/path/to/matching/php .context/v02/python/bin/python docs/verifications/compare_distributions.py --stored-references
+python3 scripts/reference-manifest.py
+python3 scripts/distribution-docs.py
+```
+
+Reference regeneration with R or 60-digit mpmath is intentional and separate;
+see the comparison page. Distribution scalar/batch/Rust/R/SciPy benchmarks and
+the seven-model pre-v0.2 preservation comparison run separately from the gate,
+with numerical agreement recorded before distribution timings. Seeded [sampling](rng.qmd)
+adds 25 independently generated Python/R cases: 2,000 Rust engine/quantile values
+and 1,616 PHP transformed references, plus repeatability, prefix, state-isolation,
+domain/limit and moment checks. `tests/rng.php` and `examples/rng.php` run in the
+release gate. The [readiness assessment](v0.2.qmd) records remaining release steps.
+
+## Posterior-draw kernels
+
+The release gate includes `crates/stats-core/tests/draws.rs` and `tests/draws.php`.
+Both consume 25 independent 80-digit Python Decimal cases, including covariance-map
+identities, affine round trips and log determinants. Strict validation includes
+zero weights, one effective draw and singular covariance, with explicit failures
+for map/affine numerical singularity. Provenance, formulas, numerical tolerances,
+reproduction commands and limitations are recorded in [draw numerical notes](draw-numerics.qmd).
+The [benchmark](benchmarks/draws.qmd) validates complete outputs against R before
+recording timings; it runs separately from the offline release gate.
+
 ## PHP intercept and offset contracts
 
 `tests/intercept.php` checks all seven PHP fitters with predictors-only inputs

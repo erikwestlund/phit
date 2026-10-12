@@ -44,6 +44,38 @@ mixed models support explicit correlated/independent random designs; binomial
 mixed models currently support one grouping factor and a random intercept.
 See [supported structures and numerical limits](https://erikwestlund.github.io/php-stat-models/contracts.html).
 
+## Probability and descriptive statistics
+
+Evaluate normal, t, chi-square, F, beta, gamma, exponential, lognormal, logistic,
+binomial, Poisson and negative-binomial distributions. Each has scalar and native
+batch density/mass, CDF, survival, log-tail and quantile functions. For example:
+
+```php
+$upperTail = stats_normal_sf(10); // About 7.62e-24.
+$logLikelihood = array_sum(stats_poisson_logpmf_array([2, 5, 3, 0], lambda: 2.5));
+$quartiles = stats_quantile_array([2.5, 3.1, 4.7, 1.2, 9.8], [.25, .5, .75]);
+```
+
+Ten descriptive utilities provide mean, variance, SD, covariance/correlation,
+type-7 quantiles, median and weighted moments. These utilities reject missing
+values by default; dropping is explicit. Read the [distribution API](docs/distributions.qmd),
+[descriptive conventions](docs/descriptive.qmd) and [v0.2 verification/readiness](docs/v0.2.qmd).
+Seeded batch sampling uses `stats_{family}_rng()`, for example
+`stats_normal_rng(n: 5, seed: 42)`. Every call owns its stream; see the
+[sampling contract](docs/rng.qmd) for reproducibility and limits.
+
+## Posterior draws
+
+Three numerical kernels accept ordinary row-oriented PHP arrays:
+`stats_draw_moments()` returns a weighted mean and covariance,
+`stats_draw_covariance_map()` returns a Cholesky covariance transformation, and
+`stats_draw_affine()` applies a matrix and shift while preserving draw order.
+Maps and affine transformations return `log_abs_det`. Draw inputs always reject
+null/NAN/INF, with no row deletion or intercept insertion. Unbiased covariance
+uses reliability weights. See the [numerical notes](docs/draw-numerics.qmd) for
+shapes, tolerances, examples and independent verification. Stan evaluation, PSIS
+and moment-matching control belong to the consuming CmdStan interface.
+
 ## Poisson counts with exposure
 
 Different observation periods belong in an offset on the **log scale**:
@@ -137,7 +169,9 @@ likelihood, and inference with simulated and published data. Figures use a share
 [R/ggplot2 strategy](https://erikwestlund.github.io/php-stat-models/visualization.html). R/Python are development tools;
 PHP runtime computation uses Rust-native nalgebra.
 
-This is a **v0.1 release candidate**. Read the
+The v0.1 fitting and packaging baseline is a **release candidate**, with the
+v0.2 numerical additions documented in the [readiness assessment](docs/v0.2.qmd).
+Read the
 [stabilization assessment](https://erikwestlund.github.io/php-stat-models/v0.1.html) for verified scope and remaining release
 gates.
 

@@ -93,6 +93,23 @@ fn pairs(x: &ZendHashTable, y: &ZendHashTable, missing: &str) -> PhpResult<(Vec<
     Ok((a, b))
 }
 
+fn weighted_pairs(
+    values: &ZendHashTable,
+    weights: &ZendHashTable,
+    missing: &str,
+) -> PhpResult<(Vec<f64>, Vec<f64>)> {
+    // Invalid weights cannot disappear just because the aligned value is missing.
+    for value in weights.values() {
+        if element(value)?.is_some_and(|w| w < 0.0) {
+            return Err(error(
+                ErrorKind::InvalidInput,
+                "weights must be nonnegative",
+            ));
+        }
+    }
+    pairs(values, weights, missing)
+}
+
 fn population(kind: &str) -> PhpResult<bool> {
     match kind {
         "sample" => Ok(false),
@@ -194,7 +211,7 @@ pub fn stats_weighted_mean(
     weights: &ZendHashTable,
     missing: &str,
 ) -> PhpResult<f64> {
-    let (values, weights) = pairs(values, weights, missing)?;
+    let (values, weights) = weighted_pairs(values, weights, missing)?;
     result(desc::weighted_mean(&values, &weights))
 }
 
@@ -217,7 +234,7 @@ pub fn stats_weighted_variance(
             ));
         }
     };
-    let (values, weights) = pairs(values, weights, missing)?;
+    let (values, weights) = weighted_pairs(values, weights, missing)?;
     result(desc::weighted_variance(&values, &weights, kind))
 }
 

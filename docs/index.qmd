@@ -45,6 +45,16 @@ update the relevant document alongside code changes. Distinguish implemented
 behavior, verified behavior and proposed direction; do not present plans as
 existing features. Add new documents only when a topic needs its own explanation.
 
+## Probability distributions and statistical utilities
+
+- [Probability distributions](distributions.qmd): scalar/batch APIs, parameterizations, tails and numerical implementation.
+- [Descriptive statistics](descriptive.qmd): type-7 quantiles, weighted definitions and missing policies.
+- [R/SciPy/mpmath verification](verifications/distributions.qmd): independent references, error tables and boundary differences.
+- [Performance](benchmarks/distributions.qmd): PHP scalar/batch, internal Rust, R and SciPy, plus preserved regression behavior.
+- [Seeded sampling](rng.qmd): local ChaCha20 streams, family APIs and reproducibility.
+- [v0.2 readiness](v0.2.qmd): completed scope and release limits.
+- [Posterior-draw kernels](draw-numerics.qmd): weighted moments, covariance maps and affine transformations.
+
 ## Binary logistic regression
 
 - [Math walkthrough](notebooks/logistic-math.qmd): likelihood, matrix calculations, Newton/IRLS and Wald inference.

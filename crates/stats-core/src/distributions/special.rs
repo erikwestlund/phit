@@ -24,7 +24,8 @@ pub(super) fn log_tail(lower: f64, upper: f64, extreme: impl FnOnce() -> f64) ->
 }
 
 /// ln Φ(z) for z < -8 from the continued fraction for the Mills ratio.
-/// Also used by the probit estimator for the same extreme lower tail.
+/// The probit estimator retains the same continued-fraction convention in its
+/// established numerical path; see the recorded distribution reuse audit.
 pub(crate) fn normal_log_lower_tail(z: f64) -> f64 {
     let x = -z;
     if x.is_infinite() {

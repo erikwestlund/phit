@@ -1,6 +1,7 @@
 use ext_php_rs::{boxed::ZBox, prelude::*, types::ZendHashTable};
 mod descriptive;
 mod distributions;
+mod draws;
 fn stats_exception(e: stats_core::StatsError) -> PhpException {
     PhpException::new(
         e.to_string(),
@@ -1091,5 +1092,5 @@ pub fn get_module(module: ModuleBuilder) -> ModuleBuilder {
         .function(wrap_function!(stats_lmm_fit))
         .function(wrap_function!(stats_logistic_mixed));
     let module = distributions::register(module);
-    descriptive::register(module)
+    draws::register(descriptive::register(module))
 }

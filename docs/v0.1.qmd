@@ -271,6 +271,13 @@ After this API update, the complete gate passed 49 Rust tests, ten PHP suites, a
 all eight examples on the configured Apple Silicon/PHP workstation. The earlier
 validation JSON records the preceding nine-suite run rather than this new check.
 
+## Subsequent numerical API expansion
+
+The [v0.2 readiness assessment](v0.2.qmd) records the distribution, descriptive
+and draw-matrix additions and their own verification/performance evidence. The
+v0.1 results above remain the historical fitting baseline. Current release
+checks include the new suites and examples without changing the regression APIs.
+
 ## Installation and release packaging
 
 The [deployment guide](deployment.qmd) documents local PIE support, a pinned

@@ -1,0 +1,91 @@
+---
+title: "Posterior-draw scale validation and performance"
+---
+
+These release-extension benchmarks compare the PHP draw kernels with independent
+R matrix calculations. Complete outputs are compared before **any timing phase**.
+The [raw report](draws-results.json) preserves every timing sample, comparison
+error, input hash, batch count, machine, runtime version and thread setting.
+
+## Numerical agreement first
+
+The 2026-10-12 run compared weighted means, both covariance normalizations,
+covariance maps and log determinants, and **every transformed draw value** against
+R. All quantities passed $10^{-11}+10^{-11}|\mathrm{reference}|$.
+
+| Draws | Parameters | Values compared | Maximum absolute difference |
+| ---: | ---: | ---: | ---: |
+| 1,000 | 4 | 4,058 | 5.33e-15 |
+| 4,000 | 16 | 64,802 | 3.91e-14 |
+| 10,000 | 32 | 323,138 | 4.97e-14 |
+| 100,000 | 8 | 800,210 | 7.22e-15 |
+
+R uses normalized weights, `colSums`, `crossprod` of square-root-weighted centered
+draws, `chol`/`backsolve`, matrix multiplication and `determinant(logarithm=TRUE)`.
+The independent [80-digit fixtures and identity tests](../draw-numerics.qmd#independent-verification)
+separately constrain covariance-map orientation, affine round trips and determinant
+sign/scale. Benchmark verification compares PHP/R results; ordinary tests provide
+the algebraic identity and edge-case checks.
+
+## Recorded timings
+
+Machine: Apple M5 Ultra, macOS 27.0.1 arm64. Rust 1.99.0, PHP 8.5.10, R 4.6.1,
+jsonlite 2.0.0, R OpenBLAS 0.3.34. Thread environment variables are fixed to one
+for OpenBLAS, OpenMP, MKL, Accelerate and BLIS. PHP uses nalgebra's Rust-native
+path without BLAS. Five measurements follow one warm-up per operation.
+
+Median milliseconds per call, including complete output materialization:
+
+| Draws | Parameters | API | Population moments | Unbiased moments | Covariance map | Affine draws |
+| ---: | ---: | :--- | ---: | ---: | ---: | ---: |
+| 1,000 | 4 | R | 0.037 | 0.040 | 0.010 | 0.026 |
+| 1,000 | 4 | PHP | 0.09066 | 0.08109 | 0.001077 | 0.1187 |
+| 4,000 | 16 | R | 0.400 | 0.400 | 0.015 | 0.260 |
+| 4,000 | 16 | PHP | 1.416 | 1.431 | 0.01149 | 1.616 |
+| 10,000 | 32 | R | 2.400 | 2.100 | 0.026 | 1.600 |
+| 10,000 | 32 | PHP | 8.842 | 8.672 | 0.04392 | 6.854 |
+| 100,000 | 8 | R | 6.000 | 5.600 | 0.011 | 3.700 |
+| 100,000 | 8 | PHP | 17.58 | 18.73 | 0.003954 | 21.61 |
+
+PHP's moments/affine calls include conversion from nested PHP numeric arrays to
+owned Rust vectors, strict validation, numerical computation and conversion back
+to PHP arrays. R starts from already numeric matrices and does not implement all
+of PHP's validation/rank policies. This is an API-level workload comparison, not
+a measurement of isolated matrix multiplication. Map timings depend only on
+parameter count; the corresponding draw count labels the surrounding workload.
+Compensated sums in Rust and R's BLAS cross-products have different arithmetic
+and runtime costs. These measurements do not establish a reason to change the
+repository's numerical backend.
+
+## Reproduction and timing boundaries
+
+Build using the [matching PHP/header environment](../development.qmd), then run:
+
+```sh
+cargo build -p php-stats --release --locked
+# R and jsonlite are benchmark-only development dependencies.
+PHP=/opt/homebrew/bin/php python3 tests/benchmarks/run-draws.py
+# Optional overrides: RSCRIPT, STATS_EXTENSION; --repeats 5 --output /path/report.json
+```
+
+Python 3's standard library generates inputs with `random.Random(20261012)`.
+Draws have a shared Gaussian component, independent Gaussian noise and parameter
+means increasing by 0.1. Nonuniform weights have deterministic zeros every 11th
+row. Covariances are constructed from deterministic full-rank lower factors.
+The affine matrix includes off-diagonal mixing and a reflection, with a nonzero
+shift. Temporary JSON inputs are identical for PHP and R; their SHA-256 hashes
+are retained in the report. No intercept column is added.
+
+Each worker loads JSON once. Startup, input generation, JSON parsing/serialization
+and reference comparison are outside timed calls. Input loading is recorded
+separately. Both APIs compute complete result arrays/matrices in each timed call;
+PHP includes native input conversion, validation and result allocation. Timings
+also include ordinary runtime reclamation of prior results.
+
+R's elapsed timer has millisecond resolution. Each map measurement batches 1,000
+calls. Moments/affine batch 1,000 calls for the 1,000 × 4 case, 100 for 4,000 × 16,
+and 10 for both larger cases; the reported value divides by the batch count.
+This avoids zero small-call readings but still limits R timing precision. R's
+garbage collection and machine load contribute variation; raw measurements are
+available for review. This run does not measure peak memory, Linux, PHP-FPM,
+Stan evaluation, PSIS or complete moment-matching iterations.

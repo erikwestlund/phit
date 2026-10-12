@@ -13,6 +13,15 @@ pub fn number(v: &Value) -> f64 {
 
 type Evaluator = Box<dyn Fn(&str, f64) -> Result<f64, stats_core::StatsError>>;
 
+#[test]
+fn overflowing_negative_binomial_mean_conversion_is_not_a_point_mass() {
+    let d = NegativeBinomial::with_mean(1e308, 1e308).unwrap();
+    assert_eq!(d.pmf(0.), 0.);
+    assert_eq!(d.logpmf(0.), -1e308 * std::f64::consts::LN_2);
+    assert_eq!(d.cdf(0.), 0.);
+    assert_eq!(d.sf(0.), 1.);
+}
+
 macro_rules! evaluator {
     ($dist:expr, $density:ident, $log_density:ident) => {{
         let d = $dist;

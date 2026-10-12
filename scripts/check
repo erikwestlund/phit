@@ -23,11 +23,14 @@ esac
 "$PHP" -n -d "extension=$extension" -r 'if (stats_hello() === "") exit(1);'
 "$PHP" -n -d "extension=$extension" scripts/php-stubs.php --check
 "$PHP" -n -l stubs/php-stats.php
-for suite in ols logistic probit poisson lmm r-compatibility lmm-expanded logistic-mixed stability intercept distributions; do
+for suite in ols logistic probit poisson lmm r-compatibility lmm-expanded logistic-mixed stability intercept distributions descriptive rng draws; do
     "$PHP" -n -d "extension=$extension" "tests/$suite.php"
 done
-for example in ols logistic probit poisson lmm lmm-slopes logistic-mixed poisson-offset; do
+for example in ols logistic probit poisson lmm lmm-slopes logistic-mixed poisson-offset distributions rng draws; do
     "$PHP" -n -d "extension=$extension" "examples/$example.php" >/dev/null
 done
-if command -v python3 >/dev/null 2>&1; then python3 scripts/reference-manifest.py --check; fi
+if command -v python3 >/dev/null 2>&1; then
+    python3 scripts/reference-manifest.py --check
+    python3 scripts/distribution-docs.py --check
+fi
 echo 'Rust/PHP release checks passed'

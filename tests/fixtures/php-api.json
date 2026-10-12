@@ -239,6 +239,31 @@
         ],
         "return_type": "array"
     },
+    "stats_beta_rng": {
+        "parameters": [
+            {
+                "name": "n",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "seed",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
     "stats_beta_sf": {
         "parameters": [
             {
@@ -519,6 +544,31 @@
         ],
         "return_type": "array"
     },
+    "stats_binomial_rng": {
+        "parameters": [
+            {
+                "name": "n",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "seed",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
     "stats_binomial_sf": {
         "parameters": [
             {
@@ -739,6 +789,26 @@
         ],
         "return_type": "array"
     },
+    "stats_chisquare_rng": {
+        "parameters": [
+            {
+                "name": "n",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "seed",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
     "stats_chisquare_sf": {
         "parameters": [
             {
@@ -816,6 +886,75 @@
             }
         ],
         "return_type": "float"
+    },
+    "stats_draw_affine": {
+        "parameters": [
+            {
+                "name": "draws",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "matrix",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "shift",
+                "type": "array",
+                "optional": false
+            }
+        ],
+        "return_type": "array",
+        "result_keys": [
+            "draws",
+            "log_abs_det"
+        ]
+    },
+    "stats_draw_covariance_map": {
+        "parameters": [
+            {
+                "name": "source_covariance",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "target_covariance",
+                "type": "array",
+                "optional": false
+            }
+        ],
+        "return_type": "array",
+        "result_keys": [
+            "log_abs_det",
+            "matrix"
+        ]
+    },
+    "stats_draw_moments": {
+        "parameters": [
+            {
+                "name": "draws",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "weights",
+                "type": "?array",
+                "optional": true,
+                "default": null
+            },
+            {
+                "name": "normalization",
+                "type": "string",
+                "optional": true,
+                "default": "population"
+            }
+        ],
+        "return_type": "array",
+        "result_keys": [
+            "covariance",
+            "mean"
+        ]
     },
     "stats_exponential_cdf": {
         "parameters": [
@@ -998,6 +1137,27 @@
             {
                 "name": "probabilities",
                 "type": "array",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_exponential_rng": {
+        "parameters": [
+            {
+                "name": "n",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "seed",
+                "type": "int",
                 "optional": false
             },
             {
@@ -1266,6 +1426,31 @@
             {
                 "name": "probabilities",
                 "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_f_rng": {
+        "parameters": [
+            {
+                "name": "n",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "seed",
+                "type": "int",
                 "optional": false
             },
             {
@@ -1557,6 +1742,32 @@
             {
                 "name": "probabilities",
                 "type": "array",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_gamma_rng": {
+        "parameters": [
+            {
+                "name": "n",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "seed",
+                "type": "int",
                 "optional": false
             },
             {
@@ -2226,6 +2437,33 @@
         ],
         "return_type": "array"
     },
+    "stats_logistic_rng": {
+        "parameters": [
+            {
+                "name": "n",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "seed",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
     "stats_logistic_sf": {
         "parameters": [
             {
@@ -2517,6 +2755,33 @@
             {
                 "name": "probabilities",
                 "type": "array",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_lognormal_rng": {
+        "parameters": [
+            {
+                "name": "n",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "seed",
+                "type": "int",
                 "optional": false
             },
             {
@@ -3010,6 +3275,31 @@
         ],
         "return_type": "array"
     },
+    "stats_nbinom_mu_rng": {
+        "parameters": [
+            {
+                "name": "n",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "seed",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
     "stats_nbinom_mu_sf": {
         "parameters": [
             {
@@ -3115,6 +3405,31 @@
             {
                 "name": "probabilities",
                 "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_nbinom_rng": {
+        "parameters": [
+            {
+                "name": "n",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "seed",
+                "type": "int",
                 "optional": false
             },
             {
@@ -3417,6 +3732,33 @@
             {
                 "name": "probabilities",
                 "type": "array",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_normal_rng": {
+        "parameters": [
+            {
+                "name": "n",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "seed",
+                "type": "int",
                 "optional": false
             },
             {
@@ -3782,6 +4124,26 @@
         ],
         "return_type": "array"
     },
+    "stats_poisson_rng": {
+        "parameters": [
+            {
+                "name": "n",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "seed",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
     "stats_poisson_sf": {
         "parameters": [
             {
@@ -4108,6 +4470,26 @@
             {
                 "name": "probabilities",
                 "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_t_rng": {
+        "parameters": [
+            {
+                "name": "n",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "seed",
+                "type": "int",
                 "optional": false
             },
             {

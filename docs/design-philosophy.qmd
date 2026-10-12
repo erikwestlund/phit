@@ -99,6 +99,13 @@ showing equivalent fits in R, statsmodels and this extension where supported. Th
 philosophy governs future work; it does not imply that helpers or additional
 models already exist.
 
+The posterior-draw operations are explicit numerical kernels for a separate
+CmdStan interface's moment matching: weighted moments, covariance maps and affine
+transforms. Literal row/parameter order and strict validation apply to all three;
+they never insert an intercept or drop missing rows. Stan evaluation, PSIS,
+iteration control and diagnostics remain the consuming package's responsibility.
+See the [numerical contract and reference evidence](draw-numerics.qmd).
+
 ## Learning examples use meaningful simulated data
 
 Use reproducible simulations with named variables, units, plausible ranges,

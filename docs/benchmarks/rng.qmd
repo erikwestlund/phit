@@ -1,0 +1,70 @@
+---
+title: "Seeded sampling verification and performance"
+---
+
+The [sampling API](../rng.qmd) uses local ChaCha20 state and inverse CDFs. This
+benchmark times full PHP batches for normal, beta and Poisson at 1,000, 100,000
+and one million draws. Every call reinitializes the explicit seed and allocates
+the complete numeric output. [Raw results](rng-results.json) retain the seed,
+input hashes, numerical evidence, PHP version, binary hash, all timing samples,
+process elapsed time and peak RSS.
+
+## Independent verification first
+
+Before any timing phase, Python independently computes the ChaCha blocks at 17
+evenly spaced indices, with the pinned PCG seed expansion/Open01 mapping. Base-R
+quantiles transform those exact probabilities. PHP's sampled points must match
+at `1e-15 + 1e-12*abs(reference)`; discrete values match the integer quantiles.
+The full output is consumed by mean/variance calculations and checked against
+theoretical moments within eight standard errors (using the distribution's fourth
+central moment for variance). Fixed seeds make these checks deterministic.
+
+This complements the ordinary 25-case independent stream/quantile fixture suite.
+It does not compare every element to R and does not claim that R's own RNG shares
+the ChaCha sequence. Each timed result undergoes the same numerical checks again.
+
+<!-- BEGIN RNG EVIDENCE -->
+
+Recorded: **2026-10-12T15:50:48.801124+00:00**; macOS-27.0.1-arm64-arm-64bit-Mach-O; PHP 8.5.10. All 9 sample-point/moment comparisons passed before timings. Seed 42, 5 repetitions.
+
+| Family | Draws | Median full call (ms) | Peak whole-process RSS (MiB) |
+| --- | --- | --- | --- |
+| normal | 1,000 | 0.09167 | 27.5 |
+| normal | 100,000 | 9.321 | 31.1 |
+| normal | 1,000,000 | 92.52 | 65.4 |
+| beta | 1,000 | 0.9933 | 27.6 |
+| beta | 100,000 | 98.44 | 31.2 |
+| beta | 1,000,000 | 963 | 65.5 |
+| poisson | 1,000 | 0.1685 | 27.6 |
+| poisson | 100,000 | 19.07 | 32.7 |
+| poisson | 1,000,000 | 174.2 | 65.7 |
+
+<!-- END RNG EVIDENCE -->
+
+## Timing interpretation
+
+Five measurements follow one untimed warm-up. Timing includes ChaCha setup,
+quantile evaluation, PHP result allocation and ordinary reclamation of previous
+results. JSON I/O and numerical summaries are outside the timed call. Peak RSS
+covers the whole worker, including summaries and inputs; it is not isolated RNG
+state memory. These are API-level times on the recorded machine, not universal
+throughput guarantees or a comparison with optimized rejection samplers.
+
+The normal/Poisson/beta cases show differing inverse-CDF costs. The method retains
+one numerical quantile path for every family. A future optimized sampler should
+be justified by measured demand and independent distribution/reproducibility tests.
+
+## Reproduction
+
+Configure matching PHP/headers as in [development](../development.qmd). Python's
+standard library and R/jsonlite are reference tools only.
+
+```sh
+cargo build -p php-stats --release --locked
+PHP=/path/to/matching/php python3 tests/benchmarks/run-rng.py
+python3 scripts/distribution-docs.py
+```
+
+The independent ChaCha equations are shared with the fixture generator; they
+read no native uniforms or samples. The sampling API and these benchmarks add
+no R/Python runtime dependency or shared application RNG state.

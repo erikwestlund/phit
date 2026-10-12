@@ -136,6 +136,9 @@ check(stats_binomial_quantile(1.0, 7, 0.0) === 0.0, 'degenerate binomial quantil
 check(stats_poisson_quantile(1.0, 3.0) === INF && stats_binomial_quantile(1.0, 7, 0.4) === 7.0, 'discrete endpoints');
 check(stats_gamma_pdf(0.0, 0.5) === INF && stats_gamma_pdf(0.0, 1.0, 2.0) === 0.5 && stats_gamma_pdf(-1.0, 2.0) === 0.0, 'gamma density at 0');
 check(stats_poisson_pmf(0, 0.0) === 1.0 && stats_binomial_pmf(3, 3, 1.0) === 1.0, 'degenerate distributions');
+check(stats_nbinom_mu_pmf(0, 1e308, 1e308) === 0.0, 'overflowing size + mean is not a point mass');
+check(stats_nbinom_mu_logpmf(0, 1e308, 1e308) === -1e308*log(2.0), 'large size + mean log mass');
+check(stats_nbinom_mu_cdf(0, 1e308, 1e308) === 0.0 && stats_nbinom_mu_sf(0, 1e308, 1e308) === 1.0, 'large NB tails');
 check(stats_nbinom_mu_pmf(0, 3.0, 0.0) === 1.0, 'nbinom with zero mean');
 
 // Defaults, integer arguments and named arguments.

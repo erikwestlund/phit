@@ -124,6 +124,10 @@ and deployment work. The earlier Accelerate trial is retained as
 [historical benchmark evidence](benchmarks/ols.qmd#apple-accelerate-experiment);
 its Cargo feature and foreign-call wrapper have been removed.
 
+The posterior-draw kernels also use nalgebra Cholesky, triangular solves and
+pivoted LU. Their [numerical notes](draw-numerics.qmd) document covariance/rank
+tolerances and independent fixtures; `tests/draws.php` is included in `scripts/check`.
+
 ## Changing the implementation
 
 Keep statistical calculations in crates/stats-core and PHP conversion in

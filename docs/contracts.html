@@ -211,6 +211,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./deployment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Installation, containers and releases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./verification.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Verification</span></a>
   </div>
@@ -509,6 +515,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>This document defines the supported v0.1 release-candidate API. Reflected signatures/defaults, result keys and statistical conventions are checked by the release gate. Changes to signatures, parameter names, result keys, missing-data policy, ordering, validation or statistical conventions must be documented and accompanied by relevant tests. PHP parameter names x, y and missing matter because callers can use named arguments.</p>
+<p>The registered PHP module is <code>php_stats</code> (previously <code>php-stats</code>). PIE requires underscores in extension identifiers. Update extension identity checks and Composer requirements to <code>ext-php_stats</code>; the <code>stats_*</code> functions keep their names. See <a href="./deployment.html">deployment</a> for supported packaging targets and installation.</p>
 <section id="php-entry-points" class="level2">
 <h2 class="anchored" data-anchor-id="php-entry-points">PHP entry points</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>stats_hello()<span class="ot">:</span> <span class="dt">string</span><span class="ot">;</span> <span class="co">// "Hello from Rust!"</span></span>

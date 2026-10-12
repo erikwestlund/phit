@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Real FastCGI requests to isolated FPM workers; no public listener/config edits.
+set -euo pipefail
+workspace_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+php_runtime="${PHP:-$(command -v php)}"
+fpm_runtime="${PHP_FPM:-$(command -v php-fpm)}"
+fcgi_client="${CGI_FCGI:-$(command -v cgi-fcgi)}"
+check_directory="$(mktemp -d "${TMPDIR:-/tmp}/php-stats-fpm.XXXXXX")"
+fpm_pid=''
+cleanup() {
+    if [[ -n "$fpm_pid" ]]; then kill "$fpm_pid" 2>/dev/null || true; wait "$fpm_pid" 2>/dev/null || true; fi
+    rm -rf -- "$check_directory"
+}
+trap cleanup EXIT
+chmod 755 "$check_directory"
+cat > "$check_directory/fpm.conf" <<EOF
+[global]
+error_log = $check_directory/fpm.log
+[stats-check]
+listen = $check_directory/fpm.sock
+user = nobody
+group = nogroup
+pm = static
+pm.max_children = 1
+catch_workers_output = yes
+clear_env = yes
+EOF
+# Non-root FPM ignores user/group; --allow-to-run-as-root is needed only in CI
+# containers, and never changes the production pool configuration.
+"$fpm_runtime" --nodaemonize --allow-to-run-as-root --fpm-config "$check_directory/fpm.conf" > "$check_directory/startup.log" 2>&1 &
+fpm_pid=$!
+for attempt in {1..100}; do
+    [[ -S "$check_directory/fpm.sock" ]] && break
+    if ! kill -0 "$fpm_pid" 2>/dev/null; then cat "$check_directory/startup.log" >&2; exit 1; fi
+    sleep 0.1
+done
+[[ -S "$check_directory/fpm.sock" ]] || { cat "$check_directory/startup.log" >&2; exit 1; }
+SCRIPT_FILENAME="$workspace_root/tests/deployment.php" REQUEST_METHOD=GET \
+    "$fcgi_client" -bind -connect "$check_directory/fpm.sock" > "$check_directory/response"
+"$php_runtime" -r '
+    $response = file_get_contents($argv[1]);
+    $parts = preg_split("/\r?\n\r?\n/", $response, 2);
+    $result = json_decode($parts[1] ?? "", true, flags: JSON_THROW_ON_ERROR);
+    if (($result["ok"] ?? false) !== true || $result["sapi"] !== "fpm-fcgi" || $result["zts"]) {
+        fwrite(STDERR, $response); exit(1);
+    }
+    echo "PHP-FPM deployment passed: ", json_encode($result, JSON_THROW_ON_ERROR), PHP_EOL;
+' "$check_directory/response"

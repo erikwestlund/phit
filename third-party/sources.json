@@ -1,0 +1,34 @@
+[
+  {
+    "package": "argmin",
+    "version": "0.11.0",
+    "path": "third-party/argmin-0.11.0/LICENSE-MIT",
+    "source": "https://raw.githubusercontent.com/argmin-rs/argmin/c94c32adefd6c2525ce05806092ca868ec85fba4/LICENSE-MIT",
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+    "license_choice": "MIT"
+  },
+  {
+    "package": "argmin-math",
+    "version": "0.5.1",
+    "path": "third-party/argmin-math-0.5.1/LICENSE-MIT",
+    "source": "https://raw.githubusercontent.com/argmin-rs/argmin/48dbd837faa4643c936564f34d3480a6639f2673/LICENSE-MIT",
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+    "license_choice": "MIT"
+  },
+  {
+    "package": "ext-php-rs-build",
+    "version": "0.1.1",
+    "path": "third-party/ext-php-rs-build-0.1.1/LICENSE-MIT",
+    "source": "https://raw.githubusercontent.com/extphprs/ext-php-rs/0e3e0c753e845d8b320949b2d9416d5d432bc67a/LICENSE_MIT",
+    "sha256": "5087494cf5b576cbd17d337077975c7a59cad370d5c0febcd7dca0b39b977415",
+    "license_choice": "MIT"
+  },
+  {
+    "package": "ext-php-rs-introspection",
+    "version": "0.2.1",
+    "path": "third-party/ext-php-rs-introspection-0.2.1/LICENSE-MIT",
+    "source": "https://raw.githubusercontent.com/extphprs/ext-php-rs/7c64d6df1a4eb6396bd5602b04d834af1ee9a0ab/LICENSE_MIT",
+    "sha256": "5087494cf5b576cbd17d337077975c7a59cad370d5c0febcd7dca0b39b977415",
+    "license_choice": "MIT"
+  }
+]

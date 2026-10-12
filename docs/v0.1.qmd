@@ -270,3 +270,20 @@ API fixtures include the appended option. See [the contract](contracts.qmd#fixed
 After this API update, the complete gate passed 49 Rust tests, ten PHP suites, and
 all eight examples on the configured Apple Silicon/PHP workstation. The earlier
 validation JSON records the preceding nine-suite run rather than this new check.
+
+## Installation and release packaging
+
+The [deployment guide](deployment.qmd) documents local PIE support, a pinned
+multi-stage PHP-FPM container, a versioned source/binary artifact workflow and
+actual installation checks. The registered module is now `php_stats` to satisfy
+PIE's naming rules; function names remain unchanged. Public registry/release
+publication is pending.
+
+The [packaging record](verifications/packaging-results.json) captures Linux
+Bookworm/aarch64 PHP 8.3.35, 8.4.26 and 8.5.11, including actual CLI and FPM requests,
+plus macOS/arm64 PHP 8.5.10 staging/loading. Each complete gate passes 56 Rust
+tests, 11 PHP suites and eight examples. The added distribution suite checks
+8,618 points with the original tolerances, using independent stored references
+where R differs; scaled-density underflow and API snapshot float typing were
+fixed. Source-archive installation and extracted binary loading pass. The
+configured amd64 CI matrix still needs a remote run before release publication.

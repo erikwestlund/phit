@@ -6,6 +6,7 @@ project:
     - "**/*.qmd"
   resources:
     - figures/
+    - verifications/packaging-results.json
     - verifications/v01-validation.json
     - verifications/reference-manifest.json
     - benchmarks/v01-preservation-results.json
@@ -75,6 +76,7 @@ website:
           - r-compatibility.qmd
           - missing-data.qmd
           - development.qmd
+          - deployment.qmd
           - verification.qmd
           - documentation.qmd
       - href: notebooks/index.qmd

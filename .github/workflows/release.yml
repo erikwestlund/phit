@@ -1,0 +1,61 @@
+name: Prepare versioned release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deployment:
+    uses: ./.github/workflows/packaging.yml
+  source:
+    needs: deployment
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify tag, crate versions and MIT license
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, re, tomllib
+          root = pathlib.Path('.')
+          versions = [tomllib.loads((root / p).read_text())['package']['version']
+                      for p in ['crates/stats-core/Cargo.toml', 'crates/php-extension/Cargo.toml']]
+          assert versions[0] == versions[1], versions
+          assert re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+(?:-[A-Za-z0-9.-]+)?', versions[0])
+          if os.environ['GITHUB_REF_TYPE'] == 'tag':
+              assert os.environ['GITHUB_REF_NAME'] == 'v' + versions[0], 'tag/crate version mismatch'
+          assert (root / 'LICENSE').read_text().startswith('MIT License')
+          with open(os.environ['GITHUB_ENV'], 'a') as out: out.write('RELEASE_VERSION=' + versions[0] + '\n')
+          PY
+      - name: Create source archive and checksums
+        run: |
+          mkdir -p dist
+          git archive --format=tar.gz --prefix="php-stat-models-$RELEASE_VERSION/" HEAD > "dist/php-stat-models-$RELEASE_VERSION.tar.gz"
+          sha256sum "dist/php-stat-models-$RELEASE_VERSION.tar.gz" > dist/SHA256SUMS
+      - name: Check required package files
+        run: |
+          python3 - <<'PY'
+          import os, tarfile
+          version = os.environ['RELEASE_VERSION']
+          with tarfile.open(f'dist/php-stat-models-{version}.tar.gz') as archive:
+              names = {p.name.removeprefix(f'php-stat-models-{version}/') for p in archive.getmembers()}
+          for path in ['LICENSE', 'composer.json', 'Cargo.lock', 'Cargo.toml',
+                       'pie/config.m4', 'pie/Makefile.frag', 'crates/php-extension/src/lib.rs',
+                       'crates/stats-core/src/lib.rs', 'tests/deployment.php']:
+              assert path in names, path
+          assert not any('/_freeze/' in p or p.startswith('docs/site_libs/') for p in names)
+          PY
+      - name: Verify installation from the actual source archive
+        run: |
+          mkdir -p .context/source-test
+          tar -xzf "dist/php-stat-models-$RELEASE_VERSION.tar.gz" -C .context/source-test
+          source_root=".context/source-test/php-stat-models-$RELEASE_VERSION"
+          docker build --progress=plain --target checks -f "$source_root/docker/Dockerfile" -t archive-checks "$source_root"
+          docker build --progress=plain -f "$source_root/docker/Dockerfile" -t archive-runtime "$source_root"
+          "$source_root/scripts/check-container" archive-runtime archive-checks > dist/deployment.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: php-stat-models-source
+          path: dist/

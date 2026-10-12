@@ -1,4 +1,1620 @@
 {
+    "stats_beta_cdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_beta_cdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_beta_logcdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_beta_logcdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_beta_logpdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_beta_logpdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_beta_logsf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_beta_logsf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_beta_pdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_beta_pdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_beta_quantile": {
+        "parameters": [
+            {
+                "name": "p",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_beta_quantile_array": {
+        "parameters": [
+            {
+                "name": "probabilities",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_beta_sf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_beta_sf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "alpha",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "beta",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_binomial_cdf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_binomial_cdf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_binomial_logcdf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_binomial_logcdf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_binomial_logpmf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_binomial_logpmf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_binomial_logsf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_binomial_logsf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_binomial_pmf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_binomial_pmf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_binomial_quantile": {
+        "parameters": [
+            {
+                "name": "p",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_binomial_quantile_array": {
+        "parameters": [
+            {
+                "name": "probabilities",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_binomial_sf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_binomial_sf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "int",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_chisquare_cdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_chisquare_cdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_chisquare_logcdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_chisquare_logcdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_chisquare_logpdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_chisquare_logpdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_chisquare_logsf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_chisquare_logsf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_chisquare_pdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_chisquare_pdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_chisquare_quantile": {
+        "parameters": [
+            {
+                "name": "p",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_chisquare_quantile_array": {
+        "parameters": [
+            {
+                "name": "probabilities",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_chisquare_sf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_chisquare_sf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_correlation": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "y",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "missing",
+                "type": "string",
+                "optional": true,
+                "default": "raise"
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_covariance": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "y",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "type",
+                "type": "string",
+                "optional": true,
+                "default": "sample"
+            },
+            {
+                "name": "missing",
+                "type": "string",
+                "optional": true,
+                "default": "raise"
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_exponential_cdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_exponential_cdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_exponential_logcdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_exponential_logcdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_exponential_logpdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_exponential_logpdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_exponential_logsf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_exponential_logsf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_exponential_pdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_exponential_pdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_exponential_quantile": {
+        "parameters": [
+            {
+                "name": "p",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_exponential_quantile_array": {
+        "parameters": [
+            {
+                "name": "probabilities",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_exponential_sf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_exponential_sf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "rate",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_f_cdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_f_cdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_f_logcdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_f_logcdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_f_logpdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_f_logpdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_f_logsf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_f_logsf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_f_pdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_f_pdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_f_quantile": {
+        "parameters": [
+            {
+                "name": "p",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_f_quantile_array": {
+        "parameters": [
+            {
+                "name": "probabilities",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_f_sf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_f_sf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df1",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df2",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_gamma_cdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_gamma_cdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_gamma_logcdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_gamma_logcdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_gamma_logpdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_gamma_logpdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_gamma_logsf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_gamma_logsf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_gamma_pdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_gamma_pdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_gamma_quantile": {
+        "parameters": [
+            {
+                "name": "p",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_gamma_quantile_array": {
+        "parameters": [
+            {
+                "name": "probabilities",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_gamma_sf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_gamma_sf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "shape",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
     "stats_hello": {
         "parameters": [],
         "return_type": "string"
@@ -243,6 +1859,182 @@
             "z_statistics"
         ]
     },
+    "stats_logistic_cdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_logistic_cdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_logistic_logcdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_logistic_logcdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_logistic_logpdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_logistic_logpdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_logistic_logsf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_logistic_logsf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
     "stats_logistic_mixed": {
         "parameters": [
             {
@@ -345,6 +2137,1346 @@
             "std_errors",
             "z_statistics"
         ]
+    },
+    "stats_logistic_pdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_logistic_pdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_logistic_quantile": {
+        "parameters": [
+            {
+                "name": "p",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_logistic_quantile_array": {
+        "parameters": [
+            {
+                "name": "probabilities",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_logistic_sf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_logistic_sf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "location",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_lognormal_cdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_lognormal_cdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_lognormal_logcdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_lognormal_logcdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_lognormal_logpdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_lognormal_logpdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_lognormal_logsf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_lognormal_logsf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_lognormal_pdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_lognormal_pdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_lognormal_quantile": {
+        "parameters": [
+            {
+                "name": "p",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_lognormal_quantile_array": {
+        "parameters": [
+            {
+                "name": "probabilities",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_lognormal_sf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_lognormal_sf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "meanlog",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sdlog",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_mean": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "missing",
+                "type": "string",
+                "optional": true,
+                "default": "raise"
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_median": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "missing",
+                "type": "string",
+                "optional": true,
+                "default": "raise"
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_cdf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_cdf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_nbinom_logcdf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_logcdf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_nbinom_logpmf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_logpmf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_nbinom_logsf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_logsf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_nbinom_mu_cdf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_mu_cdf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_nbinom_mu_logcdf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_mu_logcdf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_nbinom_mu_logpmf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_mu_logpmf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_nbinom_mu_logsf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_mu_logsf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_nbinom_mu_pmf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_mu_pmf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_nbinom_mu_quantile": {
+        "parameters": [
+            {
+                "name": "p",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_mu_quantile_array": {
+        "parameters": [
+            {
+                "name": "probabilities",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_nbinom_mu_sf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_mu_sf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mu",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_nbinom_pmf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_pmf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_nbinom_quantile": {
+        "parameters": [
+            {
+                "name": "p",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_quantile_array": {
+        "parameters": [
+            {
+                "name": "probabilities",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_nbinom_sf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_nbinom_sf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "size",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "prob",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_normal_cdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_normal_cdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_normal_logcdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_normal_logcdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_normal_logpdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_normal_logpdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_normal_logsf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_normal_logsf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_normal_pdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_normal_pdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_normal_quantile": {
+        "parameters": [
+            {
+                "name": "p",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_normal_quantile_array": {
+        "parameters": [
+            {
+                "name": "probabilities",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_normal_sf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_normal_sf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "mean",
+                "type": "float",
+                "optional": true,
+                "default": 0.0
+            },
+            {
+                "name": "sd",
+                "type": "float",
+                "optional": true,
+                "default": 1.0
+            }
+        ],
+        "return_type": "array"
     },
     "stats_ols": {
         "parameters": [
@@ -470,6 +3602,216 @@
             "z_statistics"
         ]
     },
+    "stats_poisson_cdf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_poisson_cdf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_poisson_logcdf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_poisson_logcdf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_poisson_logpmf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_poisson_logpmf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_poisson_logsf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_poisson_logsf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_poisson_pmf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_poisson_pmf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_poisson_quantile": {
+        "parameters": [
+            {
+                "name": "p",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_poisson_quantile_array": {
+        "parameters": [
+            {
+                "name": "probabilities",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_poisson_sf": {
+        "parameters": [
+            {
+                "name": "k",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_poisson_sf_array": {
+        "parameters": [
+            {
+                "name": "counts",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "lambda",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
     "stats_probit": {
         "parameters": [
             {
@@ -531,5 +3873,349 @@
             "std_errors",
             "z_statistics"
         ]
+    },
+    "stats_quantile": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "p",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "missing",
+                "type": "string",
+                "optional": true,
+                "default": "raise"
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_quantile_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "probabilities",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "missing",
+                "type": "string",
+                "optional": true,
+                "default": "raise"
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_sd": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "type",
+                "type": "string",
+                "optional": true,
+                "default": "sample"
+            },
+            {
+                "name": "missing",
+                "type": "string",
+                "optional": true,
+                "default": "raise"
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_t_cdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_t_cdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_t_logcdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_t_logcdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_t_logpdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_t_logpdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_t_logsf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_t_logsf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_t_pdf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_t_pdf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_t_quantile": {
+        "parameters": [
+            {
+                "name": "p",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_t_quantile_array": {
+        "parameters": [
+            {
+                "name": "probabilities",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_t_sf": {
+        "parameters": [
+            {
+                "name": "x",
+                "type": "float",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_t_sf_array": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "df",
+                "type": "float",
+                "optional": false
+            }
+        ],
+        "return_type": "array"
+    },
+    "stats_variance": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "type",
+                "type": "string",
+                "optional": true,
+                "default": "sample"
+            },
+            {
+                "name": "missing",
+                "type": "string",
+                "optional": true,
+                "default": "raise"
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_weighted_mean": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "weights",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "missing",
+                "type": "string",
+                "optional": true,
+                "default": "raise"
+            }
+        ],
+        "return_type": "float"
+    },
+    "stats_weighted_variance": {
+        "parameters": [
+            {
+                "name": "values",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "weights",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "type",
+                "type": "string",
+                "optional": true,
+                "default": "frequency"
+            },
+            {
+                "name": "missing",
+                "type": "string",
+                "optional": true,
+                "default": "raise"
+            }
+        ],
+        "return_type": "float"
     }
 }

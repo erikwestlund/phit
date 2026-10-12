@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Test the production image, including FPM with its real shipped configuration.
+set -euo pipefail
+runtime_image="${1:?Usage: scripts/check-container RUNTIME_IMAGE CHECKS_IMAGE}"
+checks_image="${2:?Pass the checks-stage image with cgi-fcgi installed}"
+workspace_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+check_directory="$(mktemp -d "${TMPDIR:-/tmp}/php-stats-container.XXXXXX")"
+container_name="php-stats-check-$$"
+started=false
+cleanup() {
+    status=$?
+    if "$started"; then
+        if [[ "$status" != 0 ]]; then docker logs "$container_name" >&2 || true; fi
+        docker rm --force "$container_name" >/dev/null || true
+    fi
+    rm -rf -- "$check_directory"
+    exit "$status"
+}
+trap cleanup EXIT
+chmod 755 "$check_directory"
+docker run --rm --volume "$workspace_root:/src:ro" "$runtime_image" \
+    php /src/tests/deployment.php > "$check_directory/cli.json"
+docker run --detach --name "$container_name" --volume "$workspace_root:/src:ro" \
+    "$runtime_image" >/dev/null
+started=true
+ready=false
+for attempt in {1..30}; do
+    if docker run --rm --network "container:$container_name" \
+        --env SCRIPT_FILENAME=/src/tests/deployment.php --env REQUEST_METHOD=GET \
+        "$checks_image" cgi-fcgi -bind -connect 127.0.0.1:9000 \
+        > "$check_directory/fpm.response" 2> "$check_directory/client.log"; then
+        ready=true
+        break
+    fi
+    sleep 0.2
+done
+"$ready" || { cat "$check_directory/client.log" >&2; exit 1; }
+docker run --rm --volume "$check_directory:/check:ro" "$checks_image" php -r '
+    $cli = json_decode(file_get_contents("/check/cli.json"), true, flags: JSON_THROW_ON_ERROR);
+    $response = file_get_contents("/check/fpm.response");
+    $parts = preg_split("/\r?\n\r?\n/", $response, 2);
+    $fpm = json_decode($parts[1] ?? "", true, flags: JSON_THROW_ON_ERROR);
+    if (($cli["ok"] ?? false) !== true || ($fpm["ok"] ?? false) !== true ||
+        $cli["sapi"] !== "cli" || $fpm["sapi"] !== "fpm-fcgi" ||
+        $cli["php"] !== $fpm["php"] || $cli["coefficients"] !== $fpm["coefficients"] ||
+        $cli["poisson_rate"] !== $fpm["poisson_rate"] || $cli["zts"] || $fpm["zts"]) {
+        fwrite(STDERR, json_encode([$cli, $fpm], JSON_THROW_ON_ERROR)); exit(1);
+    }
+    echo json_encode(["cli" => $cli, "fpm" => $fpm], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+'

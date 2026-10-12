@@ -8,6 +8,11 @@ result keys, missing-data policy, ordering, validation or statistical convention
 and accompanied by relevant tests. PHP parameter names x, y and missing matter because
 callers can use named arguments.
 
+The registered PHP module is `php_stats` (previously `php-stats`). PIE requires
+underscores in extension identifiers. Update extension identity checks and
+Composer requirements to `ext-php_stats`; the `stats_*` functions keep their names.
+See [deployment](deployment.qmd) for supported packaging targets and installation.
+
 ## PHP entry points
 
 ```php

@@ -1,0 +1,16 @@
+{
+    "name": "erikwestlund/php-stat-models",
+    "description": "Native Rust statistical modeling for PHP: regression, likelihood and mixed models",
+    "type": "php-ext",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.3 <8.6"
+    },
+    "php-ext": {
+        "extension-name": "php_stats",
+        "build-path": "pie",
+        "support-nts": true,
+        "support-zts": false,
+        "os-families": ["linux", "darwin"]
+    }
+}

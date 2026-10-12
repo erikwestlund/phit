@@ -1,4 +1,6 @@
 use ext_php_rs::{boxed::ZBox, prelude::*, types::ZendHashTable};
+mod descriptive;
+mod distributions;
 fn stats_exception(e: stats_core::StatsError) -> PhpException {
     PhpException::new(
         e.to_string(),
@@ -1078,7 +1080,8 @@ pub fn stats_hello() -> String {
 
 #[php_module]
 pub fn get_module(module: ModuleBuilder) -> ModuleBuilder {
-    module
+    let module = module
+        .name("php_stats") // Canonical PHP/PIE extension identifier (underscores required).
         .function(wrap_function!(stats_hello))
         .function(wrap_function!(stats_ols))
         .function(wrap_function!(stats_logistic))
@@ -1086,5 +1089,7 @@ pub fn get_module(module: ModuleBuilder) -> ModuleBuilder {
         .function(wrap_function!(stats_poisson))
         .function(wrap_function!(stats_lmm))
         .function(wrap_function!(stats_lmm_fit))
-        .function(wrap_function!(stats_logistic_mixed))
+        .function(wrap_function!(stats_logistic_mixed));
+    let module = distributions::register(module);
+    descriptive::register(module)
 }

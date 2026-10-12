@@ -30,6 +30,7 @@ and independent numerical references.
   responsibilities and scope.
 - [Contracts](contracts.qmd): current PHP and Rust APIs, shapes, ordering, errors
   and statistical edge cases.
+- [Server deployment and releases](deployment.qmd): PIE, Docker, PHP-FPM and tested artifacts.
 - [Development and installation](development.qmd): local setup, separate checkouts,
   builds and application deployment.
 - [Verification](verification.qmd): checks, reference fixtures, tolerances and

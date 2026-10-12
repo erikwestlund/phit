@@ -1,0 +1,46 @@
+name: Installer and PHP-FPM checks
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.3'
+            image: php:8.3-fpm-bookworm@sha256:f768bd9142444f6126a690697b028c23f30878c3b628a7c355dfce75e29cc045
+          - php: '8.4'
+            image: php:8.4-fpm-bookworm@sha256:6bfef8e416977aa41f48e3e42a40c1e08050d24e4a938c6edb421400bff24601
+          - php: '8.5'
+            image: php:8.5-fpm-bookworm@sha256:dd198c828c224e479bdaa184cdcf04a28c73d186bf5a885493bf9cc78d7196ef
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and verify PIE installation
+        env:
+          PHP_IMAGE: ${{ matrix.image }}
+        run: docker build --progress=plain --build-arg "PHP_IMAGE=$PHP_IMAGE" --target checks -f docker/Dockerfile -t php-stats-checks .
+      - name: Build production runtime
+        env:
+          PHP_IMAGE: ${{ matrix.image }}
+        run: docker build --progress=plain --build-arg "PHP_IMAGE=$PHP_IMAGE" -f docker/Dockerfile -t php-stats-runtime .
+      - name: Verify CLI and production FPM requests
+        run: ./scripts/check-container php-stats-runtime php-stats-checks > deployment.json
+      - name: Prepare tested binary and dependency notices
+        env:
+          PHP_IMAGE: ${{ matrix.image }}
+        run: docker build --progress=plain --build-arg "PHP_IMAGE=$PHP_IMAGE" --target binaries --output type=local,dest=binaries -f docker/Dockerfile .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-amd64-php-${{ matrix.php }}-nts-bookworm
+          path: binaries/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-amd64-php-${{ matrix.php }}-deployment
+          path: deployment.json

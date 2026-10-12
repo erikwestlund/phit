@@ -58,43 +58,47 @@
   </url>
   <url>
     <loc>https://erikwestlund.github.io/php-stat-models/index.html</loc>
-    <lastmod>2026-10-12T01:29:21.831Z</lastmod>
+    <lastmod>2026-10-12T13:42:49.142Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/php-stat-models/development.html</loc>
-    <lastmod>2026-10-12T01:28:15.740Z</lastmod>
+    <lastmod>2026-10-12T13:42:49.142Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/data/lmm/index.html</loc>
-    <lastmod>2026-10-11T21:01:02.769Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/deployment.html</loc>
+    <lastmod>2026-10-12T14:27:42.604Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/benchmarks/probit.html</loc>
-    <lastmod>2026-10-11T20:14:48.934Z</lastmod>
-  </url>
-  <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/benchmarks/ols.html</loc>
-    <lastmod>2026-10-11T20:14:48.933Z</lastmod>
-  </url>
-  <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/benchmarks/logistic-mixed.html</loc>
-    <lastmod>2026-10-12T01:04:32.772Z</lastmod>
-  </url>
-  <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/benchmarks/lmm.html</loc>
-    <lastmod>2026-10-11T20:45:22.256Z</lastmod>
-  </url>
-  <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/benchmarks/logistic.html</loc>
-    <lastmod>2026-10-11T20:14:48.933Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/contracts.html</loc>
+    <lastmod>2026-10-12T13:42:49.142Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/php-stat-models/benchmarks/poisson.html</loc>
     <lastmod>2026-10-11T20:14:48.934Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stat-models/contracts.html</loc>
-    <lastmod>2026-10-12T01:32:42.304Z</lastmod>
+    <loc>https://erikwestlund.github.io/php-stat-models/benchmarks/logistic.html</loc>
+    <lastmod>2026-10-11T20:14:48.933Z</lastmod>
+  </url>
+  <url>
+    <loc>https://erikwestlund.github.io/php-stat-models/benchmarks/lmm.html</loc>
+    <lastmod>2026-10-11T20:45:22.256Z</lastmod>
+  </url>
+  <url>
+    <loc>https://erikwestlund.github.io/php-stat-models/benchmarks/logistic-mixed.html</loc>
+    <lastmod>2026-10-12T01:04:32.772Z</lastmod>
+  </url>
+  <url>
+    <loc>https://erikwestlund.github.io/php-stat-models/benchmarks/ols.html</loc>
+    <lastmod>2026-10-11T20:14:48.933Z</lastmod>
+  </url>
+  <url>
+    <loc>https://erikwestlund.github.io/php-stat-models/benchmarks/probit.html</loc>
+    <lastmod>2026-10-11T20:14:48.934Z</lastmod>
+  </url>
+  <url>
+    <loc>https://erikwestlund.github.io/php-stat-models/data/lmm/index.html</loc>
+    <lastmod>2026-10-11T21:01:02.769Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/php-stat-models/design-philosophy.html</loc>
@@ -146,7 +150,7 @@
   </url>
   <url>
     <loc>https://erikwestlund.github.io/php-stat-models/v0.1.html</loc>
-    <lastmod>2026-10-12T01:31:04.513Z</lastmod>
+    <lastmod>2026-10-12T14:27:42.604Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/php-stat-models/verifications/lmm.html</loc>

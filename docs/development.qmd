@@ -93,6 +93,9 @@ is `cargo install cargo-php --locked`, then from `crates/php-extension`,
 to the CLI php.ini shown by `php --ini`. Then `php examples/ols.php` runs directly.
 Rebuild for each PHP version; `-n` skips ini files for isolated development tests.
 
+For PIE installation, container builds, production FPM checks and release artifacts,
+see [installation and deployment](deployment.qmd).
+
 ## Running in an application
 
 Build the release extension against the PHP installation used by the application.
@@ -102,7 +105,7 @@ permanent absolute path and enable it in the relevant PHP configuration.
 
 CLI and PHP-FPM may read different ini files. Enable the extension for FPM as well
 as CLI when serving web requests, and restart FPM after installation or replacement.
-Verify `extension_loaded('php-stats')` and `function_exists('stats_ols')` and `function_exists('stats_logistic')` in the
+Verify `extension_loaded('php_stats')` and `function_exists('stats_ols')` and `function_exists('stats_logistic')` in the
 actual application runtime. Once enabled, application code calls stats_ols(), stats_logistic(), stats_probit() or stats_poisson()
 directly. There is no per-call import, autoloader or Composer dependency.
 
@@ -130,8 +133,9 @@ mathematical steps near the code, and update contracts and reference tests when
 behavior changes. Do not add abstractions for hypothetical models.
 
 Follow [verification.qmd](verification.qmd) for the checks appropriate to a change.
-The tested baseline is Apple Silicon, Rust 1.99 and Homebrew PHP 8.5.10. Linux and
-other PHP versions have setup instructions but have not yet been verified here.
+The tested baseline is Apple Silicon, Rust 1.99 and Homebrew PHP 8.5.10. Linux container/PIE/FPM evidence is now recorded in
+[deployment verification](deployment.qmd#deployment-verification); other configurations
+remain subject to the supported-matrix checks.
 
 The general mixed fitter also uses pinned Rust-native `bobyqa` and `argmin`
 (Nelder–Mead). These add no C/Fortran, BLAS or LAPACK runtime requirements.

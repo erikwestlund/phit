@@ -208,6 +208,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "cdflib"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "599beb985a612a1195c1fe3919dbdece7233472ec3360796a70887a2959bf753"
+dependencies = [
+ "thiserror",
+]
+
+[[package]]
 name = "cexpr"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1412,6 +1421,7 @@ dependencies = [
  "argmin",
  "argmin-math",
  "bobyqa",
+ "cdflib",
  "nalgebra",
  "serde_json",
  "statrs",

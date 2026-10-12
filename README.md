@@ -91,6 +91,21 @@ Then call `stats_ols()`, `stats_poisson()`, etc. normally. The
 [PHP stubs](stubs/php-stats.php) support IDEs and static analysis; do not include
 them at runtime.
 
+## Server installation and containers
+
+The [deployment guide](https://erikwestlund.github.io/php-stat-models/deployment.html)
+explains PIE, PHP-FPM, Docker and versioned binary/source artifacts.
+
+```sh
+docker build --target checks -f docker/Dockerfile -t php-stats:checks .
+docker build -f docker/Dockerfile -t php-stats:local .
+./scripts/check-container php-stats:local php-stats:checks
+```
+
+The runtime image has the native extension enabled; use it as your application's
+PHP-FPM base. The registered extension name is `php_stats`. PIE support is prepared
+for local checkouts; public Packagist installation and tagged releases are pending.
+
 ## Data and errors
 
 Inputs are numeric PHP arrays. Null and `NAN` values are dropped listwise with a

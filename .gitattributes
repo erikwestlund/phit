@@ -2,3 +2,18 @@
 docs/**/*.html linguist-generated=true -whitespace
 docs/site_libs/** linguist-generated=true -whitespace
 docs/_freeze/** linguist-generated=true
+
+# Keep generated website caches/assets out of PIE/source release archives.
+/.github export-ignore
+/.context export-ignore
+/docs/_freeze export-ignore
+/docs/_site export-ignore
+/docs/.quarto export-ignore
+/docs/site_libs export-ignore
+/docs/**/*.html export-ignore
+/docs/**/*_files export-ignore
+/docs/*_files export-ignore
+/docs/benchmarks/figures export-ignore
+/docs/figures/*.png export-ignore
+/docs/figures/*.svg export-ignore
+/docs/search.json export-ignore

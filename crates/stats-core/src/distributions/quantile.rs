@@ -64,41 +64,31 @@ pub(super) fn continuous(p: f64, start: f64, lower: f64, upper: f64, f: &LogTail
     if gx < 0.0 {
         a = x;
         if upper.is_infinite() {
-            let mut next = x;
-            loop {
-                next = expand(next, 1.0);
-                if next == f64::INFINITY {
-                    return upper;
+            match walk(x, 1.0, &|v| {
+                g(v).partial_cmp(&0.0) != Some(std::cmp::Ordering::Less)
+            }) {
+                None => return upper,
+                Some((hit, miss)) => {
+                    if g(hit).is_nan() {
+                        return f64::NAN;
+                    }
+                    (a, b) = (miss, hit);
                 }
-                let gn = g(next);
-                if gn.is_nan() {
-                    return f64::NAN;
-                }
-                if gn >= 0.0 {
-                    b = next;
-                    break;
-                }
-                a = next;
             }
         }
     } else {
         b = x;
         if lower.is_infinite() {
-            let mut next = x;
-            loop {
-                next = expand(next, -1.0);
-                if next == f64::NEG_INFINITY {
-                    return lower;
+            match walk(x, -1.0, &|v| {
+                g(v).partial_cmp(&0.0) != Some(std::cmp::Ordering::Greater)
+            }) {
+                None => return lower,
+                Some((hit, miss)) => {
+                    if g(hit).is_nan() {
+                        return f64::NAN;
+                    }
+                    (a, b) = (hit, miss);
                 }
-                let gn = g(next);
-                if gn.is_nan() {
-                    return f64::NAN;
-                }
-                if gn <= 0.0 {
-                    a = next;
-                    break;
-                }
-                b = next;
             }
         } else if lower == 0.0 && g(f64::MIN_POSITIVE) > 0.0 {
             // The quantile underflows below the smallest normal double.
@@ -133,6 +123,67 @@ pub(super) fn continuous(p: f64, start: f64, lower: f64, upper: f64, f: &LogTail
         }
     }
     f64::NAN
+}
+
+/// Walk outward from `x` with expand() until `stop` holds (a NaN tail counts as
+/// stopping), returning the first stopping point and the point before it, or None
+/// once the walk reaches the infinite end. Visits exactly expand()'s points, but
+/// searches its additive stretch toward zero by exponential probing and bisection:
+/// while |v| >= 4 and |v| < 2^54 each +-2 step is exact, so v + 2k*direction equals
+/// k sequential steps. A start so large that +-2 cannot change it fails as NaN
+/// instead of looping forever.
+fn walk(x: f64, direction: f64, stop: &dyn Fn(f64) -> bool) -> Option<(f64, f64)> {
+    const EXACT_STEPS: f64 = 18_014_398_509_481_984.0; // 2^54
+    let mut previous = x;
+    loop {
+        if previous * direction < -4.0 && previous.abs() < EXACT_STEPS {
+            // Points previous + 2k*direction, k = 1..last, keep |v| >= 4.
+            let last = ((previous.abs() - 4.0) / 2.0).floor();
+            let at = |k: f64| previous + direction * 2.0 * k;
+            let (mut miss, mut probe) = (0.0, 1.0);
+            while probe <= last && !stop(at(probe)) {
+                miss = probe;
+                probe *= 2.0;
+            }
+            if probe > last {
+                probe = if miss < last && stop(at(last)) {
+                    last
+                } else {
+                    f64::INFINITY
+                };
+            }
+            if probe.is_finite() {
+                while probe - miss > 1.0 {
+                    let mid = (miss + 0.5 * (probe - miss)).floor();
+                    if stop(at(mid)) {
+                        probe = mid;
+                    } else {
+                        miss = mid;
+                    }
+                }
+                let before = if probe == 1.0 {
+                    previous
+                } else {
+                    at(probe - 1.0)
+                };
+                return Some((at(probe), before));
+            }
+            if last >= 1.0 {
+                previous = at(last);
+            }
+        }
+        let next = expand(previous, direction);
+        if next == direction * f64::INFINITY {
+            return None;
+        }
+        if next == previous {
+            return Some((f64::NAN, previous));
+        }
+        if stop(next) {
+            return Some((next, previous));
+        }
+        previous = next;
+    }
 }
 
 // Grow outward quickly: additive near zero, then squaring the magnitude, and

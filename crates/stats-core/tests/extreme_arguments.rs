@@ -55,3 +55,17 @@ fn ordinary_parameters_are_unaffected() {
     let value = returns_promptly("F cdf", || FisherF::new(5.0, 3.0).unwrap().cdf(2.0));
     assert!((value - 0.698_452_637_304_924_2).abs() < 1e-15);
 }
+
+#[test]
+fn tiny_df_t_quantiles_bracket_quickly_with_unchanged_values() {
+    // The additive bracket walk once took milliseconds to seconds here; the
+    // bisection over the same points must return the identical double.
+    let start = std::time::Instant::now();
+    let q = StudentT::new(0.01).unwrap().quantile(0.2);
+    assert_eq!(q, -3.124_236_391_667_611_3e38);
+    assert_eq!(
+        StudentT::new(0.01).unwrap().quantile(0.6),
+        246_458_794.805_535_44
+    );
+    assert!(start.elapsed() < Duration::from_millis(50));
+}

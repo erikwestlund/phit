@@ -1,0 +1,6 @@
+id,text,note
+1,"a,b","say ""hi"""
+2,"multi
+line",  "  padded"  
+3,plain,x"y
+4,"",""

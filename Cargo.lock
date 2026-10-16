@@ -1422,6 +1422,7 @@ dependencies = [
  "argmin-math",
  "bobyqa",
  "cdflib",
+ "memchr",
  "nalgebra",
  "rand",
  "rand_chacha",

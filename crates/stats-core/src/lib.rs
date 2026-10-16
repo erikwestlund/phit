@@ -1,4 +1,5 @@
 //! Pure Rust statistical calculations, independent of PHP.
+pub mod csv;
 pub mod descriptive;
 pub mod distributions;
 pub mod draws;

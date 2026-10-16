@@ -11,6 +11,8 @@ argmin-math = { version = "=0.5.1", default-features = false, features = ["vec"]
 # Tail-accurate incomplete beta/gamma (TOMS 708/654) and Cody normal CDF for the
 # distribution API; statrs remains the special-function source for the estimators.
 cdflib = "=0.4.3"
+# Line and delimiter search for the CSV reader (already locked transitively).
+memchr = "=2.8.3"
 nalgebra = "0.35"
 # Explicitly seeded sampling; both versions were already locked transitively.
 rand = { version = "=0.9.5", default-features = false, features = ["std"] }

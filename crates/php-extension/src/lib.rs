@@ -1,4 +1,5 @@
 use ext_php_rs::{boxed::ZBox, prelude::*, types::ZendHashTable};
+mod csv;
 mod descriptive;
 mod distributions;
 mod draws;
@@ -1079,5 +1080,5 @@ pub fn get_module(module: ModuleBuilder) -> ModuleBuilder {
         .function(wrap_function!(stats_logistic_mixed));
     let module = formula::register(module);
     let module = distributions::register(module);
-    draws::register(descriptive::register(module))
+    csv::register(draws::register(descriptive::register(module)))
 }

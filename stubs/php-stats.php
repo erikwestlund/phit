@@ -1991,6 +1991,20 @@ function stats_quantile(array $values, float $p, string $missing = 'raise'): flo
 function stats_quantile_array(array $values, array $probabilities, string $missing = 'raise'): array {}
 
 /**
+ * Read a delimited text file the way phibble's PHP reader (after readr::read_delim()) does: same records,
+ * names, guessed types, values and problem messages. Contract and phibble/readr differences: docs/io.qmd.
+ * Dates are int days since 1970-01-01; datetimes are int microseconds since the epoch (UTC); NA is null.
+ * failed counts values that did not parse under the column's type (they are null). Skipped ('_') columns are null.
+ * @param string $path A readable file (bytes are passed through; no encoding validation)
+ * @param array{delimiter?: string, quote?: string, escape_double?: bool, escape_backslash?: bool, na?: list<string>, trim_ws?: bool,
+ *   skip?: int, n_max?: ?int, comment?: string, skip_empty_rows?: bool, col_names?: bool, types?: array<int, '?'|'l'|'i'|'d'|'c'|'D'|'T'|'_'>,
+ *   guess_max?: int, decimal_mark?: string, grouping_mark?: ?string} $options readr's defaults when omitted
+ * @return array{names: list<string>, columns: list<null|array{type: 'bool'|'int'|'float'|'string'|'date'|'datetime', values: list<bool|int|float|string|null>, failed: int}>, problems: list<string>}
+ * @throws \ValueError Missing or unreadable file, or an invalid option.
+ */
+function stats_read_csv(string $path, array $options = []): array {}
+
+/**
  * Standard deviation: square root of stats_var.
  * null/NAN are missing: missing 'raise' (default) rejects them, 'drop' removes them (pairwise for two arrays).
  * Nonfinite arithmetic raises 1003; constant-input correlation remains NAN.

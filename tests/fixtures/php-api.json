@@ -4660,6 +4660,27 @@
         ],
         "return_type": "array"
     },
+    "stats_read_csv": {
+        "parameters": [
+            {
+                "name": "path",
+                "type": "string",
+                "optional": false
+            },
+            {
+                "name": "options",
+                "type": "array",
+                "optional": true,
+                "default": []
+            }
+        ],
+        "return_type": "array",
+        "result_keys": [
+            "columns",
+            "names",
+            "problems"
+        ]
+    },
     "stats_sd": {
         "parameters": [
             {

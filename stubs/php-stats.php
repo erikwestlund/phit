@@ -747,7 +747,102 @@ function stats_gamma_sf(float $x, float $shape, float $scale = 1.0): float {}
  */
 function stats_gamma_sf_array(array $values, float $shape, float $scale = 1.0): array {}
 
+/**
+ * Generalized linear model from a formula, like R's glm(): gaussian/identity (stats_ols core), binomial/logit, binomial/probit
+ * and poisson/log (the matrix GLM cores). Binomial responses: 0/1, logical, factor/string (first level = failure),
+ * proportions with trial weights, or cbind(successes, failures). The empty link selects the canonical link.
+ * Formula syntax and R differences: docs/formulas.qmd. Rows with null/NAN in any variable the formula uses are
+ * dropped with one E_WARNING (missing 'raise' rejects them); retained_rows/dropped_rows are original positions.
+ * @param string $formula R formula, e.g. 'y ~ log(x) + f * z + offset(log(t))'
+ * @param array<string,list<int|float|bool|string|null>|array{levels:list<string>,codes:list<int|null>,ordered:bool}>|object $data Named columns or factor descriptors; objects use toModelData(), else toColumns()
+ * @param string $family 'gaussian', 'binomial' or 'poisson'
+ * @param string $link '' (canonical), 'identity', 'logit', 'probit' or 'log'
+ * @param array<int|float|null>|string|null $weights Positive prior weights aligned with the original rows, or a column name
+ * @return array{
+ *   coefficients: list<float>,
+ *   covariance: list<list<float>>,
+ *   std_errors: list<float>,
+ *   p_values: list<float>,
+ *   conf_int: list<array{float,float}>,
+ *   fitted: list<float>,
+ *   residuals: list<float>,
+ *   log_likelihood: float,
+ *   df_residual: int,
+ *   diagnostics: array{converged:bool,solver:string,warnings:list<string>,iterations?:int,evaluations?:int,gradient_max?:float,boundary?:bool,singular?:bool},
+ *   n_input: int,
+ *   n_observations: int,
+ *   n_dropped: int,
+ *   retained_rows: list<int>,
+ *   dropped_rows: list<int>,
+ *   z_statistics: list<float>,
+ *   deviance: float,
+ *   null_deviance: float,
+ *   aic: float,
+ *   iterations: int,
+ *   converged: bool,
+ *   family: string,
+ *   link: string,
+ *   formula: string,
+ *   response: string,
+ *   columns: list<string>,
+ *   terms: list<string>,
+ *   assign: list<int>,
+ *   intercept: bool,
+ *   named: array<string,float>,
+ *   t_statistics?: list<float>,
+ *   rss?: float,
+ *   residual_variance?: float,
+ *   sigma?: float,
+ *   r_squared?: float,
+ *   adj_r_squared?: float,
+ * }
+ * @throws \Exception Statistical or input error (codes 1001–1008); unsupported functions/families/random terms raise 1007.
+ */
+function stats_glm(string $formula, mixed $data, string $family = 'gaussian', string $link = '', string $missing = 'drop', mixed $weights = NULL): array {}
+
 function stats_hello(): string {}
+
+/**
+ * Linear model from a formula, like R's lm(): builds the model matrix and calls the stats_ols core (weights, offset() terms).
+ * Factor levels unused after deletion are dropped, as lm() does. Rank deficiency raises 1004 instead of R's NA coefficients.
+ * Formula syntax and R differences: docs/formulas.qmd. Rows with null/NAN in any variable the formula uses are
+ * dropped with one E_WARNING (missing 'raise' rejects them); retained_rows/dropped_rows are original positions.
+ * @param string $formula R formula, e.g. 'y ~ log(x) + f * z + offset(log(t))'
+ * @param array<string,list<int|float|bool|string|null>|array{levels:list<string>,codes:list<int|null>,ordered:bool}>|object $data Named columns or factor descriptors; objects use toModelData(), else toColumns()
+ * @param array<int|float|null>|string|null $weights Positive prior weights aligned with the original rows, or a column name
+ * @return array{
+ *   coefficients: list<float>,
+ *   covariance: list<list<float>>,
+ *   std_errors: list<float>,
+ *   p_values: list<float>,
+ *   conf_int: list<array{float,float}>,
+ *   fitted: list<float>,
+ *   residuals: list<float>,
+ *   log_likelihood: float,
+ *   df_residual: int,
+ *   diagnostics: array{converged:bool,solver:string,warnings:list<string>,iterations?:int,evaluations?:int,gradient_max?:float,boundary?:bool,singular?:bool},
+ *   n_input: int,
+ *   n_observations: int,
+ *   n_dropped: int,
+ *   retained_rows: list<int>,
+ *   dropped_rows: list<int>,
+ *   t_statistics: list<float>,
+ *   rss: float,
+ *   residual_variance: float,
+ *   sigma: float,
+ *   r_squared: float,
+ *   adj_r_squared: float,
+ *   formula: string,
+ *   response: string,
+ *   columns: list<string>,
+ *   terms: list<string>,
+ *   assign: list<int>,
+ *   intercept: bool,
+ *   named: array<string,float>,
+ * }
+ * @throws \Exception Statistical or input error (codes 1001–1008); unsupported functions/families/random terms raise 1007.
+ */
+function stats_lm(string $formula, mixed $data, string $missing = 'drop', mixed $weights = NULL): array {}
 
 /**
  * Predictor matrix: rows are observations. A fixed intercept is prepended by default.
@@ -1169,6 +1264,36 @@ function stats_mean(array $values, string $missing = 'raise'): float {}
  * @throws \Exception Input error (codes 1001–1003).
  */
 function stats_median(array $values, string $missing = 'raise'): float {}
+
+/**
+ * R-compatible model.matrix() for a formula over named columns: treatment contrasts (first level is the reference),
+ * contr.poly for ordered factors, R column names/term order, inline transforms, offset() and random-effect bars.
+ * Unused factor levels are kept, as in model.matrix(); x includes the "(Intercept)" column when present.
+ * Formula syntax and R differences: docs/formulas.qmd. Rows with null/NAN in any variable the formula uses are
+ * dropped with one E_WARNING (missing 'raise' rejects them); retained_rows/dropped_rows are original positions.
+ * @param string $formula R formula, e.g. 'y ~ log(x) + f * z + offset(log(t))'
+ * @param array<string,list<int|float|bool|string|null>|array{levels:list<string>,codes:list<int|null>,ordered:bool}>|object $data Named columns or factor descriptors; objects use toModelData(), else toColumns()
+ * @return array{
+ *   y: list<float>|list<array{float,float}>|null,
+ *   response_levels?: list<string>,
+ *   x: list<list<float>>,
+ *   columns: list<string>,
+ *   intercept: bool,
+ *   terms: list<string>,
+ *   assign: list<int>,
+ *   formula: string,
+ *   response: string|null,
+ *   offset: list<float>|null,
+ *   random: list<array{label:string,group:string,columns:list<string>,correlated:bool,z:list<list<float>>,groups:list<int|string>}>,
+ *   n_input: int,
+ *   n_observations: int,
+ *   n_dropped: int,
+ *   retained_rows: list<int>,
+ *   dropped_rows: list<int>,
+ * }
+ * @throws \Exception Statistical or input error (codes 1001–1008); unsupported functions/families/random terms raise 1007.
+ */
+function stats_model_matrix(string $formula, mixed $data, string $missing = 'drop'): array {}
 
 /**
  * Negative binomial: failures before the size-th success, success probability prob: P(X <= x).

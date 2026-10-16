@@ -2,6 +2,7 @@
 pub mod descriptive;
 pub mod distributions;
 pub mod draws;
+pub mod formula;
 pub mod logistic;
 pub mod ols;
 pub use logistic::{LogisticResult, fit_logistic};

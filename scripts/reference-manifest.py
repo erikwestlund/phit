@@ -13,7 +13,8 @@ GENERATORS={'ols-r':'tests/generate-fixtures.R','logistic-r':'tests/generate-log
  'distributions-scipy':'docs/verifications/compare_distributions.py',
  'distributions-mpmath':'docs/verifications/compare_distributions.py',
  'descriptive-r':'tests/generate-distribution-fixtures.R',
- 'rng-python-r':'tests/generate-rng-fixtures.py'}
+ 'rng-python-r':'tests/generate-rng-fixtures.py',
+ 'formula-r':'tests/generate-formula-fixtures.R'}
 POLICY={'ols-r':'1e-9 + 1e-7*abs(reference); zero/perfect fit conventions tested separately',
  'logistic-r':'1e-9 + 1e-7*abs(reference)','probit-r':'1e-9 + 1e-7*abs(reference)','poisson-r':'1e-9 + 1e-7*abs(reference)',
  'r-compatibility':'1e-7 + 1e-6*abs(reference)',
@@ -26,6 +27,7 @@ POLICY={'ols-r':'1e-9 + 1e-7*abs(reference); zero/perfect fit conventions tested
  'distributions-scipy':'Independent peer values and error report; not an authoritative release-gate replacement for R/mpmath.',
  'distributions-mpmath':'Same operation-specific policy as R; 60-digit references rounded once, null denotes unavailable. Reference choice uses only saved R/mpmath values, never the native result.',
  'descriptive-r':'Relative 1e-12, exact zero; scalar/batch type-7 quantiles must agree exactly. Missing/error conventions tested separately.',
+ 'formula-r':'model.matrix columns/terms/rows exact; values 1e-12 + 1e-12*abs(reference); lm/glm fits 1e-9 + 1e-7*abs(reference) (orthogonal poly() designs use the fit tolerance). GLM references are polished by restarting glm() from its own solution.',
  'rng-python-r':'Independent ChaCha/seed/Open01 uniforms exact; R inverse-CDF values 1e-15 + 1e-12*abs(reference); discrete/point-mass samples exact. Prefix/repeatability, limits and moments tested separately.'}
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def compact_ref(ref):return {k:v for k,v in ref.items() if k not in ['result','results','expected']}
@@ -47,7 +49,11 @@ for stem,generator in GENERATORS.items():
   if isinstance(c.get('reference'),dict):metadata['reference']=compact_ref(c['reference'])
   if references:metadata['references']={k:compact_ref(v) for k,v in references.items()}
   if 'nlme_reference' in c:metadata['nlme_reference']=compact_ref(c['nlme_reference'])
-  if stem.startswith('distributions-') or stem=='rng-python-r':
+  if stem=='formula-r':
+   inputs={k:c[k] for k in ['function','formula','family','link','weights'] if k in c}
+   inputs['data']=data['datasets'][c['dataset']]
+   n=len(expected['retained_rows']);p=len(expected['columns']);quantities=list(expected)
+  elif stem.startswith('distributions-') or stem=='rng-python-r':
    n=len(c['input']);p=1;quantities=[c['operation']]
   elif stem=='descriptive-r':
    n=len(c.get('values',c.get('x',[])));p=1;quantities=list(expected)
@@ -57,12 +63,14 @@ for stem,generator in GENERATORS.items():
   cases.append({**metadata,'inputs_sha256':hashlib.sha256(json.dumps(inputs,sort_keys=True,separators=(',',':')).encode()).hexdigest(),
     'n':n,'p':p,'compared_quantities':quantities})
  report['fixtures'].append({'path':str(path.relative_to(ROOT)),'sha256':sha(path),'generator':generator,'generator_sha256':sha(ROOT/generator),
-  'software_recorded_in_fixture':{k:v for k,v in data.items() if k not in ['cases','descriptive','pairs','weighted']},'tolerance_policy':POLICY[stem],
+  'software_recorded_in_fixture':{k:v for k,v in data.items() if k not in ['cases','descriptive','pairs','weighted','datasets']},'tolerance_policy':POLICY[stem],
   'model_specification':('Literal draw/covariance matrices and options; 80-digit independent Decimal formulas and decompositions.' if stem=='draws-python' else
     'Explicit saved matrices/vectors/options in fixture; generator records reference formula, family, seed and controls.'),
   'cases':cases})
  if stem.startswith('distributions-') or stem=='descriptive-r':
   report['fixtures'][-1]['model_specification']='Explicit distribution parameterization/evaluation points or numeric descriptive slices; no model fit or data filtering in reference generation.'
+ if stem=='formula-r':
+  report['fixtures'][-1]['model_specification']='Named-column datasets (repository CSVs and a seeded synthetic frame) with formula strings; R model.frame/model.matrix/lm/glm under LC_COLLATE=C.'
  if stem=='rng-python-r':
   extra=ROOT/'tests/generate-rng-fixtures.R'
   report['fixtures'][-1]['reference_inputs']=[{'path':str(extra.relative_to(ROOT)),'sha256':sha(extra)}]

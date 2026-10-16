@@ -315,7 +315,12 @@ fn finish_result(
     diagnostics.insert(
         "solver",
         match function {
-            "stats_ols" => "scaled_svd",
+            "stats_ols" | "stats_lm" => "scaled_svd",
+            "stats_glm" => match output.get("link").and_then(|v| v.str()) {
+                Some("identity") => "scaled_svd",
+                Some("probit") => "fisher_scoring",
+                _ => "newton_irls",
+            },
             "stats_logistic" | "stats_poisson" => "newton_irls",
             "stats_probit" => "fisher_scoring",
             "stats_lmm" => "profile_variance_search",
@@ -372,28 +377,7 @@ fn finish_result(
     Ok(output)
 }
 
-#[php_function]
-#[php(defaults(missing = "\"drop\"", intercept = true))]
-pub fn stats_ols(
-    x: &ZendHashTable,
-    y: &ZendHashTable,
-    missing: &str,
-    weights: Option<&ZendHashTable>,
-    offset: Option<&ZendHashTable>,
-    intercept: bool,
-) -> PhpResult<ZBox<ZendHashTable>> {
-    let input = prepare_data(
-        x,
-        y,
-        missing,
-        "continuous",
-        None,
-        weights,
-        offset,
-        intercept,
-    )?;
-    let result = stats_core::fit_ols_with_data(input.x, input.y, input.weights, input.offset)
-        .map_err(stats_exception)?;
+fn ols_output(result: stats_core::OlsResult) -> PhpResult<ZBox<ZendHashTable>> {
     let mut output = ZendHashTable::new();
     macro_rules! put {
         ($key:literal, $value:expr) => {
@@ -424,6 +408,72 @@ pub fn stats_ols(
     put!("adj_r_squared", result.adj_r_squared);
     put!("df_residual", result.df_residual as i64);
     put!("log_likelihood", result.log_likelihood);
+    Ok(output)
+}
+
+// The three GLM cores share result field names.
+macro_rules! glm_output {
+    ($result:expr) => {{
+        let result = $result;
+        let mut output = ZendHashTable::new();
+        macro_rules! put {
+            ($key:literal, $value:expr) => {
+                output
+                    .insert($key, $value)
+                    .map_err(|e| PhpException::from(e.to_string()))?;
+            };
+        }
+        put!("coefficients", result.coefficients);
+        put!("covariance", result.covariance);
+        put!("std_errors", result.std_errors);
+        put!("z_statistics", result.z_statistics);
+        put!("p_values", result.p_values);
+        put!(
+            "conf_int",
+            result
+                .conf_int
+                .into_iter()
+                .map(|v| v.to_vec())
+                .collect::<Vec<_>>()
+        );
+        put!("fitted", result.fitted);
+        put!("residuals", result.residuals);
+        put!("log_likelihood", result.log_likelihood);
+        put!("deviance", result.deviance);
+        put!("null_deviance", result.null_deviance);
+        put!("aic", result.aic);
+        put!("df_residual", result.df_residual as i64);
+        put!("iterations", result.iterations as i64);
+        put!("converged", true);
+        output
+    }};
+}
+
+mod formula;
+
+#[php_function]
+#[php(defaults(missing = "\"drop\"", intercept = true))]
+pub fn stats_ols(
+    x: &ZendHashTable,
+    y: &ZendHashTable,
+    missing: &str,
+    weights: Option<&ZendHashTable>,
+    offset: Option<&ZendHashTable>,
+    intercept: bool,
+) -> PhpResult<ZBox<ZendHashTable>> {
+    let input = prepare_data(
+        x,
+        y,
+        missing,
+        "continuous",
+        None,
+        weights,
+        offset,
+        intercept,
+    )?;
+    let result = stats_core::fit_ols_with_data(input.x, input.y, input.weights, input.offset)
+        .map_err(stats_exception)?;
+    let output = ols_output(result)?;
     finish_result(
         output,
         input.n_input,
@@ -446,36 +496,7 @@ pub fn stats_logistic(
     let input = prepare_data(x, y, missing, "binary", None, weights, offset, intercept)?;
     let result = stats_core::fit_logistic_with_data(input.x, input.y, input.weights, input.offset)
         .map_err(stats_exception)?;
-    let mut output = ZendHashTable::new();
-    macro_rules! put {
-        ($key:literal, $value:expr) => {
-            output
-                .insert($key, $value)
-                .map_err(|e| PhpException::from(e.to_string()))?;
-        };
-    }
-    put!("coefficients", result.coefficients);
-    put!("covariance", result.covariance);
-    put!("std_errors", result.std_errors);
-    put!("z_statistics", result.z_statistics);
-    put!("p_values", result.p_values);
-    put!(
-        "conf_int",
-        result
-            .conf_int
-            .into_iter()
-            .map(|v| v.to_vec())
-            .collect::<Vec<_>>()
-    );
-    put!("fitted", result.fitted);
-    put!("residuals", result.residuals);
-    put!("log_likelihood", result.log_likelihood);
-    put!("deviance", result.deviance);
-    put!("null_deviance", result.null_deviance);
-    put!("aic", result.aic);
-    put!("df_residual", result.df_residual as i64);
-    put!("iterations", result.iterations as i64);
-    put!("converged", true);
+    let output = glm_output!(result);
     finish_result(
         output,
         input.n_input,
@@ -498,36 +519,7 @@ pub fn stats_probit(
     let input = prepare_data(x, y, missing, "binary", None, weights, offset, intercept)?;
     let result = stats_core::fit_probit_with_data(input.x, input.y, input.weights, input.offset)
         .map_err(stats_exception)?;
-    let mut output = ZendHashTable::new();
-    macro_rules! put {
-        ($key:literal, $value:expr) => {
-            output
-                .insert($key, $value)
-                .map_err(|e| PhpException::from(e.to_string()))?;
-        };
-    }
-    put!("coefficients", result.coefficients);
-    put!("covariance", result.covariance);
-    put!("std_errors", result.std_errors);
-    put!("z_statistics", result.z_statistics);
-    put!("p_values", result.p_values);
-    put!(
-        "conf_int",
-        result
-            .conf_int
-            .into_iter()
-            .map(|v| v.to_vec())
-            .collect::<Vec<_>>()
-    );
-    put!("fitted", result.fitted);
-    put!("residuals", result.residuals);
-    put!("log_likelihood", result.log_likelihood);
-    put!("deviance", result.deviance);
-    put!("null_deviance", result.null_deviance);
-    put!("aic", result.aic);
-    put!("df_residual", result.df_residual as i64);
-    put!("iterations", result.iterations as i64);
-    put!("converged", true);
+    let output = glm_output!(result);
     finish_result(
         output,
         input.n_input,
@@ -550,36 +542,7 @@ pub fn stats_poisson(
     let input = prepare_data(x, y, missing, "count", None, weights, offset, intercept)?;
     let result = stats_core::fit_poisson_with_data(input.x, input.y, input.weights, input.offset)
         .map_err(stats_exception)?;
-    let mut output = ZendHashTable::new();
-    macro_rules! put {
-        ($key:literal, $value:expr) => {
-            output
-                .insert($key, $value)
-                .map_err(|e| PhpException::from(e.to_string()))?;
-        };
-    }
-    put!("coefficients", result.coefficients);
-    put!("covariance", result.covariance);
-    put!("std_errors", result.std_errors);
-    put!("z_statistics", result.z_statistics);
-    put!("p_values", result.p_values);
-    put!(
-        "conf_int",
-        result
-            .conf_int
-            .into_iter()
-            .map(|v| v.to_vec())
-            .collect::<Vec<_>>()
-    );
-    put!("fitted", result.fitted);
-    put!("residuals", result.residuals);
-    put!("log_likelihood", result.log_likelihood);
-    put!("deviance", result.deviance);
-    put!("null_deviance", result.null_deviance);
-    put!("aic", result.aic);
-    put!("df_residual", result.df_residual as i64);
-    put!("iterations", result.iterations as i64);
-    put!("converged", true);
+    let output = glm_output!(result);
     finish_result(
         output,
         input.n_input,
@@ -1097,6 +1060,7 @@ pub fn get_module(module: ModuleBuilder) -> ModuleBuilder {
         .function(wrap_function!(stats_lmm))
         .function(wrap_function!(stats_lmm_fit))
         .function(wrap_function!(stats_logistic_mixed));
+    let module = formula::register(module);
     let module = distributions::register(module);
     draws::register(descriptive::register(module))
 }

@@ -7,11 +7,11 @@
       "inputs": [
         {
           "path": "benchmarks/ols-results.json",
-          "md5": "17982204359620b716e88bba4a538ac3"
+          "md5": "95885b050fbda3fc5fb620f0d55523ef"
         }
       ],
-      "svg_md5": "01d8b12b3c7d49c94381ae2f0296f68b",
-      "png_md5": "4c064428f25fea0019b050c0461f7ddc"
+      "svg_md5": "604fc04c9e3ec7999f91ec0e60173db7",
+      "png_md5": "51b47f42c3475c16b2a878ef65ba1320"
     },
     "benchmarks/figures/ols-memory.svg": {
       "width_inches": 10,
@@ -20,11 +20,11 @@
       "inputs": [
         {
           "path": "benchmarks/ols-results.json",
-          "md5": "17982204359620b716e88bba4a538ac3"
+          "md5": "95885b050fbda3fc5fb620f0d55523ef"
         }
       ],
-      "svg_md5": "ca4cd4ed39f8cdf98ce329f0c9b66246",
-      "png_md5": "398501629e980e0c6697719b0e4d2ece"
+      "svg_md5": "3b7c9618fdfefc9fe834f778dca99824",
+      "png_md5": "b068dcb99c358444392f33031d63caaa"
     },
     "figures/logistic-mixed-integration-error.svg": {
       "width_inches": 10,
@@ -132,11 +132,11 @@
       "inputs": [
         {
           "path": "benchmarks/logistic-results.json",
-          "md5": "e21554800f256dcb1653b21e3d7cc5fa"
+          "md5": "e3971b2e569c48839ef09d9180e5b4a5"
         }
       ],
-      "svg_md5": "c178212ea76a41be54bdc94892aa59af",
-      "png_md5": "8a3a69dc3d54d1b41730b30f1186bc09"
+      "svg_md5": "902666738af7277ead47e7214224fdc6",
+      "png_md5": "326c024c8ba5903ab8247525fbd70914"
     },
     "benchmarks/figures/logistic-memory.svg": {
       "width_inches": 10,
@@ -145,11 +145,11 @@
       "inputs": [
         {
           "path": "benchmarks/logistic-results.json",
-          "md5": "e21554800f256dcb1653b21e3d7cc5fa"
+          "md5": "e3971b2e569c48839ef09d9180e5b4a5"
         }
       ],
-      "svg_md5": "7804a6ab2c7da86e43080e4af1782757",
-      "png_md5": "e67a671972d9375173853b345cf9b514"
+      "svg_md5": "a90b54a1fe68666b724fcc31b843389d",
+      "png_md5": "92d99eab0baf46cde1b84bccb560fec9"
     },
     "benchmarks/figures/probit-fit-time.svg": {
       "width_inches": 10,
@@ -158,11 +158,11 @@
       "inputs": [
         {
           "path": "benchmarks/probit-results.json",
-          "md5": "b778bb1b89f14aed86f9a6f851528196"
+          "md5": "27112d6a5b023b9ac5168460a56232d4"
         }
       ],
-      "svg_md5": "77aeb8b885b8cc45680f43d244552657",
-      "png_md5": "cf7851a429fdeb678372f39516005f97"
+      "svg_md5": "fe1f699da0b22c09c60d1cd1d08c337a",
+      "png_md5": "96930b4b1220cbbbeb758122e96e70b6"
     },
     "benchmarks/figures/probit-memory.svg": {
       "width_inches": 10,
@@ -171,11 +171,11 @@
       "inputs": [
         {
           "path": "benchmarks/probit-results.json",
-          "md5": "b778bb1b89f14aed86f9a6f851528196"
+          "md5": "27112d6a5b023b9ac5168460a56232d4"
         }
       ],
-      "svg_md5": "3a08ab9507e4e750eb73bc2c346cea49",
-      "png_md5": "c54e90f8148f18f89992d807ceb387fb"
+      "svg_md5": "a142c9dfe4d7e8d1a59174474ec893f0",
+      "png_md5": "8a5438ebe7fa48d4fc3d4d296115ad02"
     },
     "benchmarks/figures/poisson-fit-time.svg": {
       "width_inches": 10,
@@ -184,11 +184,11 @@
       "inputs": [
         {
           "path": "benchmarks/poisson-results.json",
-          "md5": "725f76adaf574ba5f2dd7b2e2455f611"
+          "md5": "e37a6af7522fbda5b78791d018fccae8"
         }
       ],
-      "svg_md5": "735ddaa9c881283aa3364b455f2c67ca",
-      "png_md5": "1da0b2c44e952642335d1c1787cbd801"
+      "svg_md5": "76a571dfac63c465a9e7a0e4146d9aad",
+      "png_md5": "708f37b0c03c3200864e97515d5c8fc2"
     },
     "benchmarks/figures/poisson-memory.svg": {
       "width_inches": 10,
@@ -197,11 +197,11 @@
       "inputs": [
         {
           "path": "benchmarks/poisson-results.json",
-          "md5": "725f76adaf574ba5f2dd7b2e2455f611"
+          "md5": "e37a6af7522fbda5b78791d018fccae8"
         }
       ],
-      "svg_md5": "ac4ed087858fd6c5a6364c2c0d333df6",
-      "png_md5": "7c08b536b2afaebf40e073dcf8e77ea7"
+      "svg_md5": "bd0bcd006daf13a6fa406265724a9284",
+      "png_md5": "187de659e5d6cb99762270c3aaabc805"
     },
     "benchmarks/figures/lmm-fit-time.svg": {
       "width_inches": 10,

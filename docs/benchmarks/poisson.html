@@ -609,7 +609,7 @@ window.Quarto = {
 <p>The standard benchmark compares the release PHP extension, R <code>glm(poisson)</code> and statsmodels <code>GLM</code> on identical synthetic observations. The <a href="poisson-results.json">raw report</a> preserves all timing samples, machine and runtime versions, input hashes, numerical outputs and differences from R.</p>
 <section id="recorded-results" class="level2">
 <h2 class="anchored" data-anchor-id="recorded-results">Recorded results</h2>
-<div id="1620ee18" class="cell" data-execution_count="1">
+<div id="a2e1a5c4" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -642,7 +642,7 @@ window.Quarto = {
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"peak process RSS (MiB)"</span>: fit[<span class="st">"peak_rss_bytes"</span>]<span class="op">/</span><span class="dv">2</span><span class="op">**</span><span class="dv">20</span> <span class="cf">if</span> fit[<span class="st">"peak_rss_bytes"</span>] <span class="cf">else</span> <span class="va">None</span>})</span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>display(ordered_table(rows))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Recorded: 2026-10-11T20:07:45.027082+00:00
+<pre><code>Recorded: 2026-10-16T07:51:11.086697+00:00
 Machine: Apple M5 Ultra macOS-27.0.1-arm64-arm-64bit-Mach-O
 Rust: rustc 1.99.0 (b940084d7 2026-09-28) (Homebrew)
 Repeats: 5 Warm-ups: 1</code></pre>
@@ -670,7 +670,7 @@ Repeats: 5 Warm-ups: 1</code></pre>
 <td>3</td>
 <td>R</td>
 <td>R version 4.6.1 (2026-06-24)</td>
-<td>1.000000</td>
+<td>2.000000</td>
 <td>1.000000</td>
 </tr>
 <tr class="even">
@@ -679,8 +679,8 @@ Repeats: 5 Warm-ups: 1</code></pre>
 <td>3</td>
 <td>statsmodels</td>
 <td>0.15.0</td>
-<td>0.852834</td>
-<td>0.788041</td>
+<td>0.766834</td>
+<td>0.742791</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
@@ -688,8 +688,8 @@ Repeats: 5 Warm-ups: 1</code></pre>
 <td>3</td>
 <td>PHP</td>
 <td>8.5.10</td>
-<td>0.268625</td>
-<td>0.264250</td>
+<td>0.244667</td>
+<td>0.240708</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">3</th>
@@ -697,8 +697,8 @@ Repeats: 5 Warm-ups: 1</code></pre>
 <td>3</td>
 <td>R</td>
 <td>R version 4.6.1 (2026-06-24)</td>
-<td>121.000000</td>
-<td>119.000000</td>
+<td>135.000000</td>
+<td>130.000000</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">4</th>
@@ -706,8 +706,8 @@ Repeats: 5 Warm-ups: 1</code></pre>
 <td>3</td>
 <td>statsmodels</td>
 <td>0.15.0</td>
-<td>29.063083</td>
-<td>28.863375</td>
+<td>31.078417</td>
+<td>30.588917</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">5</th>
@@ -715,8 +715,8 @@ Repeats: 5 Warm-ups: 1</code></pre>
 <td>3</td>
 <td>PHP</td>
 <td>8.5.10</td>
-<td>33.534292</td>
-<td>33.182958</td>
+<td>26.229333</td>
+<td>25.544417</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">6</th>
@@ -724,8 +724,8 @@ Repeats: 5 Warm-ups: 1</code></pre>
 <td>11</td>
 <td>R</td>
 <td>R version 4.6.1 (2026-06-24)</td>
-<td>275.000000</td>
-<td>263.000000</td>
+<td>283.000000</td>
+<td>274.000000</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">7</th>
@@ -733,8 +733,8 @@ Repeats: 5 Warm-ups: 1</code></pre>
 <td>11</td>
 <td>statsmodels</td>
 <td>0.15.0</td>
-<td>64.819375</td>
-<td>64.605500</td>
+<td>68.415666</td>
+<td>67.694792</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">8</th>
@@ -742,8 +742,8 @@ Repeats: 5 Warm-ups: 1</code></pre>
 <td>11</td>
 <td>PHP</td>
 <td>8.5.10</td>
-<td>130.703375</td>
-<td>129.038625</td>
+<td>69.535750</td>
+<td>67.548459</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">9</th>
@@ -751,8 +751,8 @@ Repeats: 5 Warm-ups: 1</code></pre>
 <td>3</td>
 <td>R</td>
 <td>R version 4.6.1 (2026-06-24)</td>
-<td>1330.000000</td>
-<td>1302.000000</td>
+<td>1437.000000</td>
+<td>1322.000000</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">10</th>
@@ -760,8 +760,8 @@ Repeats: 5 Warm-ups: 1</code></pre>
 <td>3</td>
 <td>statsmodels</td>
 <td>0.15.0</td>
-<td>313.505542</td>
-<td>313.211333</td>
+<td>328.982667</td>
+<td>327.916083</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">11</th>
@@ -769,8 +769,8 @@ Repeats: 5 Warm-ups: 1</code></pre>
 <td>3</td>
 <td>PHP</td>
 <td>8.5.10</td>
-<td>306.150292</td>
-<td>304.146750</td>
+<td>277.840083</td>
+<td>268.567584</td>
 </tr>
 </tbody>
 </table>
@@ -782,7 +782,7 @@ Repeats: 5 Warm-ups: 1</code></pre>
 </section>
 <section id="visual-comparison" class="level2">
 <h2 class="anchored" data-anchor-id="visual-comparison">Visual comparison</h2>
-<div id="5ac0d860" class="cell" data-execution_count="2">
+<div id="8a8a570a" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-stdout">
 <pre><code>benchmarks/figures/poisson-fit-time.svg 
 benchmarks/figures/poisson-memory.svg </code></pre>
@@ -807,7 +807,7 @@ benchmarks/figures/poisson-memory.svg </code></pre>
 <h2 class="anchored" data-anchor-id="what-is-timed">What is timed?</h2>
 <p>Workers load the same CSV once, perform one untimed warm-up, and measure five full fits. Each timed fit materializes coefficients, covariance, standard errors, normal z tests, p-values, Wald intervals, every fitted mean count and response residual, likelihood, deviance, null deviance, AIC and residual degrees of freedom. PHP also converts inputs and all outputs and constructs row metadata within the timer. Startup, CSV loading, data generation and final JSON serialization are excluded.</p>
 <p>R uses formula/model construction and QR-based IRLS, with epsilon 1e-16 to stabilize covariance agreement. Python uses GLM IRLS with parameter tolerance 1e-11; PHP uses weighted SVD Newton updates and its documented convergence rules. Starting values, linear solves and stopping criteria differ. This is a comparison of complete public API calls, not equal iteration counts or isolated decomposition speeds. Common numerical-library thread variables are set to one; installed backends and requested settings are recorded. Workers run separately with order alternated between cases. Other machine activity can affect measurements. R’s elapsed timer has coarse millisecond resolution for small cases.</p>
-<div id="5a3c9e9e" class="cell" data-execution_count="3">
+<div id="0efe88c6" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>display(ordered_table(memory))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -832,107 +832,107 @@ benchmarks/figures/poisson-memory.svg </code></pre>
 <td>3</td>
 <td>R</td>
 <td>0.001000</td>
-<td>0.157631</td>
-<td>87.562500</td>
+<td>0.166073</td>
+<td>89.078125</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
 <td>1000</td>
 <td>3</td>
 <td>statsmodels</td>
-<td>0.000304</td>
-<td>0.736520</td>
-<td>175.312500</td>
+<td>0.000316</td>
+<td>0.663927</td>
+<td>174.750000</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
 <td>1000</td>
 <td>3</td>
 <td>PHP</td>
-<td>0.000591</td>
-<td>0.044401</td>
-<td>27.531250</td>
+<td>0.000613</td>
+<td>0.046898</td>
+<td>28.625000</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">3</th>
 <td>100000</td>
 <td>3</td>
 <td>R</td>
-<td>0.039000</td>
-<td>0.955917</td>
-<td>164.718750</td>
+<td>0.047000</td>
+<td>1.071532</td>
+<td>215.171875</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">4</th>
 <td>100000</td>
 <td>3</td>
 <td>statsmodels</td>
-<td>0.014952</td>
-<td>0.881876</td>
-<td>408.171875</td>
+<td>0.014608</td>
+<td>0.859887</td>
+<td>411.875000</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">5</th>
 <td>100000</td>
 <td>3</td>
 <td>PHP</td>
-<td>0.052834</td>
-<td>0.299627</td>
-<td>80.359375</td>
+<td>0.056039</td>
+<td>0.259662</td>
+<td>86.828125</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">6</th>
 <td>100000</td>
 <td>11</td>
 <td>R</td>
-<td>0.407000</td>
-<td>2.349321</td>
-<td>298.265625</td>
+<td>0.482000</td>
+<td>2.560594</td>
+<td>354.687500</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">7</th>
 <td>100000</td>
 <td>11</td>
 <td>statsmodels</td>
-<td>0.104639</td>
-<td>1.190940</td>
-<td>743.000000</td>
+<td>0.104589</td>
+<td>1.209845</td>
+<td>745.906250</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">8</th>
 <td>100000</td>
 <td>11</td>
 <td>PHP</td>
-<td>0.264275</td>
-<td>1.098354</td>
-<td>152.062500</td>
+<td>0.276801</td>
+<td>0.743030</td>
+<td>149.265625</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">9</th>
 <td>1000000</td>
 <td>3</td>
 <td>R</td>
-<td>0.669000</td>
-<td>9.059542</td>
-<td>755.687500</td>
+<td>0.759000</td>
+<td>9.663629</td>
+<td>763.046875</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">10</th>
 <td>1000000</td>
 <td>3</td>
 <td>statsmodels</td>
-<td>0.144917</td>
-<td>2.754909</td>
-<td>2341.859375</td>
+<td>0.142587</td>
+<td>2.808749</td>
+<td>2350.703125</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">11</th>
 <td>1000000</td>
 <td>3</td>
 <td>PHP</td>
-<td>0.535971</td>
-<td>2.441560</td>
-<td>823.562500</td>
+<td>0.580065</td>
+<td>2.342486</td>
+<td>934.718750</td>
 </tr>
 </tbody>
 </table>
@@ -948,7 +948,7 @@ benchmarks/figures/poisson-memory.svg </code></pre>
 <p><span class="math display">\[\mu_i=\exp(0.1+0.005\,\mathrm{visitors}_i-0.12\,\mathrm{staff}_i
 +0.1\sum_j\mathrm{extra}_{ij}),\qquad y_i\sim\operatorname{Poisson}(\mu_i).\]</span></p>
 <p>This simulation is separate from the small R-generated teaching sample; its scores are unrounded and its seed is different. Every runtime reads identical 17-significant-digit CSV values. Data hashes, generating coefficients and sample correlations are recorded. All coefficient-level quantities and scalar statistics are compared with R at tolerance 1e-9 + 1e-7 × abs(reference). Full fitted/residual vectors are materialized; cross-runtime comparison samples ten evenly spaced rows, while small fixtures check complete vectors. PHP convergence must be true and its update count must be between one and 100. Wald intervals use R confint.default(), and the null baseline follows the documented intercept convention. Poisson deviance uses the saturated count likelihood, not -2 log-likelihood.</p>
-<div id="7bb954c6" class="cell" data-execution_count="4">
+<div id="2a004909" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>display(ordered_table([{ <span class="st">"observations"</span>: case[<span class="st">"n"</span>], <span class="st">"coefficients"</span>: case[<span class="st">"p"</span>],</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                        <span class="st">"implementation"</span>: name, <span class="st">"largest absolute difference vs R"</span>: <span class="bu">max</span>(errors.values())}</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                       <span class="cf">for</span> case <span class="kw">in</span> report[<span class="st">"cases"</span>]</span>
@@ -980,7 +980,7 @@ benchmarks/figures/poisson-memory.svg </code></pre>
 <td>1000</td>
 <td>3</td>
 <td>PHP</td>
-<td>9.094947e-13</td>
+<td>4.774847e-12</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
@@ -994,7 +994,7 @@ benchmarks/figures/poisson-memory.svg </code></pre>
 <td>100000</td>
 <td>3</td>
 <td>PHP</td>
-<td>3.550667e-09</td>
+<td>5.398761e-09</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">4</th>
@@ -1008,7 +1008,7 @@ benchmarks/figures/poisson-memory.svg </code></pre>
 <td>100000</td>
 <td>11</td>
 <td>PHP</td>
-<td>2.027321e-09</td>
+<td>1.478475e-08</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">6</th>
@@ -1022,7 +1022,7 @@ benchmarks/figures/poisson-memory.svg </code></pre>
 <td>1000000</td>
 <td>3</td>
 <td>PHP</td>
-<td>2.156012e-07</td>
+<td>4.051253e-08</td>
 </tr>
 </tbody>
 </table>

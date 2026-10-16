@@ -47,8 +47,8 @@ display(ordered_table(rows))
 The cases include 1,000, 100,000 and one million observations with three
 coefficients, and 100,000 observations with eleven coefficients. Counts include
 the intercept. On this recorded Mac, the million-observation median was about
-288 ms for PHP, 237 ms for statsmodels and 833 ms for R. The wider case took about
-113 ms, 27 ms and 124 ms respectively. These observations describe this workload
+405 ms for PHP, 240 ms for statsmodels and 804 ms for R. The wider case took about
+79 ms, 27 ms and 121 ms respectively. These observations describe this workload
 and environment, not a universal ranking.
 
 ## Visual comparison

@@ -109,6 +109,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -744,7 +773,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="boundaries-and-errors" class="level2">
 <h2 class="anchored" data-anchor-id="boundaries-and-errors">Boundaries and errors</h2>
-<p>Evaluation points may be ±INF, but NAN raises 1003. Null, numeric strings, booleans and nested array elements are not numeric inputs; malformed batch elements raise 1001. Scalar argument-type failures follow Zend’s runtime conventions. There is no distribution <code>missing</code> option. Nonfinite parameters raise 1003; invalid domains and quantile probabilities outside <code>[0,1]</code> raise 1001. Binomial size above <code>2^53</code> raises 1007. A NAN numerical result raises 1006; it is not returned as a value.</p>
+<p>Evaluation points may be ±INF, but NAN raises 1003. Null, numeric strings, booleans and nested array elements are not numeric inputs; malformed batch elements raise 1001. Scalar argument-type failures follow Zend’s runtime conventions. There is no distribution <code>missing</code> option. Nonfinite parameters raise 1003; invalid domains and quantile probabilities outside <code>[0,1]</code> raise 1001. Binomial size above <code>2^53</code> raises 1007. A NAN numerical result raises 1006; it is not returned as a value. Parameters so extreme that the incomplete beta or gamma cannot be evaluated also raise 1006 promptly: a beta-type sum <span class="math inline">\(a + b\)</span> beyond the double range, a beta-type parameter above <span class="math inline">\(10^{300}\)</span> evaluated within <span class="math inline">\(10^{-300}\)</span> of an end of the support, or a gamma-type shape or point above <span class="math inline">\(10^{300}\)</span> (for example <code>stats_f_cdf(2, 3, PHP_FLOAT_MAX)</code> or <code>stats_gamma_cdf(1e30, 1e30)</code>). Earlier builds could hang or panic on such input.</p>
 <p>Outside support, density/mass is zero and log density/mass is <code>-INF</code>. Boundary densities can be infinite, for example a beta shape below one at a support endpoint. Discrete PMFs at non-integer counts are zero, while CDF/SF use the floor of the evaluation point. SF always means strictly greater than that count.</p>
 <p>Continuous quantile endpoints are the support bounds, including infinities. Discrete quantiles return the smallest support value whose CDF reaches the requested probability, using a documented <code>64 * EPSILON</code> relative comparison allowance on the smaller tail to accommodate rounding at CDF steps. Endpoint p=0 follows the conventional lower support bound; p=1 follows the upper support bound for ordinary distributions. A point mass returns its actual mass location at p=1. This differs from R/SciPy in some degenerate cases. Returned count quantiles are PHP floats; precision is limited by binary64’s exact integer range.</p>
 </section>

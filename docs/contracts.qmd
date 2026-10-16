@@ -22,12 +22,41 @@ stats_ols(array $x, array $y, string $missing = 'drop', ?array $weights = null, 
 stats_logistic(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
 stats_probit(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
 stats_poisson(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+
+// Formula interfaces over the same cores; $data is named columns or an object with toModelData()/toColumns().
+stats_model_matrix(string $formula, array|object $data, string $missing = 'drop'): array;
+stats_lm(string $formula, array|object $data, string $missing = 'drop', array|string|null $weights = null): array;
+stats_glm(string $formula, array|object $data, string $family = 'gaussian', string $link = '', string $missing = 'drop', array|string|null $weights = null): array;
+stats_lmer(string $formula, array|object $data, bool $reml = true, string $missing = 'drop', array|string|null $weights = null, ...): array;
+stats_glmer(string $formula, array|object $data, string $family = 'binomial', string $link = '', string $missing = 'drop', array|string|null $weights = null, ...): array;
 ```
 
 These are global native functions available when the extension is loaded.
 All estimators are synchronous and stateless: each returns a complete fit without
 retaining a model handle, input data or mutable configuration. It does not mutate
 the caller's arrays. Repeated fits are independent.
+
+## Formula interfaces
+
+The formula functions parse an R model formula, build R's `model.matrix()` over
+named columns, and call the estimation cores of `stats_ols`, `stats_logistic`,
+`stats_probit`, `stats_poisson`, `stats_lmm_fit`, and `stats_logistic_mixed`.
+Each fit returns the complete result contract of its matrix function. It adds
+`formula`, `response`, `columns` (coefficient names in coefficient order), `terms`,
+`assign`, `intercept`, and `named` (`column => coefficient`). `stats_glm` and
+`stats_glmer` also return `family` and `link`. `stats_model_matrix` returns `y`,
+`x` (including the `(Intercept)` column), the naming keys, `offset`, `random` designs
+in the shape `stats_lmm_fit` accepts, and the deletion accounting.
+
+Missing-value deletion covers only the variables a formula uses, with the same
+warning, `missing: 'raise'` behavior, and row accounting as the matrix functions.
+`stats_model_matrix` keeps unused factor levels, as `model.matrix()` does. The
+fitting functions drop them, as `lm()`, `glm()`, and lme4 do. Unknown columns,
+malformed factor descriptors, referenced list-columns, and invalid formulas raise
+1001. Column-length mismatch raises 1002. Infinite transform results raise 1003.
+Unsupported functions, families, links, and random-effect structures raise 1007.
+Rank deficiency raises 1004. The [formula guide](formulas.qmd) defines the syntax,
+contrasts, data shapes, verification, and every known difference from R.
 
 ## Probability distributions and descriptive statistics
 

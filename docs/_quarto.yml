@@ -81,6 +81,7 @@ website:
           - v0.2.qmd
           - design-philosophy.qmd
           - contracts.qmd
+          - formulas.qmd
           - r-compatibility.qmd
           - missing-data.qmd
           - development.qmd

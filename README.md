@@ -38,6 +38,13 @@ model classes.
 | `stats_lmm()` | Gaussian random intercept; optimized ML fit |
 | `stats_lmm_fit()` | Gaussian mixed model; ML/REML, random slopes, multiple grouping terms |
 | `stats_logistic_mixed()` | Binomial random intercept; Laplace or adaptive quadrature |
+| `stats_lm()`, `stats_glm()` | R formulas over named columns; OLS, logit, probit and Poisson cores |
+| `stats_lmer()`, `stats_glmer()` | lme4-style formulas over the mixed-model cores |
+| `stats_model_matrix()` | R-compatible `model.matrix()` with names, contrasts and random-effect designs |
+
+The formula functions accept R syntax such as `'log(rent) ~ log(area) + district'`
+and return coefficient names with the matrix function's results. See the
+[formula guide](docs/formulas.qmd).
 
 Each fitter has its own documented inference and diagnostics. General Gaussian
 mixed models support explicit correlated/independent random designs; binomial

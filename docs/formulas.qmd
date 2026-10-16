@@ -1,0 +1,244 @@
+---
+title: "Model formulas"
+---
+
+The formula functions accept an R model formula and a data set of named columns.
+They build R's model matrix in Rust and call the same estimation cores as the
+matrix functions. Results keep each matrix function's complete contract and add
+coefficient names.
+
+```php
+stats_model_matrix(string $formula, array|object $data, string $missing = 'drop'): array;
+stats_lm(string $formula, array|object $data, string $missing = 'drop', array|string|null $weights = null): array;
+stats_glm(string $formula, array|object $data, string $family = 'gaussian', string $link = '',
+    string $missing = 'drop', array|string|null $weights = null): array;
+stats_lmer(string $formula, array|object $data, bool $reml = true, string $missing = 'drop',
+    array|string|null $weights = null, ?array $start = null, int $max_evaluations = 20000,
+    float $tolerance = 1e-7, string $optimizer = 'bobyqa', float $objective_tolerance = 1e-12): array;
+stats_glmer(string $formula, array|object $data, string $family = 'binomial', string $link = '',
+    string $missing = 'drop', array|string|null $weights = null, int $quadrature_points = 1,
+    int $max_evaluations = 20000, float $tolerance = 1e-7): array;
+```
+
+PHP reflection reports `$data` and `$weights` as `mixed`. The generated stubs
+document the accepted types.
+
+## Example
+
+```php
+$data = [
+    'rent' => [1879.25, 1805.03, 2022.29, 1267.85, 1509.24, 2240.10, 959.51, 2386.54],
+    'area' => [74.4, 57.4, 66.4, 49.1, 45.7, 92.4, 37.0, 93.9],
+    'district' => ['north', 'south', 'north', 'east', 'south', 'north', 'east', 'south'],
+];
+
+$fit = stats_lm('log(rent) ~ log(area) + district', $data);
+$fit['columns'];  // ['(Intercept)', 'log(area)', 'districtnorth', 'districtsouth']
+$fit['named'];    // ['(Intercept)' => ..., 'log(area)' => ..., ...]
+$fit['p_values']; // Aligned with columns, as in stats_ols.
+
+$model = stats_glm('passed ~ hours * score', $learning, family: 'binomial', link: 'probit');
+$mixed = stats_lmer('score ~ hours + (1 + hours | school)', $schools);
+```
+
+## Data
+
+`$data` is an associative array of columns, `name => list of values`. An object
+is also accepted. The extension calls its public `toModelData()` method, or
+`toColumns()` when the first method is absent, and uses the returned array.
+Exceptions thrown by those methods propagate unchanged. phibble's
+`Frame::toModelData()` returns this shape.
+
+Each column is one of the following.
+
+- Numbers: integers and floats. `null` and `NAN` are missing. Infinity raises 1003.
+- Booleans: a logical column. R codes it as a two-level factor named `{col}TRUE`.
+- Strings: a character column. It becomes a factor whose levels are the distinct
+  retained values in byte (C-locale) order, which is R's order under
+  `LC_COLLATE=C`. Other R locales can sort mixed-case or accented strings differently.
+- A factor descriptor: an array with exactly the keys `levels` (list of unique
+  strings), `codes` (list of 0-based integers, `null` for missing), and `ordered`
+  (bool). Levels keep the caller's order and the first level is the reference.
+- Dates arrive as numbers, for example days or seconds since the epoch.
+
+Every column must have the same length (code 1002). Only the columns a formula uses
+are type-checked. An unknown column, a malformed factor descriptor, or a referenced
+list-column or mixed-type column raises 1001. A list of row arrays raises 1001.
+
+## Formula syntax
+
+The formula grammar and operator precedence follow R.
+
+| Syntax | Meaning |
+| --- | --- |
+| `y ~ a + b` | Main effects. `~ a + b` (no response) is valid for `stats_model_matrix`. |
+| `- 1`, `+ 0`, `0 +` | Remove the intercept. `+ 1` restores it. |
+| `a:b` | Interaction columns for every combination of the coded variables. |
+| `a * b` | `a + b + a:b`. |
+| `(a + b + c)^2` | All main effects and interactions up to order 2. |
+| `a / b` | `a + a:b` (nesting). `b %in% a` is `b:a`. |
+| `- term` | Remove a term, for example `a * b - a:b`. |
+| `.` | Every data column that does not appear in the response. |
+| `offset(expr)` | A fixed known offset. Several offsets are summed. |
+| `(x | g)`, `(x || g)` | Random-effect terms (see below). |
+
+Terms are ordered as R orders them: main effects first, then two-way interactions,
+and so on, with ties in formula order. Within an interaction, variables appear in
+order of first appearance in the formula, and the first variable varies fastest
+in the column order. `y ~ b:a + a` therefore gives `bv:ap`, `bv:aq`, and so on.
+
+### Inline transforms
+
+The following functions can appear as variables or inside one another. Column
+names are R's deparsed expressions, including R's spacing and its 15-digit number
+formatting, for example `I(x^2)`, `I(area/beds)`, `I(x * 1e+05)`, and
+`log(x, base = 2)`.
+
+- `log(x)`, `log(x, base)`, `log2`, `log10`, `log1p`, `exp`, `expm1`, `sqrt`,
+  `abs`, `sin`, `cos`, and `tan`.
+- `I(expr)` with `+ - * / ^`, numbers, parentheses, unary minus, comparisons
+  (`< > <= >= == !=`), `&`, `|`, and `!`. A comparison gives a logical column, such as
+  `I(x > 3)TRUE`. Strings compare with character and factor columns:
+  `I(region == "north")`.
+- `poly(x, degree)` gives R's orthogonal polynomials and `poly(x, degree, raw = TRUE)`
+  gives raw powers. Columns are named `poly(x, 2)1`, `poly(x, 2)2`, and so on.
+  Orthogonal polynomials are computed over all input rows before deletion, as in
+  R, and reject missing values. Raw polynomials allow them.
+- `factor(x)`, `as.factor(x)`, and `ordered(x)` convert a column. Numeric levels
+  are sorted numerically and labelled with R's number formatting. Levels come
+  from all input rows, as in R's model frame.
+- `as.numeric(f)` gives 1-based factor codes.
+- `cbind(successes, failures)` is a binomial response for `stats_glm` and `stats_glmer`.
+
+Any other function raises 1007. A transform result of NaN, such as `log(-1)`, is
+missing and is deleted like any other missing value (R also removes it, with a
+"NaNs produced" warning). An infinite result, such as `log(0)`, raises 1003.
+
+### Contrasts
+
+Unordered factors, strings, and logicals use treatment contrasts. The columns are
+named `{variable}{level}` for every level after the first. Ordered factors use
+`contr.poly`, with columns `.L`, `.Q`, `.C`, `^4`, and so on. R's coding rule
+decides whether a factor in a term receives contrasts or one indicator per
+level. A factor is coded by contrasts when the term without it appears earlier
+in the formula, or is empty. Without an intercept, the first factor in the first
+term that contains one receives full indicator coding. These rules give R's
+columns for formulas such as `y ~ 0 + f`, `y ~ x:f`, `y ~ f:g`, and `y ~ f * g - 1`.
+
+## Missing values and unused levels
+
+Listwise deletion uses only the variables that the formula references. These
+include the response, transforms, offsets, weights, grouping factors, and
+random-effect columns. Other columns may contain missing values. As in the matrix
+functions, `missing: 'drop'` removes incomplete rows with one `E_WARNING`, and
+`missing: 'raise'` raises 1001. `retained_rows` and `dropped_rows` are original
+zero-based positions.
+
+`stats_model_matrix` keeps unused factor levels, as R's `model.matrix()` does,
+and their indicator columns are all zero. The fitting functions drop levels that
+are absent after deletion, as `lm()`, `glm()`, `lmer()`, and `glmer()` do through
+`drop.unused.levels = TRUE`. Character levels always come from the retained rows.
+
+## stats_model_matrix
+
+The result has these keys.
+
+| Key | Contents |
+| --- | --- |
+| `y` | Response values. A factor response gives 0-based codes plus `response_levels`. `cbind(s, f)` gives `[s, f]` rows. `null` without a response. |
+| `x` | Design rows for retained observations, including `(Intercept)` when present. |
+| `columns`, `assign` | R column names and R's `assign` attribute (0 for the intercept). |
+| `terms`, `intercept` | R term labels and whether the intercept is present. |
+| `formula`, `response` | The deparsed formula and response expression. |
+| `offset` | Summed offsets, or `null`. |
+| `random` | One entry per random-effect term: `label`, `group`, `columns`, `correlated`, `z`, `groups`. |
+| `n_input`, `n_observations`, `n_dropped`, `retained_rows`, `dropped_rows` | Deletion accounting. |
+
+`x` includes the intercept column. Pass it to a matrix function with
+`intercept: false`. Each `random` entry has the shape that `stats_lmm_fit` expects:
+
+```php
+$mm = stats_model_matrix('y ~ x + (1 + x | g)', $data);
+$fit = stats_lmm_fit(x: $mm['x'], y: $mm['y'], random: $mm['random'], intercept: false);
+```
+
+## stats_lm and stats_glm
+
+`stats_lm` calls the `stats_ols` core and returns its full result. `stats_glm`
+supports four family and link combinations. An empty `link` selects the canonical link.
+
+| Family | Links | Core |
+| --- | --- | --- |
+| `gaussian` | `identity` | `stats_ols`, plus `deviance`, `null_deviance`, and `aic` as R's `glm()` reports them |
+| `binomial` | `logit`, `probit` | `stats_logistic`, `stats_probit` |
+| `poisson` | `log` | `stats_poisson` |
+
+Other families or links raise 1007. A binomial response can be 0/1 numbers,
+booleans, a factor or character column (the first level is failure and all other
+levels are success, as in R), proportions with integer trial weights, or
+`cbind(successes, failures)`.
+
+`$weights` is either an array aligned with the original rows or the name of a
+numeric column. Missing weights delete their rows. Weights must be positive.
+
+Formula fits add these keys to the matrix result: `formula`, `response`,
+`columns` (aligned with `coefficients`), `terms`, `assign`, `intercept`, and
+`named` (`column => coefficient`). `stats_glm` also returns `family` and `link`.
+All list keys of the matrix functions are unchanged.
+
+Random-effect terms in `stats_lm` or `stats_glm` raise 1007 and name
+`stats_lmer` and `stats_lmm_fit` as the alternatives.
+
+## stats_lmer and stats_glmer
+
+`stats_lmer` maps lme4-style bars onto `stats_lmm_fit`. REML is the default, as in
+`lme4::lmer()`. Supported bars include `(1 | g)`, `(x | g)`, `(0 + x | g)`,
+`(x || g)` (diagonal covariance), several terms such as `(1 | g1) + (1 | g2)`,
+interaction groups `(1 | g1:g2)`, and nesting `(1 | g1/g2)`. Nesting expands to
+`(1 | g1) + (1 | g2:g1)`, with lme4's group name and `g2level:g1level` labels.
+The result is the `stats_lmm_fit` contract. Each `random` entry also has `label`,
+`group`, `columns`, and `correlated`.
+
+`stats_glmer` supports exactly one random intercept `(1 | g)` with the binomial
+family and logit link, over the `stats_logistic_mixed` core. `quadrature_points`
+corresponds to lme4's `nAGQ`. Responses follow `stats_glm`.
+
+## Differences from R
+
+- Character levels use byte order. R's default locale collation can order
+  mixed-case or non-ASCII strings differently.
+- Rank-deficient designs raise 1004. R reports `NA` (aliased) coefficients instead.
+- Weights must be positive. R accepts zero weights. `cbind()` rows with zero
+  trials are rejected; R gives them zero weight.
+- A response that also appears on the right-hand side raises 1001. R drops the term
+  with a warning.
+- Only the functions listed above can be evaluated. `factor()` takes one argument,
+  and `poly()` takes one variable.
+- `x %in% a` is labelled `x:a`. R labels the term `x %in% a`; the columns are identical.
+- `stats_model_matrix` returns factor responses as 0-based codes with `response_levels`.
+- `stats_glm(family: 'gaussian')` uses t-based intervals, as `stats_ols` does.
+  R's `confint.default()` is z-based and `confint()` profiles the likelihood.
+- `stats_lmer` orders groups and effects by first appearance after deletion and
+  keeps random terms in formula order. lme4 sorts levels and orders terms by their
+  number of levels. Estimates are invariant to these orderings.
+- Duplicate column names collapse in the `named` map; `columns` keeps every name.
+
+## Verification
+
+`tests/generate-formula-fixtures.R` saves 62 R references under
+`LC_COLLATE=C`: 33 `model.frame()`/`model.matrix()` designs, 14 `lm()` fits, and
+15 `glm()` fits. They use the repository's housing, schools, learning, clinic,
+and cbpp data and a seeded synthetic frame with factors, unused and reordered
+levels, ordered factors, logicals, character columns, missing values, weights,
+offsets, transforms, and no-intercept models. `glm()` references are restarted
+from R's own solution until the coefficients stop changing, because the default
+deviance criterion fixes coefficients only to about the square root of its
+tolerance. `tests/formula.php` compares design columns, terms, and rows exactly,
+design values within 1e-12 relative, and fit quantities within the matrix suites'
+`1e-9 + 1e-7*abs(reference)`.
+
+`tests/generate-formula-lme4-fixtures.R` saves 10 lme4 references (7 `lmer()` and
+3 `glmer()` fits), including crossed, nested, correlated, and uncorrelated terms
+and adaptive quadrature. `tests/formula-mixed.php` uses the tolerances of the
+existing lme4 suites. Both fixtures are indexed in the
+[reference manifest](verifications/reference-manifest.json).

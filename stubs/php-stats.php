@@ -356,7 +356,7 @@ function stats_chisquare_sf_array(array $values, float $df): array {}
  * @param array<int|float|null> $y
  * @throws \Exception Input error (codes 1001–1003).
  */
-function stats_correlation(array $x, array $y, string $missing = 'raise'): float {}
+function stats_cor(array $x, array $y, string $missing = 'raise'): float {}
 
 /**
  * Covariance; type 'sample' (n - 1) or 'population' (n).
@@ -366,7 +366,7 @@ function stats_correlation(array $x, array $y, string $missing = 'raise'): float
  * @param array<int|float|null> $y
  * @throws \Exception Input error (codes 1001–1003).
  */
-function stats_covariance(array $x, array $y, string $type = 'sample', string $missing = 'raise'): float {}
+function stats_cov(array $x, array $y, string $type = 'sample', string $missing = 'raise'): float {}
 
 /**
  * Apply y = A*x + b to each draw: Y = X*A^T + b. Square invertible A; return log(abs(det(A))). Numerical rank tolerance in docs/draw-numerics.qmd.
@@ -1750,7 +1750,7 @@ function stats_quantile(array $values, float $p, string $missing = 'raise'): flo
 function stats_quantile_array(array $values, array $probabilities, string $missing = 'raise'): array {}
 
 /**
- * Standard deviation: square root of stats_variance.
+ * Standard deviation: square root of stats_var.
  * null/NAN are missing: missing 'raise' (default) rejects them, 'drop' removes them (pairwise for two arrays).
  * Nonfinite arithmetic raises 1003; constant-input correlation remains NAN.
  * @param array<int|float|null> $values
@@ -1880,7 +1880,7 @@ function stats_t_sf_array(array $values, float $df): array {}
  * @param array<int|float|null> $values
  * @throws \Exception Input error (codes 1001–1003).
  */
-function stats_variance(array $values, string $type = 'sample', string $missing = 'raise'): float {}
+function stats_var(array $values, string $type = 'sample', string $missing = 'raise'): float {}
 
 /**
  * Weighted mean sum(w*x)/sum(w); weights must be nonnegative with a positive sum. Negative weights reject before missing deletion.
@@ -1900,4 +1900,4 @@ function stats_weighted_mean(array $values, array $weights, string $missing = 'r
  * @param array<int|float|null> $weights
  * @throws \Exception Input error (codes 1001–1003).
  */
-function stats_weighted_variance(array $values, array $weights, string $type = 'frequency', string $missing = 'raise'): float {}
+function stats_weighted_var(array $values, array $weights, string $type = 'frequency', string $missing = 'raise'): float {}

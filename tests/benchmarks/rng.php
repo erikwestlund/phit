@@ -10,5 +10,5 @@ if ($argv[2] === 'time') {
     }
 }
 echo json_encode(['version'=>PHP_VERSION,'seconds'=>$times,'result'=>[
-    'n'=>count($draws),'mean'=>stats_mean($draws),'variance'=>stats_variance($draws,'population'),
+    'n'=>count($draws),'mean'=>stats_mean($draws),'variance'=>stats_var($draws,'population'),
     'sample'=>array_map(fn($i) => $draws[$i],$input['indices'])]],JSON_THROW_ON_ERROR);

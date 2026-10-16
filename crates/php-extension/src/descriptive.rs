@@ -133,7 +133,7 @@ pub fn stats_mean(values: &ZendHashTable, missing: &str) -> PhpResult<f64> {
 
 #[php_function]
 #[php(defaults(r#type = "\"sample\"", missing = "\"raise\""))]
-pub fn stats_variance(values: &ZendHashTable, r#type: &str, missing: &str) -> PhpResult<f64> {
+pub fn stats_var(values: &ZendHashTable, r#type: &str, missing: &str) -> PhpResult<f64> {
     result(desc::variance(
         &self::values(values, missing)?,
         population(r#type)?,
@@ -151,7 +151,7 @@ pub fn stats_sd(values: &ZendHashTable, r#type: &str, missing: &str) -> PhpResul
 
 #[php_function]
 #[php(defaults(r#type = "\"sample\"", missing = "\"raise\""))]
-pub fn stats_covariance(
+pub fn stats_cov(
     x: &ZendHashTable,
     y: &ZendHashTable,
     r#type: &str,
@@ -163,7 +163,7 @@ pub fn stats_covariance(
 
 #[php_function]
 #[php(defaults(missing = "\"raise\""))]
-pub fn stats_correlation(x: &ZendHashTable, y: &ZendHashTable, missing: &str) -> PhpResult<f64> {
+pub fn stats_cor(x: &ZendHashTable, y: &ZendHashTable, missing: &str) -> PhpResult<f64> {
     let (x, y) = pairs(x, y, missing)?;
     result(desc::correlation(&x, &y))
 }
@@ -217,7 +217,7 @@ pub fn stats_weighted_mean(
 
 #[php_function]
 #[php(defaults(r#type = "\"frequency\"", missing = "\"raise\""))]
-pub fn stats_weighted_variance(
+pub fn stats_weighted_var(
     values: &ZendHashTable,
     weights: &ZendHashTable,
     r#type: &str,
@@ -241,13 +241,13 @@ pub fn stats_weighted_variance(
 pub fn register(module: ModuleBuilder) -> ModuleBuilder {
     module
         .function(wrap_function!(stats_mean))
-        .function(wrap_function!(stats_variance))
+        .function(wrap_function!(stats_var))
         .function(wrap_function!(stats_sd))
-        .function(wrap_function!(stats_covariance))
-        .function(wrap_function!(stats_correlation))
+        .function(wrap_function!(stats_cov))
+        .function(wrap_function!(stats_cor))
         .function(wrap_function!(stats_quantile))
         .function(wrap_function!(stats_quantile_array))
         .function(wrap_function!(stats_median))
         .function(wrap_function!(stats_weighted_mean))
-        .function(wrap_function!(stats_weighted_variance))
+        .function(wrap_function!(stats_weighted_var))
 }

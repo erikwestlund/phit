@@ -839,7 +839,7 @@
         ],
         "return_type": "array"
     },
-    "stats_correlation": {
+    "stats_cor": {
         "parameters": [
             {
                 "name": "x",
@@ -860,7 +860,7 @@
         ],
         "return_type": "float"
     },
-    "stats_covariance": {
+    "stats_cov": {
         "parameters": [
             {
                 "name": "x",
@@ -4530,7 +4530,7 @@
         ],
         "return_type": "array"
     },
-    "stats_variance": {
+    "stats_var": {
         "parameters": [
             {
                 "name": "values",
@@ -4573,7 +4573,7 @@
         ],
         "return_type": "float"
     },
-    "stats_weighted_variance": {
+    "stats_weighted_var": {
         "parameters": [
             {
                 "name": "values",

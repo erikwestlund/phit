@@ -12,15 +12,15 @@ list in probability-array iteration order.
 
 ```php
 stats_mean(array $values, string $missing = 'raise'): float;
-stats_variance(array $values, string $type = 'sample', string $missing = 'raise'): float;
+stats_var(array $values, string $type = 'sample', string $missing = 'raise'): float;
 stats_sd(array $values, string $type = 'sample', string $missing = 'raise'): float;
-stats_covariance(array $x, array $y, string $type = 'sample', string $missing = 'raise'): float;
-stats_correlation(array $x, array $y, string $missing = 'raise'): float;
+stats_cov(array $x, array $y, string $type = 'sample', string $missing = 'raise'): float;
+stats_cor(array $x, array $y, string $missing = 'raise'): float;
 stats_quantile(array $values, float $p, string $missing = 'raise'): float;
 stats_quantile_array(array $values, array $probabilities, string $missing = 'raise'): array;
 stats_median(array $values, string $missing = 'raise'): float;
 stats_weighted_mean(array $values, array $weights, string $missing = 'raise'): float;
-stats_weighted_variance(array $values, array $weights, string $type = 'frequency', string $missing = 'raise'): float;
+stats_weighted_var(array $values, array $weights, string $type = 'frequency', string $missing = 'raise'): float;
 ```
 
 `type: 'sample'` variance/SD/covariance divides by n−1; `'population'` divides by n.
@@ -81,7 +81,7 @@ binary64 calculations and do not promise arbitrary-scale extended precision.
 ```php
 $values = [2.5, 3.1, 4.7, 1.2, 9.8, 5.5, 3.3];
 $mean = stats_mean($values);                     // 4.3
-$sampleVariance = stats_variance($values);       // About 7.85667
+$sampleVariance = stats_var($values);       // About 7.85667
 $quartiles = stats_quantile_array($values, [.25, .5, .75]);
 $explicitDrop = stats_mean([1, null, 3], missing: 'drop'); // 2
 ```

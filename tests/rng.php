@@ -67,6 +67,6 @@ foreach ([null,'42',true,1.5,[],NAN,INF] as $bad) {
 // Deterministic shape/moment checks complement the exact reference vectors.
 $normal = stats_normal_rng(50000,173,mean:3,sd:2);
 $poisson = stats_poisson_rng(50000,174,lambda:12);
-check(abs(stats_mean($normal)-3)<.06 && abs(stats_variance($normal,'population')-4)<.15, 'normal moments');
-check(abs(stats_mean($poisson)-12)<.1 && abs(stats_variance($poisson,'population')-12)<.4, 'Poisson moments');
+check(abs(stats_mean($normal)-3)<.06 && abs(stats_var($normal,'population')-4)<.15, 'normal moments');
+check(abs(stats_mean($poisson)-12)<.1 && abs(stats_var($poisson,'population')-12)<.4, 'Poisson moments');
 echo "PHP RNG tests passed ($compared independent R/ChaCha values, seed isolation, validation and moments)\n";

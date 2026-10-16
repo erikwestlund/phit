@@ -23,12 +23,12 @@ $operations=['pdf'=>'density f(x); 0 outside the support','logpdf'=>'log density
  'pmf'=>'probability P(X = k); 0 for non-integer or out-of-support k','logpmf'=>'log probability ln P(X = k)',
  'cdf'=>'P(X <= x)','logcdf'=>'ln P(X <= x), accurate after P underflows','sf'=>'survival P(X > x), computed directly',
  'logsf'=>'ln P(X > x), accurate after P underflows','quantile'=>'smallest x with P(X <= x) >= p'];
-$descriptive=['stats_mean'=>'Arithmetic mean.','stats_variance'=>"Variance; type 'sample' divides by n - 1, 'population' by n.",
- 'stats_sd'=>'Standard deviation: square root of stats_variance.','stats_covariance'=>"Covariance; type 'sample' (n - 1) or 'population' (n).",
- 'stats_correlation'=>'Pearson correlation; NAN when either input is constant.','stats_quantile'=>"Sample quantile, R's default type 7 (linear interpolation).",
+$descriptive=['stats_mean'=>'Arithmetic mean.','stats_var'=>"Variance; type 'sample' divides by n - 1, 'population' by n.",
+ 'stats_sd'=>'Standard deviation: square root of stats_var.','stats_cov'=>"Covariance; type 'sample' (n - 1) or 'population' (n).",
+ 'stats_cor'=>'Pearson correlation; NAN when either input is constant.','stats_quantile'=>"Sample quantile, R's default type 7 (linear interpolation).",
  'stats_quantile_array'=>'Several type 7 quantiles from one sort.','stats_median'=>'Median (type 7 quantile at 0.5).',
  'stats_weighted_mean'=>'Weighted mean sum(w*x)/sum(w); weights must be nonnegative with a positive sum. Negative weights reject before missing deletion.',
- 'stats_weighted_variance'=>"Weighted variance; type 'frequency' (W - 1), 'reliability' (W - sum(w^2)/W) or 'population' (W). Negative weights reject before missing deletion."];
+ 'stats_weighted_var'=>"Weighted variance; type 'frequency' (W - 1), 'reliability' (W - sum(w^2)/W) or 'population' (W). Negative weights reject before missing deletion."];
 $draws=[
  'stats_draw_moments'=>['summary'=>"Weighted draw mean and covariance; weights normalized internally. Normalization 'population' or 'unbiased' (reliability weights, never frequency counts). Singular covariance is valid.",
   'params'=>['draws'=>'array<array<int|float>>','weights'=>'array<int|float>|null'],

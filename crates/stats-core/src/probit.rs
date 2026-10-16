@@ -236,11 +236,12 @@ fn fit_data_limit(
         let weighted = DMatrix::from_fn(n, p, |i, j| {
             scaled[(i, j)] * root_weights[i] * weights[i].sqrt()
         });
-        // QR first; the SVD of the small R has the same singular values and V.
+        // QR first; R's singular values give the rank check, and steps solve R directly.
         let qr = weighted.qr();
-        let svd = qr.r().svd(true, true);
-        let tolerance = f64::EPSILON * n.max(p) as f64 * svd.singular_values[0];
-        if svd.singular_values.iter().any(|s| *s <= tolerance) {
+        let r = qr.r();
+        let singular = r.singular_values();
+        let tolerance = f64::EPSILON * n.max(p) as f64 * singular.max();
+        if singular.iter().any(|s| *s <= tolerance) {
             return Err(error(
                 ErrorKind::Nonconvergence,
                 "design/information is rank deficient; separation may prevent a finite MLE",
@@ -268,12 +269,14 @@ fn fit_data_limit(
         }
         let mut rhs = rhs;
         qr.q_tr_mul(&mut rhs);
-        let step = svd.solve(&rhs.rows(0, p), tolerance).map_err(|_| {
-            error(
-                ErrorKind::FactorizationFailure,
-                "least-squares factorization failed",
-            )
-        })?;
+        let step = r
+            .solve_upper_triangular(&rhs.rows(0, p).into_owned())
+            .ok_or_else(|| {
+                error(
+                    ErrorKind::FactorizationFailure,
+                    "least-squares factorization failed",
+                )
+            })?;
         if step.iter().any(|v| !v.is_finite()) {
             return Err(error(
                 ErrorKind::Nonfinite,
@@ -335,28 +338,23 @@ fn fit_data_limit(
             "final probit information exceeds floating-point range",
         ));
     }
-    let svd = weighted.qr().r().svd(false, true);
-    let tolerance = f64::EPSILON * n.max(p) as f64 * svd.singular_values[0];
-    if svd.singular_values.iter().any(|s| *s <= tolerance) {
+    let r = weighted.qr().r();
+    let singular = r.singular_values();
+    let tolerance = f64::EPSILON * n.max(p) as f64 * singular.max();
+    if singular.iter().any(|s| *s <= tolerance) {
         return Err(error(
             ErrorKind::RankDeficiency,
             "final probit information is numerically rank deficient",
         ));
     }
-    let vt = svd.v_t.as_ref().ok_or_else(|| {
+    let gram_inverse = crate::observations::inverse_gram(&r).ok_or_else(|| {
         error(
-            ErrorKind::Internal,
-            "SVD did not return right singular vectors",
+            ErrorKind::FactorizationFailure,
+            "triangular factor could not be inverted",
         )
     })?;
     // Var(beta)=(X' W X)^-1. Bernoulli dispersion is fixed at 1; no RSS/(n-p).
-    let covariance = DMatrix::from_fn(p, p, |i, j| {
-        (0..p)
-            .map(|k| vt[(k, i)] * vt[(k, j)] / svd.singular_values[k].powi(2))
-            .sum::<f64>()
-            / scales[i]
-            / scales[j]
-    });
+    let covariance = DMatrix::from_fn(p, p, |i, j| gram_inverse[(i, j)] / scales[i] / scales[j]);
     let normal = Normal::new(0.0, 1.0)
         .map_err(|_| error(ErrorKind::Internal, "invalid normal distribution"))?;
     let critical = normal.inverse_cdf(0.975);

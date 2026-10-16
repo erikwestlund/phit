@@ -68,3 +68,13 @@ pub(crate) fn compensated_sum(values: impl IntoIterator<Item = f64>) -> f64 {
     }
     sum + compensation
 }
+
+/// (R'R)^-1 from the triangular QR factor by back-substitution. nalgebra's SVD
+/// returns accurate singular values but can lose its singular vectors when R is
+/// nearly rank deficient (e.g. one prior weight 1e18 times the others), so the
+/// SVD is used only for rank checks; solves and covariances use R directly.
+pub(crate) fn inverse_gram(r: &nalgebra::DMatrix<f64>) -> Option<nalgebra::DMatrix<f64>> {
+    let p = r.ncols();
+    let inverse = r.solve_upper_triangular(&nalgebra::DMatrix::identity(p, p))?;
+    Some(&inverse * inverse.transpose())
+}

@@ -88,25 +88,29 @@ pub fn fit_ols(x: Vec<Vec<f64>>, y: Vec<f64>) -> Result<OlsResult, StatsError> {
         ));
     }
     let scaled = DMatrix::from_fn(n, p, |i, j| design[(i, j)] / scales[j]);
-    // Householder QR, then SVD of the small R: X = Q R and R = U S V' give the
-    // singular values and V of X without forming its n-by-p left factor.
+    // Householder QR of the scaled design. R's singular values (those of the
+    // design) drive the rank check; coefficients and covariance come from R by
+    // back-substitution, never from singular vectors or X'X.
     let qr = scaled.qr();
     let mut qty = outcomes.clone();
     qr.q_tr_mul(&mut qty);
-    let svd = qr.r().svd(true, true);
-    let tolerance = f64::EPSILON * n.max(p) as f64 * svd.singular_values.max();
-    if svd.singular_values.iter().any(|s| *s <= tolerance) {
+    let r = qr.r();
+    let singular = r.singular_values();
+    let tolerance = f64::EPSILON * n.max(p) as f64 * singular.max();
+    if singular.iter().any(|s| *s <= tolerance) {
         return Err(error(
             ErrorKind::RankDeficiency,
             "design is rank deficient at numerical precision",
         ));
     }
-    let beta_scaled = svd.solve(&qty.rows(0, p), tolerance).map_err(|_| {
-        error(
-            ErrorKind::FactorizationFailure,
-            "least-squares factorization failed",
-        )
-    })?;
+    let beta_scaled = r
+        .solve_upper_triangular(&qty.rows(0, p).into_owned())
+        .ok_or_else(|| {
+            error(
+                ErrorKind::FactorizationFailure,
+                "least-squares factorization failed",
+            )
+        })?;
     let beta = DVector::from_iterator(p, (0..p).map(|j| beta_scaled[j] / scales[j]));
     let fitted = &design * &beta;
     let residuals = &outcomes - &fitted;
@@ -121,19 +125,14 @@ pub fn fit_ols(x: Vec<Vec<f64>>, y: Vec<f64>) -> Result<OlsResult, StatsError> {
         ));
     }
     // (X'X)^-1 = D^-1 V diag(1/s^2) V' D^-1; never form X'X.
-    let vt = svd.v_t.as_ref().ok_or_else(|| {
+    let gram_inverse = crate::observations::inverse_gram(&r).ok_or_else(|| {
         error(
-            ErrorKind::Internal,
-            "SVD did not return right singular vectors",
+            ErrorKind::FactorizationFailure,
+            "triangular factor could not be inverted",
         )
     })?;
     let covariance = DMatrix::from_fn(p, p, |i, j| {
-        (0..p)
-            .map(|k| vt[(k, i)] * vt[(k, j)] / svd.singular_values[k].powi(2))
-            .sum::<f64>()
-            / scales[i]
-            / scales[j]
-            * variance
+        gram_inverse[(i, j)] / scales[i] / scales[j] * variance
     });
     let distribution = StudentsT::new(0.0, 1.0, df as f64)
         .map_err(|_| error(ErrorKind::Internal, "invalid t distribution"))?;
@@ -248,13 +247,20 @@ pub fn fit_ols_with_data(
     }
     let p = x[0].len();
     let intercept = (0..p).any(|j| x.iter().all(|r| r[j] == 1.0));
+    // Householder QR is unstable when row scales differ by many orders of
+    // magnitude unless the heavy rows come first (Powell & Reid), so factor the
+    // whitened rows in decreasing-weight order. fitted/residuals are rebuilt in
+    // the original order below; the other results do not depend on row order.
+    let mut order: Vec<usize> = (0..n).collect();
+    order.sort_by(|a, b| weights[*b].total_cmp(&weights[*a]));
     let mut result = fit_ols(
-        x.iter()
-            .zip(&weights)
-            .map(|(r, w)| r.iter().map(|v| v * w.sqrt()).collect())
+        order
+            .iter()
+            .map(|&i| x[i].iter().map(|v| v * weights[i].sqrt()).collect())
             .collect(),
-        (0..n)
-            .map(|i| (y[i] - offset[i]) * weights[i].sqrt())
+        order
+            .iter()
+            .map(|&i| (y[i] - offset[i]) * weights[i].sqrt())
             .collect(),
     )?;
     result.fitted = (0..n)

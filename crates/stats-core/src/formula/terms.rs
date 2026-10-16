@@ -187,7 +187,10 @@ impl Encoder<'_> {
                     let base = self.encode(l, negate)?;
                     let mut result = base.clone();
                     let mut acc = base.clone();
-                    for _ in 1..power {
+                    // Interactions cannot exceed the number of distinct variables,
+                    // so higher powers add nothing; capping keeps (a + b)^1e20 finite.
+                    let variables = base.iter().fold(Vec::new(), |a, t| union(&a, t)).len();
+                    for _ in 1..power.min(variables.max(1)) {
                         acc = interact(&acc, &base);
                         result = trim(result.into_iter().chain(acc.clone()).collect());
                     }

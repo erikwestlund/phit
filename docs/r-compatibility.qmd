@@ -90,6 +90,13 @@ cross-optimizer comparisons use `1e-3 + 3e-4 * abs(reference)`.
 counts and singular flags are exact where compared. The notebook reports actual
 errors, not only pass/fail.
 
+GLM covariances are evaluated at the final coefficients. R's `vcov()` for a `glm`
+reuses the weights of the last IRLS iteration, which were computed one step before
+the final update. On well-conditioned fits the two agree far inside the tolerance.
+On designs near separation they can differ by about 1e-5 relative. For
+`am ~ factor(cyl) + wt` on `mtcars`, the Fisher information recomputed in R at
+`coef(fit)` matches the php-stats covariance to about 1e-9.
+
 Different optimizers can stop at slightly different variance estimates on a flat
 likelihood. The cross-optimizer tolerance accommodates that observed spread,
 particularly covariance entries and small residuals on sleepstudy. It does not

@@ -39,7 +39,11 @@ fn result_json(r: &LmmResult) -> Value {
     "marginal_residuals":r.marginal_residuals,"residual_variance":r.residual_variance,
     "sigma":r.sigma,"log_likelihood":r.log_likelihood,"aic":r.aic,"bic":r.bic,
     "df_residual":r.df_residual,"n_parameters":r.n_parameters,"singular":r.singular,
-    "terms":r.terms.iter().map(|t|json!({"covariance":t.covariance,"effects":t.effects})).collect::<Vec<_>>()})
+    "terms":r.terms.iter().map(|t|json!({"covariance":t.covariance,"effects":t.effects,
+        "effects_cond_var":t.effects_cond_var,
+        // lme4 splits (x || g) into one-column terms and reports only these.
+        "effects_cond_var_diagonal":t.effects_cond_var.iter()
+            .map(|b|(0..b.len()).map(|j|b[j][j]).collect::<Vec<_>>()).collect::<Vec<_>>()})).collect::<Vec<_>>()})
 }
 #[test]
 fn matches_four_lme4_optimizers_on_expanded_models() {

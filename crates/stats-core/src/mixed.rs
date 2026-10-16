@@ -17,6 +17,9 @@ pub struct MixedResult {
     pub residuals: Vec<f64>,
     pub marginal_residuals: Vec<f64>,
     pub random_effects: Vec<f64>,
+    /// Conditional variance of each group's intercept given y at the estimates,
+    /// tau / (1 + n_g rho), as lme4 ranef(condVar = TRUE).
+    pub random_effects_cond_var: Vec<f64>,
     pub group_ids: Vec<usize>,
     pub group_sizes: Vec<usize>,
     pub residual_variance: f64,
@@ -342,6 +345,10 @@ pub fn fit_random_intercept(
             shrinkage * mean
         })
         .collect();
+    let random_effects_cond_var: Vec<f64> = members
+        .iter()
+        .map(|g| tau / (1.0 + g.len() as f64 * rho))
+        .collect();
     let fitted: Vec<f64> = (0..n)
         .map(|i| fixed_fitted[i] + random_effects[indices[i]])
         .collect();
@@ -354,6 +361,7 @@ pub fn fit_random_intercept(
         .chain(p_values.iter())
         .chain(conf_int.iter().flatten())
         .chain(random_effects.iter())
+        .chain(random_effects_cond_var.iter())
         .chain(fitted.iter())
         .chain(residuals.iter())
         .chain(marginal.iter())
@@ -379,6 +387,7 @@ pub fn fit_random_intercept(
         residuals,
         marginal_residuals: marginal.iter().copied().collect(),
         random_effects,
+        random_effects_cond_var,
         group_ids,
         group_sizes: members.iter().map(Vec::len).collect(),
         residual_variance: variance,

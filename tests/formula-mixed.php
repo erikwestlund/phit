@@ -16,6 +16,22 @@ function mcompare(mixed $actual, mixed $expected, string $label, float $abs, flo
     mcheck(abs($actual - $expected) <= $abs + $rel * abs($expected), "$label: $actual != $expected");
     $comparisons++;
 }
+// lme4 ranef(condVar = TRUE) postVar, keyed by lme4 level, against a term's per-group
+// blocks. $blocks maps a group label to its k x k block; (x || g) records only the
+// diagonal because lme4 splits it into separate one-column terms.
+function cond_var_compare(array $blocks, array $labels, array $reference, string $label, float $abs, float $rel): void {
+    $index = array_flip(array_map('strval', $labels));
+    mcheck(count($index) === count($reference['levels']), "$label levels");
+    foreach ($reference['levels'] as $i => $level) {
+        $block = $blocks[$index[(string)$level] ?? -1] ?? null;
+        mcheck(is_array($block), "$label/$level missing");
+        if (isset($reference['cond_var'])) {
+            mcompare($block, $reference['cond_var'][$i], "$label/$level", $abs, $rel);
+        } else {
+            mcompare(array_map(fn($j) => $block[$j][$j], array_keys($block)), $reference['cond_var_diagonal'][$i], "$label/$level", $abs, $rel);
+        }
+    }
+}
 $fixture = json_decode(file_get_contents(__DIR__ . '/fixtures/formula-lme4-r.json'), true, flags: JSON_THROW_ON_ERROR);
 $fits = ['lmer' => 0, 'glmer' => 0];
 foreach ($fixture['cases'] as $case) {
@@ -31,6 +47,16 @@ foreach ($fixture['cases'] as $case) {
     mcheck(array_map(fn($t) => (array)$t['columns'], $result['random']) === array_map(fn($b) => (array)$b['columns'], $case['bars']), "$name: random columns");
     foreach ($expected as $key => $value) {
         if (in_array($key, ['columns', 'n_observations'], true)) continue;
+        if ($key === 'random_cond_var') {
+            [$abs, $rel] = $case['function'] === 'lmer' ? [1e-5, 1e-5] : [2e-5, 2e-4];
+            foreach ($value as $t => $reference) {
+                [$blocks, $labels] = $case['function'] === 'lmer'
+                    ? [$result['random'][$t]['effects_cond_var'], $result['random'][$t]['group_labels']]
+                    : [array_map(fn($v) => [[$v]], $result['random_effects_cond_var']), $result['group_labels']];
+                cond_var_compare($blocks, $labels, $reference, "$name/random_cond_var/$t", $abs, $rel);
+            }
+            continue;
+        }
         $likelihood = in_array($key, ['log_likelihood', 'aic', 'bic'], true);
         if ($case['function'] === 'lmer') {
             [$abs, $rel] = $likelihood ? [5e-6, 1e-9] : [1e-5, 1e-5];
@@ -52,6 +78,11 @@ $matrix = stats_lmm_fit(array_map(fn($h) => [$h], $schools['study_hours']), $sch
     [['z' => array_fill(0, count($schools['score']), [1]), 'groups' => $schools['school']]]);
 mcompare($lmer['coefficients'], $matrix['coefficients'], 'lmer equals stats_lmm_fit', 1e-12, 1e-12);
 mcheck($lmer['method'] === 'ML' && $lmer['random'][0]['label'] === '1 | school' && $lmer['random'][0]['group_labels'] === $matrix['random'][0]['group_labels'], 'lmer metadata');
+// stats_lmm (random-intercept ML) reports the same conditional variances as lme4.
+$ml = array_values(array_filter($fixture['cases'], fn($c) => $c['name'] === 'lmer_schools_intercept_ml'))[0];
+$lmm = stats_lmm(array_map(null, $schools['study_hours'], $schools['prior_score']), $schools['score'], $schools['school']);
+cond_var_compare(array_map(fn($v) => [[$v]], $lmm['random_effects_cond_var']), $lmm['group_labels'],
+    $ml['expected']['random_cond_var'][0], 'stats_lmm/random_effects_cond_var', 1e-5, 1e-5);
 $panel = $fixture['datasets']['panel'];
 $glmer = @stats_glmer('yb ~ x + (1 | subject)', $panel);
 mcheck($glmer['family'] === 'binomial' && $glmer['random'][0]['group'] === 'subject' && $glmer['n_dropped'] === 2, 'glmer metadata');

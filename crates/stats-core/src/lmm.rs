@@ -61,6 +61,10 @@ impl Default for LmmOptions {
 pub struct RandomTermResult {
     pub covariance: Vec<Vec<f64>>,
     pub effects: Vec<Vec<f64>>,
+    /// Per group, the k x k conditional covariance of that group's random-effect
+    /// vector given y at the estimates: the matching diagonal block of
+    /// sigma² Λ (Λ'Z'WZΛ + I)⁻¹ Λ', as lme4 ranef(condVar = TRUE).
+    pub effects_cond_var: Vec<Vec<Vec<f64>>>,
     pub group_ids: Vec<usize>,
     pub group_sizes: Vec<usize>,
 }
@@ -209,6 +213,7 @@ impl Data {
         }
         Ok(Profile {
             solution,
+            random_r: upper.view((0, 0), (self.q, self.q)).into_owned(),
             fixed_r,
             variance,
             objective,
@@ -249,6 +254,8 @@ impl CostFunction for SimplexObjective<'_> {
 
 struct Profile {
     solution: DVector<f64>,
+    // R_11 with R_11'R_11 = Λ'Z'WZΛ + I (the penalized random-effect block).
+    random_r: DMatrix<f64>,
     fixed_r: DMatrix<f64>,
     variance: f64,
     objective: f64,
@@ -595,6 +602,27 @@ pub fn fit_lmm(
                     .sum::<f64>()
         })
         .collect();
+    // lme4 condVar: sigma² Λ (L L')⁻¹ Λ' with L L' = Λ'Z'WZΛ + I at the final
+    // theta. With R_11'R_11 = L L', solve R_11' S = Λ' so the product is S'S.
+    let spread = fit
+        .random_r
+        .transpose()
+        .solve_lower_triangular(&fit.lambda.transpose())
+        .ok_or_else(|| {
+            err(
+                ErrorKind::FactorizationFailure,
+                "cannot solve random-effect conditional covariance factor",
+            )
+        })?;
+    let cond_block = |base: usize, k: usize| -> Vec<Vec<f64>> {
+        (0..k)
+            .map(|i| {
+                (0..k)
+                    .map(|j| fit.variance * spread.column(base + i).dot(&spread.column(base + j)))
+                    .collect()
+            })
+            .collect()
+    };
     let mut singular = false;
     let term_results = data
         .terms
@@ -610,6 +638,9 @@ pub fn fit_lmm(
                 covariance: rows(&(fit.variance * &l * l.transpose())),
                 effects: (0..m.ids.len())
                     .map(|g| (0..m.k).map(|j| effects[m.base + g * m.k + j]).collect())
+                    .collect(),
+                effects_cond_var: (0..m.ids.len())
+                    .map(|g| cond_block(m.base + g * m.k, m.k))
                     .collect(),
                 group_ids: m.ids.clone(),
                 group_sizes: m.sizes.clone(),
@@ -657,6 +688,12 @@ pub fn fit_lmm(
         .iter()
         .chain(result.covariance.iter().flatten())
         .chain(result.fitted.iter())
+        .chain(
+            result
+                .terms
+                .iter()
+                .flat_map(|t| t.effects_cond_var.iter().flatten().flatten()),
+        )
         .chain(result.std_errors.iter())
         .chain(result.z_statistics.iter())
         .any(|v| !v.is_finite())

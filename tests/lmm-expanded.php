@@ -1,16 +1,25 @@
 <?php
 declare(strict_types=1);
 require __DIR__.'/r-compatibility.php';
+// Reference terms: (x || g) keeps only conditional-variance diagonals, as lme4 reports them.
+function expanded_terms(array $random,array $input):array{
+ return array_map(function($t,$in){
+  $out=['covariance'=>$t['covariance'],'effects'=>$t['effects']];
+  if($in['correlated']??true)$out['effects_cond_var']=$t['effects_cond_var'];
+  else $out['effects_cond_var_diagonal']=array_map(fn($b)=>array_map(fn($j)=>$b[$j][$j],array_keys($b)),$t['effects_cond_var']);
+  return $out;
+ },$random,$input);
+}
 $f=json_decode(file_get_contents(__DIR__.'/fixtures/lmm-expanded-r.json'),true,flags:JSON_THROW_ON_ERROR);
 foreach($f['cases'] as $c){
  $r=stats_lmm_fit(x:$c['x'],y:$c['y'],random:$c['terms'],reml:$c['reml'],weights:$c['weights'],offset:$c['offset'], intercept: false);
- $r['terms']=array_map(fn($t)=>['covariance'=>$t['covariance'],'effects'=>$t['effects']],$r['random']);
+ $r['terms']=expanded_terms($r['random'],$c['terms']);
  foreach($c['references'] as $optimizer=>$ref)foreach($ref['result'] as $k=>$v){
   [$abs,$rel]=in_array($k,['log_likelihood','aic','bic'],true)?[5e-6,1e-9]:($optimizer==='bobyqa'?[1e-5,1e-5]:[1e-3,3e-4]);
   compat_compare($r[$k],$v,$c['name'].'/'.$optimizer.'/'.$k,$abs,$rel);
  }
  $nm=stats_lmm_fit($c['x'],$c['y'],$c['terms'],reml:$c['reml'],weights:$c['weights'],offset:$c['offset'],optimizer:'nelder_mead', intercept: false);
- $nm['terms']=array_map(fn($t)=>['covariance'=>$t['covariance'],'effects'=>$t['effects']],$nm['random']);
+ $nm['terms']=expanded_terms($nm['random'],$c['terms']);
  foreach($c['references']['Nelder_Mead']['result'] as $k=>$v){
   [$abs,$rel]=in_array($k,['log_likelihood','aic','bic'],true)?[5e-6,1e-9]:[1e-3,3e-4];
   compat_compare($nm[$k],$v,$c['name'].'/native_Nelder_Mead/'.$k,$abs,$rel);

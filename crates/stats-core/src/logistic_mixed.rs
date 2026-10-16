@@ -44,6 +44,10 @@ pub struct LogisticMixedResult {
     pub residuals: Vec<f64>,
     /// Conditional modes, not posterior means, on the log-odds scale.
     pub random_effects: Vec<f64>,
+    /// Conditional variance of each mode: the inverse conditional-mode Hessian
+    /// tau² / (1 + tau² sum w mu(1-mu)) at the final iterate, as lme4
+    /// ranef(condVar = TRUE) for glmer. Zero at the tau = 0 boundary.
+    pub random_effects_cond_var: Vec<f64>,
     pub group_ids: Vec<usize>,
     pub group_sizes: Vec<usize>,
     pub random_intercept_variance: f64,
@@ -476,11 +480,16 @@ pub fn fit_logistic_random_intercept(
     };
     let beta: Vec<f64> = (0..p).map(|j| parameters[j] / scales[j]).collect();
     let eta = data.eta(&parameters);
-    let effects: Vec<f64> = data
+    let (effects, cond_var): (Vec<f64>, Vec<f64>) = data
         .members
         .iter()
-        .map(|rows| data.mode(rows, &eta, tau).map(|(u, _)| tau * u))
-        .collect::<Result<_, _>>()?;
+        .map(|rows| {
+            data.mode(rows, &eta, tau)
+                .map(|(u, precision)| (tau * u, tau * tau / precision))
+        })
+        .collect::<Result<Vec<_>, _>>()?
+        .into_iter()
+        .unzip();
     let linear_predictor: Vec<f64> = (0..n).map(|i| eta[i] + effects[indices[i]]).collect();
     let fitted: Vec<f64> = linear_predictor.iter().map(|e| sigmoid(*e)).collect();
     let std_errors: Vec<f64> = (0..p).map(|j| covariance[(j, j)].sqrt()).collect();
@@ -532,6 +541,7 @@ pub fn fit_logistic_random_intercept(
         fitted,
         linear_predictor,
         random_effects: effects,
+        random_effects_cond_var: cond_var,
         group_ids,
         group_sizes: data.members.iter().map(Vec::len).collect(),
         random_intercept_variance: tau * tau,
@@ -556,6 +566,7 @@ pub fn fit_logistic_random_intercept(
         .chain(result.z_statistics.iter())
         .chain(result.fitted.iter())
         .chain(result.random_effects.iter())
+        .chain(result.random_effects_cond_var.iter())
         .any(|v| !v.is_finite())
     {
         return Err(err(

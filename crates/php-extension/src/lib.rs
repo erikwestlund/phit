@@ -617,6 +617,7 @@ pub fn stats_lmm(
     put!("fixed_fitted", result.fixed_fitted);
     put!("marginal_residuals", result.marginal_residuals);
     put!("random_effects", result.random_effects);
+    put!("random_effects_cond_var", result.random_effects_cond_var);
     put!("group_sizes", result.group_sizes);
     put!("n_groups", group_labels.len());
     let mut labels = ZendHashTable::new();
@@ -694,6 +695,7 @@ fn lmm_output(
         let mut t = ZendHashTable::new();
         t.insert("covariance", term.covariance)?;
         t.insert("effects", term.effects)?;
+        t.insert("effects_cond_var", term.effects_cond_var)?;
         t.insert("group_labels", label_values(&labels)?)?;
         t.insert("group_sizes", term.group_sizes)?;
         output_terms.push(t)?;
@@ -724,6 +726,7 @@ fn logistic_mixed_output(
     out.insert("linear_predictor", r.linear_predictor)?;
     out.insert("residuals", r.residuals)?;
     out.insert("random_effects", r.random_effects)?;
+    out.insert("random_effects_cond_var", r.random_effects_cond_var)?;
     out.insert("group_sizes", r.group_sizes)?;
     out.insert("group_labels", label_values(group_labels)?)?;
     out.insert("n_groups", group_labels.len())?;

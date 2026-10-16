@@ -803,6 +803,7 @@ function stats_glm(string $formula, mixed $data, string $family = 'gaussian', st
 /**
  * Binomial random-intercept model from a formula, like lme4::glmer(family = binomial): exactly one (1 | g) term over the
  * stats_logistic_mixed core (Laplace by default, adaptive quadrature with quadrature_points > 1). Responses as in stats_glm.
+ * random_effects_cond_var holds each conditional mode's variance, as ranef(condVar = TRUE).
  * Formula syntax and R differences: docs/formulas.qmd. Rows with null/NAN in any variable the formula uses are
  * dropped with one E_WARNING (missing 'raise' rejects them); retained_rows/dropped_rows are original positions.
  * @param string $formula R formula, e.g. 'y ~ log(x) + f * z + offset(log(t))'
@@ -835,6 +836,7 @@ function stats_glm(string $formula, mixed $data, string $family = 'gaussian', st
  *   group_labels: list<int|string>,
  *   group_sizes: list<int>,
  *   random_effects: list<float>,
+ *   random_effects_cond_var: list<float>,
  *   n_groups: int,
  *   random_intercept_sd: float,
  *   random_intercept_variance: float,
@@ -911,6 +913,7 @@ function stats_lm(string $formula, mixed $data, string $missing = 'drop', mixed 
  * Gaussian mixed model from an lme4-style formula, like lme4::lmer(): fixed terms as in stats_lm and random bars
  * (x | g), (x || g), (1 | g1) + (1 | g2), (1 | g1:g2), (1 | g1/g2) mapped onto the stats_lmm_fit core. REML by default.
  * Groups and effects follow first appearance after deletion, not lme4's sorted levels; terms keep formula order.
+ * Each random term's effects_cond_var holds one k x k conditional covariance per group, as ranef(condVar = TRUE).
  * Formula syntax and R differences: docs/formulas.qmd. Rows with null/NAN in any variable the formula uses are
  * dropped with one E_WARNING (missing 'raise' rejects them); retained_rows/dropped_rows are original positions.
  * @param string $formula R formula, e.g. 'y ~ log(x) + f * z + offset(log(t))'
@@ -947,7 +950,7 @@ function stats_lm(string $formula, mixed $data, string $missing = 'drop', mixed 
  *   optimizer: string,
  *   optimizer_implementation: string,
  *   evaluations: int,
- *   random: list<array{covariance:list<list<float>>,effects:list<list<float>>,group_labels:list<int|string>,group_sizes:list<int>,label:string,group:string,columns:list<string>,correlated:bool}>,
+ *   random: list<array{covariance:list<list<float>>,effects:list<list<float>>,effects_cond_var:list<list<list<float>>>,group_labels:list<int|string>,group_sizes:list<int>,label:string,group:string,columns:list<string>,correlated:bool}>,
  *   formula: string,
  *   response: string,
  *   columns: list<string>,
@@ -994,6 +997,7 @@ function stats_lmer(string $formula, mixed $data, bool $reml = true, string $mis
  *   group_labels: list<int|string>,
  *   group_sizes: list<int>,
  *   random_effects: list<float>,
+ *   random_effects_cond_var: list<float>,
  *   evaluations: int,
  *   n_groups: int,
  *   random_intercept_variance: float,
@@ -1042,7 +1046,7 @@ function stats_lmm(array $x, array $y, array $groups, string $missing = 'drop', 
  *   optimizer: string,
  *   optimizer_implementation: string,
  *   evaluations: int,
- *   random: list<array{covariance:list<list<float>>,effects:list<list<float>>,group_labels:list<int|string>,group_sizes:list<int>}>,
+ *   random: list<array{covariance:list<list<float>>,effects:list<list<float>>,effects_cond_var:list<list<list<float>>>,group_labels:list<int|string>,group_sizes:list<int>}>,
  * }
  * @throws \Exception Statistical or input error (codes 1001–1008).
  */
@@ -1173,6 +1177,7 @@ function stats_logistic_logsf_array(array $values, float $location = 0.0, float 
  *   group_labels: list<int|string>,
  *   group_sizes: list<int>,
  *   random_effects: list<float>,
+ *   random_effects_cond_var: list<float>,
  *   n_groups: int,
  *   random_intercept_sd: float,
  *   random_intercept_variance: float,

@@ -100,6 +100,20 @@ fixtures <- lapply(cases, function(spec) {
     }
     rows(out)
   })
+  # ranef(condVar = TRUE) postVar per bar: one k x k block per level (lme4's
+  # level order). (x || g) splits into separate lme4 terms, so lme4 reports
+  # only each coefficient's own variance: record the diagonal.
+  re <- ranef(fit, condVar = TRUE)
+  expected$random_cond_var <- lapply(spec$bars, function(b) {
+    r <- re[[b$group]]; pv <- attr(r, "postVar"); levels <- as.list(rownames(r))
+    if (is.list(pv)) {
+      stopifnot(!b$correlated, identical(names(pv), b$columns))
+      return(list(levels = levels, cond_var_diagonal = lapply(seq_len(nrow(r)), function(i)
+        lapply(b$columns, function(column) pv[[column]][1, 1, i]))))
+    }
+    stopifnot(b$correlated, identical(colnames(r), b$columns))
+    list(levels = levels, cond_var = lapply(seq_len(nrow(r)), function(i) rows(matrix(pv[, , i], length(b$columns)))))
+  })
   if (spec[["function"]] == "lmer") {
     expected$random_covariances <- covariances
     expected$sigma <- sigma(fit)

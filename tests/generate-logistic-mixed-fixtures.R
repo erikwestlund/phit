@@ -41,7 +41,10 @@ for(name in names(cases))for(points in c(1,9,25,61)){
     control=glmerControl(optimizer='bobyqa',tolPwrss=1e-12,optCtrl=list(rhoend=1e-9,maxfun=100000))),
     warning=function(e){warnings<<-c(warnings,conditionMessage(e));invokeRestart('muffleWarning')},message=function(e)invokeRestart('muffleMessage'))
  beta<-fixef(fit);cv<-as.matrix(vcov(fit));se<-sqrt(diag(cv));z<-beta/se
- effects<-as.vector(ranef(fit)$group[as.character(unique(c$groups)),1])
+ re<-ranef(fit,condVar=TRUE)$group;at<-match(as.character(unique(c$groups)),rownames(re))
+ effects<-as.vector(re[at,1])
+ # Conditional-mode variances: lme4 inverts the final PIRLS Hessian (sigma = 1).
+ cond_var<-as.vector(attr(re,'postVar')[1,1,at])
  fixed<-as.vector(plogis(c$x%*%beta+c$offset));conditional<-as.vector(fitted(fit))
  saturated<-sum(dbinom(round(c$y*c$weights),c$weights,c$y,log=TRUE))
  # lme4 nAGQ>1 integrates exp(-deviance/2), dropping the saturated-model
@@ -51,7 +54,7 @@ for(name in names(cases))for(points in c(1,9,25,61)){
  result<-list(coefficients=as.list(unname(beta)),covariance=rows(cv),std_errors=as.list(unname(se)),z_statistics=as.list(unname(z)),
    p_values=as.list(unname(2*pnorm(abs(z),lower.tail=FALSE))),conf_int=rows(cbind(beta-qnorm(.975)*se,beta+qnorm(.975)*se)),
    fixed_fitted=as.list(fixed),fitted=as.list(conditional),linear_predictor=as.list(as.vector(predict(fit,type='link'))),
-   residuals=as.list(c$y-conditional),random_effects=as.list(effects),random_intercept_sd=as.numeric(getME(fit,'theta')),
+   residuals=as.list(c$y-conditional),random_effects=as.list(effects),random_effects_cond_var=as.list(cond_var),random_intercept_sd=as.numeric(getME(fit,'theta')),
    random_intercept_variance=as.numeric(getME(fit,'theta'))^2,log_likelihood=ll,neg2_log_likelihood=-2*ll,
    aic=2*np-2*ll,bic=log(length(c$y))*np-2*ll,n_parameters=np,df_residual=length(c$y)-np,singular=isSingular(fit))
  fixtures[[length(fixtures)+1]]<-list(name=paste0(name,'_',points),dataset=name,quadrature_points=points,x=rows(c$x),y=as.list(c$y),

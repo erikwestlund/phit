@@ -55,7 +55,7 @@ fn matches_lme4_laplace_and_adaptive_quadrature() {
         .unwrap_or_else(|e| panic!("{}: {e}", c["name"]));
         let actual = json!({"coefficients":r.coefficients,"covariance":r.covariance,"std_errors":r.std_errors,"z_statistics":r.z_statistics,
             "p_values":r.p_values,"conf_int":r.conf_int,"fixed_fitted":r.fixed_fitted,"fitted":r.fitted,"linear_predictor":r.linear_predictor,
-            "residuals":r.residuals,"random_effects":r.random_effects,"random_intercept_sd":r.random_intercept_sd,"random_intercept_variance":r.random_intercept_variance,
+            "residuals":r.residuals,"random_effects":r.random_effects,"random_effects_cond_var":r.random_effects_cond_var,"random_intercept_sd":r.random_intercept_sd,"random_intercept_variance":r.random_intercept_variance,
             "log_likelihood":r.log_likelihood,"neg2_log_likelihood":r.neg2_log_likelihood,"aic":r.aic,"bic":r.bic,
             "n_parameters":r.n_parameters,"df_residual":r.df_residual,"singular":r.singular});
         for (k, v) in c["expected"].as_object().unwrap() {

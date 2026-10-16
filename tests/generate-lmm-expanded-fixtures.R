@@ -97,7 +97,12 @@ fixtures<-lapply(names(cases),function(name){
      for(j in seq_len(k)){nm<-paste0('z',t,'_',j);ix<-indices[vapply(vc[indices],function(v)nm%in%rownames(v),FALSE)];cvt[j,j]<-vc[[ix]][1,1]}
    }
    ef<-as.matrix(rr[[gg]][as.character(unique(tm$groups)),paste0('z',t,'_',seq_len(k)),drop=FALSE])
-   list(covariance=rows(cvt),effects=rows(ef))
+   # ranef(condVar=TRUE) postVar, one k x k block per group. Independent
+   # columns are separate lme4 terms, so lme4 reports only their own variances.
+   at<-match(as.character(unique(tm$groups)),rownames(rr[[gg]]));pv<-attr(rr[[gg]],'postVar')
+   if(is.list(pv))return(list(covariance=rows(cvt),effects=rows(ef),
+     effects_cond_var_diagonal=lapply(at,function(i)lapply(paste0('z',t,'_',seq_len(k)),function(nm)pv[[nm]][1,1,i]))))
+   list(covariance=rows(cvt),effects=rows(ef),effects_cond_var=lapply(at,function(i)rows(matrix(pv[,,i],k))))
   })
   list(result=list(coefficients=as.list(unname(beta)),covariance=rows(cv),std_errors=as.list(unname(se)),
    z_statistics=as.list(unname(z)),p_values=as.list(unname(2*pnorm(abs(z),lower.tail=FALSE))),

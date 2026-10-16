@@ -10,7 +10,7 @@ $common = ['coefficients'=>'list<float>','covariance'=>'list<list<float>>','std_
 $glm = ['z_statistics'=>'list<float>','deviance'=>'float','null_deviance'=>'float','aic'=>'float','iterations'=>'int','converged'=>'bool'];
 $mixed = ['z_statistics'=>'list<float>','fixed_fitted'=>'list<float>','marginal_residuals'=>'list<float>','aic'=>'float',
  'residual_variance'=>'float','sigma'=>'float','method'=>'string','converged'=>'bool'];
-$group = ['group_labels'=>'list<int|string>','group_sizes'=>'list<int>','random_effects'=>'list<float>'];
+$group = ['group_labels'=>'list<int|string>','group_sizes'=>'list<int>','random_effects'=>'list<float>','random_effects_cond_var'=>'list<float>'];
 $models=['stats_ols','stats_logistic','stats_probit','stats_poisson','stats_lmm','stats_lmm_fit','stats_logistic_mixed'];
 $families=['normal'=>'Normal(mean, sd)','t'=>"Student's t with df degrees of freedom",'chisquare'=>'Chi-square with df degrees of freedom',
  'f'=>'F with numerator df1 and denominator df2 degrees of freedom','beta'=>'Beta(alpha, beta) on [0, 1]',
@@ -51,10 +51,12 @@ $formulas=[
   'result'=>$common+$olsKeys+$naming],
  'stats_glm'=>['summary'=>"Generalized linear model from a formula, like R's glm(): gaussian/identity (stats_ols core), binomial/logit, binomial/probit\n * and poisson/log (the matrix GLM cores). Binomial responses: 0/1, logical, factor/string (first level = failure),\n * proportions with trial weights, or cbind(successes, failures). The empty link selects the canonical link.",
   'result'=>$common+$glm+['family'=>'string','link'=>'string']+$naming+['t_statistics?'=>'list<float>','rss?'=>'float','residual_variance?'=>'float','sigma?'=>'float','r_squared?'=>'float','adj_r_squared?'=>'float']],
- 'stats_lmer'=>['summary'=>"Gaussian mixed model from an lme4-style formula, like lme4::lmer(): fixed terms as in stats_lm and random bars\n * (x | g), (x || g), (1 | g1) + (1 | g2), (1 | g1:g2), (1 | g1/g2) mapped onto the stats_lmm_fit core. REML by default.\n * Groups and effects follow first appearance after deletion, not lme4's sorted levels; terms keep formula order.",
+ 'stats_lmer'=>['summary'=>"Gaussian mixed model from an lme4-style formula, like lme4::lmer(): fixed terms as in stats_lm and random bars\n * (x | g), (x || g), (1 | g1) + (1 | g2), (1 | g1:g2), (1 | g1/g2) mapped onto the stats_lmm_fit core. REML by default.\n * Groups and effects follow first appearance after deletion, not lme4's sorted levels; terms keep formula order.
+ * Each random term's effects_cond_var holds one k x k conditional covariance per group, as ranef(condVar = TRUE).",
   'result'=>$common+$mixed+['n_parameters'=>'int','bic'=>'float','theta'=>'list<float>','singular'=>'bool','optimizer'=>'string','optimizer_implementation'=>'string','evaluations'=>'int',
-   'random'=>'list<array{covariance:list<list<float>>,effects:list<list<float>>,group_labels:list<int|string>,group_sizes:list<int>,label:string,group:string,columns:list<string>,correlated:bool}>']+$naming],
- 'stats_glmer'=>['summary'=>"Binomial random-intercept model from a formula, like lme4::glmer(family = binomial): exactly one (1 | g) term over the\n * stats_logistic_mixed core (Laplace by default, adaptive quadrature with quadrature_points > 1). Responses as in stats_glm.",
+   'random'=>'list<array{covariance:list<list<float>>,effects:list<list<float>>,effects_cond_var:list<list<list<float>>>,group_labels:list<int|string>,group_sizes:list<int>,label:string,group:string,columns:list<string>,correlated:bool}>']+$naming],
+ 'stats_glmer'=>['summary'=>"Binomial random-intercept model from a formula, like lme4::glmer(family = binomial): exactly one (1 | g) term over the\n * stats_logistic_mixed core (Laplace by default, adaptive quadrature with quadrature_points > 1). Responses as in stats_glm.
+ * random_effects_cond_var holds each conditional mode's variance, as ranef(condVar = TRUE).",
   'result'=>$common+['z_statistics'=>'list<float>','fixed_fitted'=>'list<float>','linear_predictor'=>'list<float>','aic'=>'float','bic'=>'float','n_parameters'=>'int']+$group+
    ['n_groups'=>'int','random_intercept_sd'=>'float','random_intercept_variance'=>'float','neg2_log_likelihood'=>'float','quadrature_points'=>'int','integration'=>'string','method'=>'string','family'=>'string','link'=>'string','optimizer'=>'string','converged'=>'bool','evaluations'=>'int','gradient_max'=>'float','boundary'=>'bool','singular'=>'bool',
    'random'=>'list<array{label:string,group:string,columns:list<string>}>']+$naming],
@@ -122,7 +124,7 @@ foreach ($functions as $name) {
   elseif (in_array($name,['stats_logistic','stats_probit','stats_poisson'],true)) $keys+=$glm;
   elseif ($name==='stats_lmm') $keys+=$mixed+$group+['evaluations'=>'int','n_groups'=>'int','random_intercept_variance'=>'float','icc'=>'float','boundary'=>'bool'];
   elseif ($name==='stats_lmm_fit') $keys+=$mixed+['n_parameters'=>'int','bic'=>'float','theta'=>'list<float>','singular'=>'bool','optimizer'=>'string','optimizer_implementation'=>'string','evaluations'=>'int',
-   'random'=>'list<array{covariance:list<list<float>>,effects:list<list<float>>,group_labels:list<int|string>,group_sizes:list<int>}>'];
+   'random'=>'list<array{covariance:list<list<float>>,effects:list<list<float>>,effects_cond_var:list<list<list<float>>>,group_labels:list<int|string>,group_sizes:list<int>}>'];
   else $keys+=['z_statistics'=>'list<float>','fixed_fitted'=>'list<float>','linear_predictor'=>'list<float>','aic'=>'float','bic'=>'float','n_parameters'=>'int']+$group+
    ['n_groups'=>'int','random_intercept_sd'=>'float','random_intercept_variance'=>'float','neg2_log_likelihood'=>'float','quadrature_points'=>'int','integration'=>'string','method'=>'string','family'=>'string','link'=>'string','optimizer'=>'string','converged'=>'bool','evaluations'=>'int','gradient_max'=>'float','boundary'=>'bool','singular'=>'bool'];
   $api[$name]['result_keys']=array_keys($keys);sort($api[$name]['result_keys']);

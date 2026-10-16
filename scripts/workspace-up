@@ -13,6 +13,8 @@ done
 
 cd "$workspace_root"
 # Reuse the repository's frozen results; no Rust/PHP/R build is required.
-quarto render docs
+# A bare `quarto render docs` removes the published docs/*.html that GitHub Pages
+# serves; render-docs renders the same way and then restores that tree.
+"$workspace_root/scripts/render-docs"
 (cd docs/_site && herd link "$workspace_site")
 echo "Documentation preview: http://$workspace_site.test"

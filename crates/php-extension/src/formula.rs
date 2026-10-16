@@ -12,7 +12,9 @@ use ext_php_rs::{
     zend::ExecutorGlobals,
 };
 use stats_core::ErrorKind;
-use stats_core::formula::{Column, Data, DesignOptions, GroupLabel, ModelDesign, Response};
+use stats_core::formula::{
+    Column, Data, DesignOptions, GroupLabel, ModelDesign, PolyCoefs, Predvars, Response,
+};
 
 fn invalid(message: &str) -> PhpException {
     input_exception(ErrorKind::InvalidInput, message)
@@ -287,7 +289,415 @@ fn add_names(output: &mut ZendHashTable, design: &ModelDesign) -> PhpResult<()> 
         }
     }
     output.insert("named", named)?;
+    output.insert("predvars", predvars_table(&design.predvars)?)?;
     Ok(())
+}
+
+/// Factor levels and poly() coefficients that stats_predict() reuses.
+fn predvars_table(predvars: &Predvars) -> PhpResult<ZBox<ZendHashTable>> {
+    let mut levels = ZendHashTable::new();
+    for (name, values) in &predvars.levels {
+        levels.insert(name.as_str(), values.clone())?;
+    }
+    let mut poly = ZendHashTable::new();
+    for (text, coefs) in &predvars.poly {
+        let mut c = ZendHashTable::new();
+        c.insert("alpha", coefs.alpha.clone())?;
+        c.insert("norm2", coefs.norm2.clone())?;
+        poly.insert(text.as_str(), c)?;
+    }
+    let mut out = ZendHashTable::new();
+    out.insert("levels", levels)?;
+    out.insert("poly", poly)?;
+    Ok(out)
+}
+
+fn malformed_fit(detail: &str) -> PhpException {
+    invalid(&format!(
+        "fit must be a result of stats_lm, stats_glm, stats_lmer or stats_glmer: {detail}"
+    ))
+}
+
+fn float_list(value: Option<&Zval>, what: &str) -> PhpResult<Vec<f64>> {
+    value
+        .and_then(|v| v.array())
+        .ok_or_else(|| malformed_fit(&format!("missing {what}")))?
+        .values()
+        .map(|v| {
+            v.double()
+                .or_else(|| v.long().map(|l| l as f64))
+                .ok_or_else(|| malformed_fit(&format!("{what} must be numbers")))
+        })
+        .collect()
+}
+
+fn string_list(value: Option<&Zval>, what: &str) -> PhpResult<Vec<String>> {
+    value
+        .and_then(|v| v.array())
+        .ok_or_else(|| malformed_fit(&format!("missing {what}")))?
+        .values()
+        .map(|v| {
+            v.str()
+                .map(str::to_owned)
+                .ok_or_else(|| malformed_fit(&format!("{what} must be strings")))
+        })
+        .collect()
+}
+
+fn predvars_from(fit: &ZendHashTable) -> PhpResult<Predvars> {
+    let table = fit
+        .get("predvars")
+        .and_then(|v| v.array())
+        .ok_or_else(|| malformed_fit("missing predvars"))?;
+    let mut predvars = Predvars::default();
+    if let Some(levels) = table.get("levels").and_then(|v| v.array()) {
+        for (name, values) in levels.iter() {
+            predvars
+                .levels
+                .push((name.to_string(), string_list(Some(values), "levels")?));
+        }
+    }
+    if let Some(poly) = table.get("poly").and_then(|v| v.array()) {
+        for (text, coefs) in poly.iter() {
+            let coefs = coefs
+                .array()
+                .ok_or_else(|| malformed_fit("poly coefficients must be arrays"))?;
+            predvars.poly.push((
+                text.to_string(),
+                PolyCoefs {
+                    alpha: float_list(coefs.get("alpha"), "poly alpha")?,
+                    norm2: float_list(coefs.get("norm2"), "poly norm2")?,
+                },
+            ));
+        }
+    }
+    Ok(predvars)
+}
+
+fn label_key(value: &Zval) -> Option<String> {
+    value
+        .long()
+        .map(|v| v.to_string())
+        .or_else(|| value.str().map(str::to_owned))
+}
+
+fn design_label_key(label: &GroupLabel) -> String {
+    match label {
+        GroupLabel::Integer(v) => v.to_string(),
+        GroupLabel::Text(v) => v.clone(),
+    }
+}
+
+/// Fitted random effects by term: group label -> coefficient vector.
+fn fitted_effects(
+    fit: &ZendHashTable,
+) -> PhpResult<Vec<std::collections::HashMap<String, Vec<f64>>>> {
+    let malformed = || malformed_fit("random effects are incomplete");
+    let random = fit
+        .get("random")
+        .and_then(|v| v.array())
+        .ok_or_else(malformed)?;
+    let mut out = Vec::new();
+    if let Some(effects) = fit.get("random_effects").and_then(|v| v.array()) {
+        // stats_glmer: one random intercept with top-level effects and labels.
+        let labels = fit
+            .get("group_labels")
+            .and_then(|v| v.array())
+            .ok_or_else(malformed)?;
+        let mut map = std::collections::HashMap::new();
+        for (label, effect) in labels.values().zip(effects.values()) {
+            let value = effect.double().ok_or_else(malformed)?;
+            map.insert(label_key(label).ok_or_else(malformed)?, vec![value]);
+        }
+        out.push(map);
+        return Ok(out);
+    }
+    for term in random.values() {
+        let term = term.array().ok_or_else(malformed)?;
+        let labels = term
+            .get("group_labels")
+            .and_then(|v| v.array())
+            .ok_or_else(malformed)?;
+        let effects = term
+            .get("effects")
+            .and_then(|v| v.array())
+            .ok_or_else(malformed)?;
+        let mut map = std::collections::HashMap::new();
+        for (label, effect) in labels.values().zip(effects.values()) {
+            map.insert(
+                label_key(label).ok_or_else(malformed)?,
+                float_list(Some(effect), "random effects")?,
+            );
+        }
+        out.push(map);
+    }
+    Ok(out)
+}
+
+fn quad_form(x: &[f64], covariance: &[Vec<f64>]) -> f64 {
+    let mut total = 0.0;
+    for (i, xi) in x.iter().enumerate() {
+        for (j, xj) in x.iter().enumerate() {
+            total += xi * covariance[i][j] * xj;
+        }
+    }
+    total
+}
+
+fn nullable(values: &[Option<f64>]) -> PhpResult<ZBox<ZendHashTable>> {
+    let mut out = ZendHashTable::new();
+    for v in values {
+        match v {
+            Some(v) => out.push(*v)?,
+            None => out.push(Option::<f64>::None)?,
+        }
+    }
+    Ok(out)
+}
+
+/// Predictions for new data from a formula fit, as R's predict() for lm, glm
+/// and merMod objects.
+#[php_function]
+#[php(defaults(
+    r#type = "\"link\"",
+    se_fit = false,
+    interval = "\"none\"",
+    level = 0.95,
+    random = true,
+    allow_new_levels = false
+))]
+#[allow(clippy::too_many_arguments)] // Named PHP arguments mirror R's predict().
+pub fn stats_predict(
+    fit: &ZendHashTable,
+    newdata: &Zval,
+    r#type: &str,
+    se_fit: bool,
+    interval: &str,
+    level: f64,
+    random: bool,
+    allow_new_levels: bool,
+) -> PhpResult<ZBox<ZendHashTable>> {
+    let formula = fit
+        .get("formula")
+        .and_then(|v| v.str())
+        .ok_or_else(|| malformed_fit("missing formula"))?
+        .to_owned();
+    let mixed = fit.get("random").is_some();
+    let link = match fit.get("link").and_then(|v| v.str()) {
+        Some(l @ ("identity" | "logit" | "probit" | "log")) => l.to_owned(),
+        Some(_) => return Err(malformed_fit("unknown link")),
+        None => "identity".to_owned(),
+    };
+    let is_lm = fit.get("family").is_none() && !mixed;
+    let response = match r#type {
+        "link" => false,
+        "response" => true,
+        _ => return Err(invalid("type must be 'link' or 'response'")),
+    };
+    let interval_kind = match interval {
+        "none" => None,
+        "confidence" | "prediction" if is_lm => Some(interval == "prediction"),
+        "confidence" | "prediction" => {
+            return Err(input_exception(
+                ErrorKind::Unsupported,
+                "intervals are available for stats_lm fits; use se_fit for GLMs",
+            ));
+        }
+        _ => {
+            return Err(invalid(
+                "interval must be 'none', 'confidence' or 'prediction'",
+            ));
+        }
+    };
+    if !(level > 0.0 && level < 1.0) {
+        return Err(invalid("level must be strictly between 0 and 1"));
+    }
+    if mixed && (se_fit || interval_kind.is_some()) {
+        return Err(input_exception(
+            ErrorKind::Unsupported,
+            "standard errors and intervals are not available for mixed-model predictions",
+        ));
+    }
+    let coefficients = float_list(fit.get("coefficients"), "coefficients")?;
+    let columns = string_list(fit.get("columns"), "columns")?;
+    let covariance: Vec<Vec<f64>> = fit
+        .get("covariance")
+        .and_then(|v| v.array())
+        .ok_or_else(|| malformed_fit("missing covariance"))?
+        .values()
+        .map(|row| float_list(Some(row), "covariance"))
+        .collect::<PhpResult<_>>()?;
+    if coefficients.len() != columns.len()
+        || covariance.len() != columns.len()
+        || covariance.iter().any(|r| r.len() != columns.len())
+    {
+        return Err(malformed_fit(
+            "coefficients, columns and covariance disagree",
+        ));
+    }
+    let predvars = predvars_from(fit)?;
+    let frame = model_data(newdata)?;
+    let design =
+        stats_core::formula::prediction_design(&formula, &frame, &predvars, mixed && random)
+            .map_err(stats_exception)?;
+    if design.columns != columns {
+        return Err(invalid(&format!(
+            "newdata produce columns [{}] but the fit has [{}]",
+            design.columns.join(", "),
+            columns.join(", ")
+        )));
+    }
+    let effects = if mixed && random {
+        Some(fitted_effects(fit)?)
+    } else {
+        None
+    };
+    let n = frame.rows();
+    let mut eta = vec![None; n];
+    let mut se = vec![None; n];
+    let mut new_levels = Vec::new();
+    for (k, row) in design.retained_rows.iter().enumerate() {
+        let x = &design.x[k];
+        let mut value: f64 = x.iter().zip(&coefficients).map(|(a, b)| a * b).sum();
+        if let Some(offset) = &design.offset {
+            value += offset[k];
+        }
+        if let Some(effects) = &effects {
+            for (term, fitted) in design.random.iter().zip(effects) {
+                let key = design_label_key(&term.groups[k]);
+                match fitted.get(&key) {
+                    Some(b) => {
+                        value += term.z[k].iter().zip(b).map(|(z, b)| z * b).sum::<f64>();
+                    }
+                    None if allow_new_levels => {}
+                    None => {
+                        let label = format!("{}={key}", term.group);
+                        if !new_levels.contains(&label) {
+                            new_levels.push(label);
+                        }
+                    }
+                }
+            }
+        }
+        eta[*row] = Some(value);
+        if se_fit || interval_kind.is_some() {
+            se[*row] = Some(quad_form(x, &covariance).max(0.0).sqrt());
+        }
+    }
+    if !new_levels.is_empty() {
+        return Err(invalid(&format!(
+            "new levels detected in newdata: {}; pass allow_new_levels: true to predict them at the population level",
+            new_levels.join(", ")
+        )));
+    }
+    let normal = stats_core::distributions::Normal::new(0.0, 1.0).map_err(stats_exception)?;
+    let inverse_link = |eta: f64| -> f64 {
+        match link.as_str() {
+            "logit" => {
+                if eta >= 0.0 {
+                    1.0 / (1.0 + (-eta).exp())
+                } else {
+                    let e = eta.exp();
+                    e / (1.0 + e)
+                }
+            }
+            "probit" => normal.cdf(eta),
+            "log" => eta.exp(),
+            _ => eta,
+        }
+    };
+    let derivative = |eta: f64| -> f64 {
+        match link.as_str() {
+            "logit" => {
+                let mu = inverse_link(eta);
+                mu * (1.0 - mu)
+            }
+            "probit" => normal.pdf(eta),
+            "log" => eta.exp(),
+            _ => 1.0,
+        }
+    };
+    let mut fitted = eta.clone();
+    if response {
+        for (f, s) in fitted.iter_mut().zip(se.iter_mut()) {
+            if let Some(e) = *f {
+                *f = Some(inverse_link(e));
+                if let Some(v) = *s {
+                    *s = Some(v * derivative(e).abs());
+                }
+            }
+        }
+    }
+    let mut out = ZendHashTable::new();
+    out.insert("fit", nullable(&fitted)?)?;
+    if se_fit {
+        out.insert("se_fit", nullable(&se)?)?;
+    }
+    let df = fit.get("df_residual").and_then(|v| v.long());
+    if is_lm && (se_fit || interval_kind.is_some()) {
+        out.insert("df", df)?;
+    }
+    if !mixed && (se_fit || interval_kind.is_some()) {
+        // R's residual.scale: sigma for Gaussian fits, 1 for binomial and Poisson.
+        let sigma = match link.as_str() {
+            "identity" => fit.get("sigma").and_then(|v| v.double()),
+            _ => Some(1.0),
+        };
+        out.insert("residual_scale", sigma)?;
+    }
+    if let Some(prediction) = interval_kind {
+        let df = df.ok_or_else(|| malformed_fit("missing df_residual"))?;
+        let sigma = fit
+            .get("sigma")
+            .and_then(|v| v.double())
+            .ok_or_else(|| malformed_fit("missing sigma"))?;
+        let critical = stats_core::distributions::StudentT::new(df as f64)
+            .map_err(stats_exception)?
+            .quantile((1.0 + level) / 2.0);
+        if prediction
+            && float_list(fit.get("weights"), "weights").is_ok_and(|w| w.iter().any(|w| *w != 1.0))
+        {
+            ext_php_rs::error::php_error(
+                &ext_php_rs::flags::ErrorType::Warning,
+                "stats_predict assumes constant prediction variance even though the model fit is weighted",
+            );
+        }
+        let mut lower = vec![None; n];
+        let mut upper = vec![None; n];
+        for i in 0..n {
+            if let (Some(f), Some(s)) = (fitted[i], se[i]) {
+                let width = critical
+                    * if prediction {
+                        (s * s + sigma * sigma).sqrt()
+                    } else {
+                        s
+                    };
+                lower[i] = Some(f - width);
+                upper[i] = Some(f + width);
+            }
+        }
+        out.insert("lower", nullable(&lower)?)?;
+        out.insert("upper", nullable(&upper)?)?;
+    }
+    out.insert(
+        "level",
+        if interval_kind.is_some() {
+            Some(level)
+        } else {
+            None
+        },
+    )?;
+    out.insert("n_input", n)?;
+    out.insert("n_predicted", design.retained_rows.len())?;
+    out.insert(
+        "missing_rows",
+        design
+            .dropped_rows
+            .iter()
+            .map(|v| *v as i64)
+            .collect::<Vec<_>>(),
+    )?;
+    Ok(out)
 }
 
 fn reject_random(design: &ModelDesign, function: &str) -> PhpResult<()> {
@@ -748,4 +1158,5 @@ pub fn register(module: ModuleBuilder) -> ModuleBuilder {
         .function(wrap_function!(stats_glm))
         .function(wrap_function!(stats_lmer))
         .function(wrap_function!(stats_glmer))
+        .function(wrap_function!(stats_predict))
 }

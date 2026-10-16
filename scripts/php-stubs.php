@@ -40,7 +40,8 @@ $draws=[
   'params'=>['draws'=>'array<array<int|float>>','matrix'=>'array<array<int|float>>','shift'=>'array<int|float>'],
   'result'=>['draws'=>'list<list<float>>','log_abs_det'=>'float']],
 ];
-$naming=['formula'=>'string','response'=>'string','columns'=>'list<string>','terms'=>'list<string>','assign'=>'list<int>','intercept'=>'bool','named'=>'array<string,float>'];
+$naming=['formula'=>'string','response'=>'string','columns'=>'list<string>','terms'=>'list<string>','assign'=>'list<int>','intercept'=>'bool','named'=>'array<string,float>',
+ 'predvars'=>'array{levels:array<string,list<string>>,poly:array<string,array{alpha:list<float>,norm2:list<float>}>}'];
 $olsKeys=['t_statistics'=>'list<float>','rss'=>'float','residual_variance'=>'float','sigma'=>'float','r_squared'=>'float','adj_r_squared'=>'float'];
 $randomShape='list<array{label:string,group:string,columns:list<string>,correlated:bool,z:list<list<float>>,groups:list<int|string>}>';
 $formulas=[
@@ -61,6 +62,8 @@ $formulas=[
    ['n_groups'=>'int','random_intercept_sd'=>'float','random_intercept_variance'=>'float','neg2_log_likelihood'=>'float','quadrature_points'=>'int','integration'=>'string','method'=>'string','family'=>'string','link'=>'string','optimizer'=>'string','converged'=>'bool','evaluations'=>'int','gradient_max'=>'float','boundary'=>'bool','singular'=>'bool',
    'random'=>'list<array{label:string,group:string,columns:list<string>}>']+$naming],
 ];
+$predict=['summary'=>"Predictions for new data from a stats_lm, stats_glm, stats_lmer or stats_glmer result, like R's predict():\n * the fit's formula is rebuilt over newdata with the fitted factor levels and poly() basis (its predvars key).\n * A level the fit never saw is an error. Rows with missing predictors predict null and are listed in missing_rows.\n * type 'response' applies the inverse link; se_fit uses the delta method on that scale. Intervals ('confidence' or\n * 'prediction', t with df_residual) are for stats_lm fits. Mixed fits add random effects of known groups (random: false\n * gives population predictions; allow_new_levels predicts unseen groups at zero). GLM standard errors use the\n * covariance at the final coefficients (docs/r-compatibility.qmd).",
+  'result'=>['fit'=>'list<float|null>','se_fit?'=>'list<float|null>','df?'=>'int','residual_scale?'=>'float','lower?'=>'list<float|null>','upper?'=>'list<float|null>','level'=>'float|null','n_input'=>'int','n_predicted'=>'int','missing_rows'=>'list<int>']];
 $io=['stats_read_csv'=>['summary'=>"Read a delimited text file the way phibble's PHP reader (after readr::read_delim()) does: same records,\n * names, guessed types, values and problem messages. Contract and phibble/readr differences: docs/io.qmd.",
   'options'=>"array{delimiter?: string, quote?: string, escape_double?: bool, escape_backslash?: bool, na?: list<string>, trim_ws?: bool,\n *   skip?: int, n_max?: ?int, comment?: string, skip_empty_rows?: bool, col_names?: bool, types?: array<int, '?'|'l'|'i'|'d'|'c'|'D'|'T'|'_'>,\n *   guess_max?: int, decimal_mark?: string, grouping_mark?: ?string}",
   'result'=>['names'=>'list<string>','columns'=>"list<null|array{type: 'bool'|'int'|'float'|'string'|'date'|'datetime', values: list<bool|int|float|string|null>, failed: int}>",'problems'=>'list<string>']]];
@@ -103,6 +106,15 @@ foreach ($functions as $name) {
   $text.=" * @return array{\n";
   foreach($contract['result'] as $key=>$type)$text.=" *   $key: $type,\n";
   $text.=" * }\n * @throws \\Exception Statistical or input error (codes 1001–1008); unsupported functions/families/random terms raise 1007.\n */\n";
+ } elseif ($name==='stats_predict') {
+  $api[$name]['result_keys']=array_map(fn($k)=>rtrim($k,'?'),array_keys($predict['result']));sort($api[$name]['result_keys']);
+  $text.="/**\n * {$predict['summary']}\n";
+  $text.=" * @param array<string,mixed> \$fit A formula fit result (needs formula, coefficients, covariance, columns and predvars)\n";
+  $text.=" * @param array<string,list<int|float|bool|string|null>|array{levels:list<string>,codes:list<int|null>,ordered:bool}>|object \$newdata Named columns, as for the fit; the response may be absent\n";
+  $text.=" * @param string \$type 'link' (linear predictor) or 'response'\n * @param string \$interval 'none', 'confidence' or 'prediction'\n * @param bool \$random Mixed fits: include random effects (lme4 re.form = NULL) or not (re.form = NA)\n";
+  $text.=" * @return array{\n";
+  foreach($predict['result'] as $key=>$type)$text.=" *   $key: $type,\n";
+  $text.=" * }\n * @throws \\Exception Input error (1001), malformed fit, new levels, or unsupported options (1007).\n */\n";
  } elseif (isset($descriptive[$name])) {
   $text.="/**\n * {$descriptive[$name]}\n * null/NAN are missing: missing 'raise' (default) rejects them, 'drop' removes them (pairwise for two arrays).\n";
   $text.=" * Nonfinite arithmetic raises 1003; constant-input correlation remains NAN.\n";

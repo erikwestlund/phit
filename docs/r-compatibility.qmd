@@ -127,9 +127,12 @@ The following items are not implemented and are not covered by a blanket parity 
 - Configurable confidence levels; profile and bootstrap intervals; likelihood-ratio
   comparisons and fixed-effect degrees-of-freedom corrections. Mixed Wald p-values
   are an explicit extension; lme4's default Gaussian summary does not supply them.
-- Prediction and simulation on new observations, unseen grouping levels,
-  conditional random-effect uncertainties, residual diagnostics, leverage/influence,
-  and model-object methods such as update/refit/anova.
+- Simulation on new observations, prediction standard errors and intervals for
+  mixed models, residual diagnostics, leverage/influence, and model-object methods
+  such as update/refit/anova. (`stats_predict()` covers point predictions,
+  standard errors and `lm` intervals for new data, as
+  [described with the formulas](formulas.qmd#prediction-stats_predict); random-effect
+  conditional variances are reported by the mixed fits.)
 - Formula parsing, contrasts and factor encoding, subset/na.exclude semantics,
   multivariate `lm` responses, fractional binomial weights and additional GLM families/links.
 - Broader generalized/nonlinear mixed models: binomial random slopes/multiple terms, mixed Poisson/probit/negative-binomial likelihoods, `nlmer`, and related methods. The new binomial random-intercept `glmer` counterpart is implemented separately, with Laplace/adaptive quadrature; it does not yet support the general Gaussian random-term designs.

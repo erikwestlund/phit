@@ -1890,6 +1890,7 @@
             "named",
             "null_deviance",
             "p_values",
+            "predvars",
             "r_squared",
             "residual_variance",
             "residuals",
@@ -1995,6 +1996,7 @@
             "neg2_log_likelihood",
             "optimizer",
             "p_values",
+            "predvars",
             "quadrature_points",
             "random",
             "random_effects",
@@ -2059,6 +2061,7 @@
             "n_observations",
             "named",
             "p_values",
+            "predvars",
             "r_squared",
             "residual_variance",
             "residuals",
@@ -2161,6 +2164,7 @@
             "optimizer",
             "optimizer_implementation",
             "p_values",
+            "predvars",
             "random",
             "residual_variance",
             "residuals",
@@ -4558,6 +4562,69 @@
             }
         ],
         "return_type": "array"
+    },
+    "stats_predict": {
+        "parameters": [
+            {
+                "name": "fit",
+                "type": "array",
+                "optional": false
+            },
+            {
+                "name": "newdata",
+                "type": "mixed",
+                "optional": false
+            },
+            {
+                "name": "type",
+                "type": "string",
+                "optional": true,
+                "default": "link"
+            },
+            {
+                "name": "se_fit",
+                "type": "bool",
+                "optional": true,
+                "default": false
+            },
+            {
+                "name": "interval",
+                "type": "string",
+                "optional": true,
+                "default": "none"
+            },
+            {
+                "name": "level",
+                "type": "float",
+                "optional": true,
+                "default": 0.95
+            },
+            {
+                "name": "random",
+                "type": "bool",
+                "optional": true,
+                "default": true
+            },
+            {
+                "name": "allow_new_levels",
+                "type": "bool",
+                "optional": true,
+                "default": false
+            }
+        ],
+        "return_type": "array",
+        "result_keys": [
+            "df",
+            "fit",
+            "level",
+            "lower",
+            "missing_rows",
+            "n_input",
+            "n_predicted",
+            "residual_scale",
+            "se_fit",
+            "upper"
+        ]
     },
     "stats_probit": {
         "parameters": [

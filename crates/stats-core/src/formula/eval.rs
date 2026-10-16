@@ -160,10 +160,26 @@ pub(crate) fn drop_unused(
     (kept, codes)
 }
 
+/// R's poly() coefficients: the three-term recurrence centers `alpha` and the
+/// squared norms `norm2` (with R's leading 1), enough to evaluate the training
+/// basis at new values.
+#[derive(Clone, Debug, PartialEq)]
+pub struct PolyCoefs {
+    pub alpha: Vec<f64>,
+    pub norm2: Vec<f64>,
+}
+
 /// Orthonormal polynomial basis (degree columns, constant removed) of centered x,
 /// equal to R's poly()/contr.poly QR construction: each column is the normalized
 /// residual of x^k after projection on lower powers.
 pub(crate) fn orthonormal_poly(x: &[f64], degree: usize) -> Result<Vec<Vec<f64>>, StatsError> {
+    poly_basis(x, degree).map(|(basis, _)| basis)
+}
+
+pub(crate) fn poly_basis(
+    x: &[f64],
+    degree: usize,
+) -> Result<(Vec<Vec<f64>>, PolyCoefs), StatsError> {
     let mut distinct: Vec<f64> = x.to_vec();
     distinct.sort_by(|a, b| a.total_cmp(b));
     distinct.dedup();
@@ -173,6 +189,10 @@ pub(crate) fn orthonormal_poly(x: &[f64], degree: usize) -> Result<Vec<Vec<f64>>
     let mean = x.iter().sum::<f64>() / x.len() as f64;
     let centered: Vec<f64> = x.iter().map(|v| v - mean).collect();
     let mut basis: Vec<Vec<f64>> = Vec::with_capacity(degree + 1);
+    let mut coefs = PolyCoefs {
+        alpha: Vec::with_capacity(degree),
+        norm2: vec![1.0],
+    };
     for k in 0..=degree {
         let mut v: Vec<f64> = centered.iter().map(|c| c.powi(k as i32)).collect();
         // Two Gram-Schmidt passes keep the basis orthogonal to rounding precision.
@@ -184,17 +204,47 @@ pub(crate) fn orthonormal_poly(x: &[f64], degree: usize) -> Result<Vec<Vec<f64>>
                 }
             }
         }
-        let norm = v.iter().map(|a| a * a).sum::<f64>().sqrt();
+        // v is the monic orthogonal polynomial of degree k, R's unnormalized Z column.
+        let norm2 = v.iter().map(|a| a * a).sum::<f64>();
+        let norm = norm2.sqrt();
         if norm == 0.0 || !norm.is_finite() {
             return Err(StatsError::new(
                 ErrorKind::RankDeficiency,
                 "polynomial basis is numerically rank deficient",
             ));
         }
+        if k < degree {
+            let weighted: f64 = centered.iter().zip(&v).map(|(c, z)| c * z * z).sum();
+            coefs.alpha.push(weighted / norm2 + mean);
+        }
+        coefs.norm2.push(norm2);
         basis.push(v.into_iter().map(|a| a / norm).collect());
     }
     basis.remove(0);
-    Ok(basis)
+    Ok((basis, coefs))
+}
+
+/// R's predict.poly: evaluate a fitted orthogonal basis at new values.
+pub(crate) fn poly_predict(x: &[Option<f64>], coefs: &PolyCoefs) -> Vec<Vec<Option<f64>>> {
+    let degree = coefs.alpha.len();
+    let mut cols = vec![Vec::with_capacity(x.len()); degree];
+    for value in x {
+        let Some(v) = *value else {
+            cols.iter_mut().for_each(|c| c.push(None));
+            continue;
+        };
+        let mut previous = 1.0;
+        let mut current = v - coefs.alpha[0];
+        cols[0].push(clean(current / coefs.norm2[2].sqrt()));
+        for (k, col) in cols.iter_mut().enumerate().skip(1) {
+            let next =
+                (v - coefs.alpha[k]) * current - (coefs.norm2[k + 1] / coefs.norm2[k]) * previous;
+            previous = current;
+            current = next;
+            col.push(clean(current / coefs.norm2[k + 2].sqrt()));
+        }
+    }
+    cols
 }
 
 fn arg<'a>(args: &'a [Arg], position: usize, name: &str) -> Option<&'a Expr> {
@@ -224,14 +274,26 @@ fn flag(expr: Option<&Expr>, default: bool, what: &str) -> Result<bool, StatsErr
     }
 }
 
-pub(crate) fn evaluate(expr: &Expr, data: &Data) -> Result<Value, StatsError> {
+/// Training records each orthogonal poly() basis; prediction reuses the recorded
+/// coefficients, as R's predict() does through the terms' predvars.
+#[derive(Default)]
+pub(crate) struct PolyState<'a> {
+    pub frozen: Option<&'a [(String, PolyCoefs)]>,
+    pub recorded: Vec<(String, PolyCoefs)>,
+}
+
+pub(crate) fn evaluate(
+    expr: &Expr,
+    data: &Data,
+    state: &mut PolyState,
+) -> Result<Value, StatsError> {
     let n = data.n;
     match expr {
         Expr::Num(v) => Ok(Value::Num(vec![Some(*v); n])),
         Expr::Bool(b) => Ok(Value::Logical(vec![Some(*b); n])),
         Expr::Str(s) => Ok(Value::Str(s.clone())),
         Expr::Dot => Err(error("'.' is only valid as a formula term")),
-        Expr::Paren(e) => evaluate(e, data),
+        Expr::Paren(e) => evaluate(e, data, state),
         Expr::Name(name) => {
             let i = data
                 .names
@@ -257,7 +319,7 @@ pub(crate) fn evaluate(expr: &Expr, data: &Data) -> Result<Value, StatsError> {
             })
         }
         Expr::Unary(op, e) => {
-            let v = evaluate(e, data)?;
+            let v = evaluate(e, data, state)?;
             match op {
                 '-' => Ok(map1(numeric(v, &deparse(expr))?, |x| -x)),
                 '+' => Ok(Value::Num(numeric(v, &deparse(expr))?)),
@@ -273,8 +335,11 @@ pub(crate) fn evaluate(expr: &Expr, data: &Data) -> Result<Value, StatsError> {
                 _ => Err(error(format!("cannot evaluate '{}'", deparse(expr)))),
             }
         }
-        Expr::Binary(op, l, r) => binary(*op, evaluate(l, data)?, evaluate(r, data)?, expr),
-        Expr::Call(name, args) => call(name, args, data, expr),
+        Expr::Binary(op, l, r) => {
+            let left = evaluate(l, data, state)?;
+            binary(*op, left, evaluate(r, data, state)?, expr)
+        }
+        Expr::Call(name, args) => call(name, args, data, state, expr),
     }
 }
 
@@ -369,28 +434,34 @@ fn binary(op: Op, left: Value, right: Value, expr: &Expr) -> Result<Value, Stats
     })
 }
 
-fn call(name: &str, args: &[Arg], data: &Data, expr: &Expr) -> Result<Value, StatsError> {
+fn call(
+    name: &str,
+    args: &[Arg],
+    data: &Data,
+    state: &mut PolyState,
+    expr: &Expr,
+) -> Result<Value, StatsError> {
     let text = deparse(expr);
     let first = || arg(args, 0, "x").ok_or_else(|| error(format!("{name}() needs an argument")));
-    let unary = |f: fn(f64) -> f64| -> Result<Value, StatsError> {
+    let unary = |f: fn(f64) -> f64, state: &mut PolyState| -> Result<Value, StatsError> {
         if args.len() != 1 {
             return Err(error(format!("{name}() takes one argument")));
         }
-        Ok(map1(numeric(evaluate(first()?, data)?, &text)?, f))
+        Ok(map1(numeric(evaluate(first()?, data, state)?, &text)?, f))
     };
     match name {
         "I" | "offset" => {
             if args.len() != 1 {
                 return Err(error(format!("{name}() takes one argument")));
             }
-            let v = evaluate(first()?, data)?;
+            let v = evaluate(first()?, data, state)?;
             if name == "offset" {
                 return Ok(Value::Num(numeric(v, &text)?));
             }
             Ok(v)
         }
         "log" => {
-            let x = numeric(evaluate(first()?, data)?, &text)?;
+            let x = numeric(evaluate(first()?, data, state)?, &text)?;
             match arg(args, 1, "base") {
                 None if args.len() == 1 => Ok(map1(x, f64::ln)),
                 Some(base) if args.len() == 2 => {
@@ -401,21 +472,21 @@ fn call(name: &str, args: &[Arg], data: &Data, expr: &Expr) -> Result<Value, Sta
                 _ => Err(error("log() takes x and an optional base")),
             }
         }
-        "log2" => unary(f64::log2),
-        "log10" => unary(f64::log10),
-        "log1p" => unary(f64::ln_1p),
-        "exp" => unary(f64::exp),
-        "expm1" => unary(f64::exp_m1),
-        "sqrt" => unary(f64::sqrt),
-        "abs" => unary(f64::abs),
-        "sin" => unary(f64::sin),
-        "cos" => unary(f64::cos),
-        "tan" => unary(f64::tan),
+        "log2" => unary(f64::log2, state),
+        "log10" => unary(f64::log10, state),
+        "log1p" => unary(f64::ln_1p, state),
+        "exp" => unary(f64::exp, state),
+        "expm1" => unary(f64::exp_m1, state),
+        "sqrt" => unary(f64::sqrt, state),
+        "abs" => unary(f64::abs, state),
+        "sin" => unary(f64::sin, state),
+        "cos" => unary(f64::cos, state),
+        "tan" => unary(f64::tan, state),
         "as.numeric" | "as.double" => {
             if args.len() != 1 {
                 return Err(error(format!("{name}() takes one argument")));
             }
-            match evaluate(first()?, data)? {
+            match evaluate(first()?, data, state)? {
                 Value::Factor { codes, .. } => Ok(Value::Num(
                     codes
                         .into_iter()
@@ -431,10 +502,10 @@ fn call(name: &str, args: &[Arg], data: &Data, expr: &Expr) -> Result<Value, Sta
                     "{name}() supports one argument; set levels in a factor descriptor"
                 )));
             }
-            to_factor(evaluate(first()?, data)?, name == "ordered")
+            to_factor(evaluate(first()?, data, state)?, name == "ordered")
         }
         "poly" => {
-            let x = numeric(evaluate(first()?, data)?, &text)?;
+            let x = numeric(evaluate(first()?, data, state)?, &text)?;
             let degree_expr = args
                 .iter()
                 .find(|a| a.name.as_deref() == Some("degree"))
@@ -472,13 +543,28 @@ fn call(name: &str, args: &[Arg], data: &Data, expr: &Expr) -> Result<Value, Sta
                     .collect();
                 return Ok(Value::Mat(cols, names));
             }
+            if let Some(frozen) = state.frozen {
+                let coefs = frozen
+                    .iter()
+                    .find(|(key, _)| *key == text)
+                    .map(|(_, c)| c)
+                    .ok_or_else(|| error(format!("the fit has no coefficients for '{text}'")))?;
+                if coefs.alpha.len() != degree || coefs.norm2.len() != degree + 2 {
+                    return Err(error(format!("malformed coefficients for '{text}'")));
+                }
+                return Ok(Value::Mat(poly_predict(&x, coefs), names));
+            }
             if x.iter().any(Option::is_none) {
                 return Err(error(
                     "missing values are not allowed in orthogonal poly(); use raw = TRUE or remove them",
                 ));
             }
             let x: Vec<f64> = x.into_iter().flatten().collect();
-            let cols = orthonormal_poly(&x, degree)?
+            let (basis, coefs) = poly_basis(&x, degree)?;
+            if !state.recorded.iter().any(|(key, _)| *key == text) {
+                state.recorded.push((text.clone(), coefs));
+            }
+            let cols = basis
                 .into_iter()
                 .map(|c| c.into_iter().map(Some).collect())
                 .collect();
@@ -488,7 +574,7 @@ fn call(name: &str, args: &[Arg], data: &Data, expr: &Expr) -> Result<Value, Sta
             let mut cols = Vec::new();
             let mut names = Vec::new();
             for a in args {
-                cols.push(numeric(evaluate(&a.value, data)?, &text)?);
+                cols.push(numeric(evaluate(&a.value, data, state)?, &text)?);
                 names.push(a.name.clone().unwrap_or_else(|| deparse(&a.value)));
             }
             if cols.is_empty() {

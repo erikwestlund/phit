@@ -11,7 +11,8 @@ mod parse;
 mod terms;
 
 use crate::{ErrorKind, StatsError};
-use eval::{Value, drop_unused, evaluate, orthonormal_poly, sorted_levels};
+pub use eval::PolyCoefs;
+use eval::{PolyState, Value, drop_unused, evaluate, orthonormal_poly, sorted_levels};
 use parse::Expr;
 use terms::{Bar, Terms, build_terms, split_bars};
 
@@ -178,6 +179,16 @@ pub struct ModelDesign {
     pub n_input: usize,
     pub retained_rows: Vec<usize>,
     pub dropped_rows: Vec<usize>,
+    /// Data-dependent state that prediction on new data must reuse.
+    pub predvars: Predvars,
+}
+
+/// What R keeps in a fit's xlevels and predvars: factor levels after deletion
+/// and orthogonal poly() coefficients, keyed by variable or call text.
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct Predvars {
+    pub levels: Vec<(String, Vec<String>)>,
+    pub poly: Vec<(String, PolyCoefs)>,
 }
 
 /// Values after deletion: numbers or a coded factor with fixed levels.
@@ -195,6 +206,57 @@ fn subset<T: Clone>(v: &[Option<T>], rows: &[usize]) -> Vec<T> {
     rows.iter()
         .map(|i| v[*i].clone().expect("retained rows are complete"))
         .collect()
+}
+
+/// Code a variable against the levels it had when the model was fitted, as
+/// predict() does; a level the fit never saw is an error, as in R.
+fn code_frozen(
+    name: &str,
+    value: &Value,
+    rows: &[usize],
+    levels: Option<&[String]>,
+) -> Result<Coded, StatsError> {
+    let labels: Vec<String> = match value {
+        Value::Logical(v) => subset(v, rows)
+            .into_iter()
+            .map(|b| if b { "TRUE" } else { "FALSE" }.to_string())
+            .collect(),
+        Value::Text(v) => subset(v, rows),
+        Value::Factor {
+            levels: own, codes, ..
+        } => rows
+            .iter()
+            .map(|i| own[codes[*i].expect("retained rows are complete")].clone())
+            .collect(),
+        _ => {
+            if levels.is_some() {
+                return Err(error(format!(
+                    "variable '{name}' was a factor when the model was fitted"
+                )));
+            }
+            return code(value, rows, false);
+        }
+    };
+    let ordered = matches!(value, Value::Factor { ordered: true, .. });
+    let Some(levels) = levels else {
+        return Err(error(format!(
+            "variable '{name}' was numeric when the model was fitted"
+        )));
+    };
+    let codes = labels
+        .iter()
+        .map(|label| {
+            levels
+                .iter()
+                .position(|l| l == label)
+                .ok_or_else(|| error(format!("factor {name} has new level {label}")))
+        })
+        .collect::<Result<_, _>>()?;
+    Ok(Coded::Factor {
+        levels: levels.to_vec(),
+        codes,
+        ordered,
+    })
 }
 
 fn code(value: &Value, rows: &[usize], drop_levels: bool) -> Result<Coded, StatsError> {
@@ -412,6 +474,49 @@ pub fn model_design(
     data: &Data,
     options: &DesignOptions,
 ) -> Result<ModelDesign, StatsError> {
+    design(formula, data, options, None)
+}
+
+/// The design for new data under a fitted model, as R's predict() builds it:
+/// the response is not needed, factors keep the fitted levels, poly() keeps the
+/// fitted basis, and rows with missing predictors are reported as dropped
+/// rather than raised. Random-effect terms are evaluated only when requested.
+pub fn prediction_design(
+    formula: &str,
+    data: &Data,
+    predvars: &Predvars,
+    random: bool,
+) -> Result<ModelDesign, StatsError> {
+    design(
+        formula,
+        data,
+        &DesignOptions {
+            drop_missing: true,
+            ..Default::default()
+        },
+        Some((predvars, random)),
+    )
+}
+
+fn design(
+    formula: &str,
+    data: &Data,
+    options: &DesignOptions,
+    predict: Option<(&Predvars, bool)>,
+) -> Result<ModelDesign, StatsError> {
+    let frozen = predict.map(|(p, _)| p);
+    let mut state = PolyState {
+        frozen: frozen.map(|p| p.poly.as_slice()),
+        recorded: Vec::new(),
+    };
+    let levels_of = |name: &str| -> Option<&[String]> {
+        frozen.and_then(|p| {
+            p.levels
+                .iter()
+                .find(|(n, _)| n == name)
+                .map(|(_, l)| l.as_slice())
+        })
+    };
     let parsed = parse::parse(formula)?;
     let (response_expr, rhs) = match &parsed {
         Expr::Binary(parse::Op::Tilde, l, r) => (Some((**l).clone()), (**r).clone()),
@@ -422,6 +527,9 @@ pub fn model_design(
     let mut bars = Vec::new();
     split_bars(&rhs, &mut parts, &mut bars, false)?;
     let fixed = build_terms(response_expr.as_ref(), &parts, &data.names)?;
+    if predict.is_some_and(|(_, random)| !random) {
+        bars.clear();
+    }
     let mut specs = Vec::new();
     for bar in bars {
         let mut lhs_parts = Vec::new();
@@ -443,7 +551,7 @@ pub fn model_design(
         let groups = bar
             .groups
             .iter()
-            .map(|g| evaluate(g, data))
+            .map(|g| evaluate(g, data, &mut state))
             .collect::<Result<Vec<_>, _>>()?;
         if groups
             .iter()
@@ -466,7 +574,15 @@ pub fn model_design(
     let values: Vec<Value> = fixed
         .variables
         .iter()
-        .map(|(_, e)| evaluate(e, data))
+        .enumerate()
+        .map(|(v, (_, e))| {
+            if predict.is_some() && Some(v) == fixed.response {
+                // predict() does not need the response; it may be absent.
+                Ok(Value::Num(vec![Some(0.0); n]))
+            } else {
+                evaluate(e, data, &mut state)
+            }
+        })
         .collect::<Result<_, _>>()?;
     let bar_values: Vec<Vec<Value>> = specs
         .iter()
@@ -474,7 +590,7 @@ pub fn model_design(
             s.terms
                 .variables
                 .iter()
-                .map(|(_, e)| evaluate(e, data))
+                .map(|(_, e)| evaluate(e, data, &mut state))
                 .collect::<Result<Vec<_>, _>>()
         })
         .collect::<Result<_, _>>()?;
@@ -494,7 +610,7 @@ pub fn model_design(
     if !dropped.is_empty() && !options.drop_missing {
         return Err(error("missing values found with missing='raise'"));
     }
-    if retained.is_empty() {
+    if retained.is_empty() && predict.is_none() {
         return Err(error(
             "no complete observations remain after removing missing values",
         ));
@@ -507,6 +623,9 @@ pub fn model_design(
         .map(|(v, value)| {
             if Some(v) == fixed.response {
                 Ok(None)
+            } else if predict.is_some() {
+                let name = &fixed.variables[v].0;
+                code_frozen(name, value, &retained, levels_of(name)).map(Some)
             } else {
                 code(value, &retained, drop_levels).map(Some)
             }
@@ -542,6 +661,7 @@ pub fn model_design(
         Some(total)
     };
     let response = match fixed.response {
+        _ if predict.is_some() => None,
         None => None,
         Some(r) => Some(match &values[r] {
             Value::Num(v) => Response::Numeric(subset(v, &retained)),
@@ -574,12 +694,33 @@ pub fn model_design(
         }) => check_finite(successes.iter().chain(failures), "response")?,
         _ => {}
     }
+    let mut levels = Vec::new();
+    let mut record = |variables: &[(String, Expr)], coded: &[Option<Coded>]| {
+        for ((name, _), value) in variables.iter().zip(coded) {
+            if let Some(Coded::Factor { levels: l, .. }) = value
+                && !levels
+                    .iter()
+                    .any(|(n, _): &(String, Vec<String>)| n == name)
+            {
+                levels.push((name.clone(), l.clone()));
+            }
+        }
+    };
+    record(&fixed.variables, &coded);
     let mut random = Vec::new();
     for (spec, values) in specs.iter().zip(&bar_values) {
         let coded: Vec<Option<Coded>> = values
             .iter()
-            .map(|v| code(v, &retained, drop_levels).map(Some))
+            .zip(&spec.terms.variables)
+            .map(|(v, (name, _))| {
+                if predict.is_some() {
+                    code_frozen(name, v, &retained, levels_of(name)).map(Some)
+                } else {
+                    code(v, &retained, drop_levels).map(Some)
+                }
+            })
             .collect::<Result<_, _>>()?;
+        record(&spec.terms.variables, &coded);
         let block = build_block(&spec.terms, &coded, m)?;
         let z: Vec<Vec<f64>> = (0..m)
             .map(|i| block.columns.iter().map(|c| c[i]).collect())
@@ -633,6 +774,10 @@ pub fn model_design(
         n_input: n,
         retained_rows: retained,
         dropped_rows: dropped,
+        predvars: Predvars {
+            levels,
+            poly: state.recorded,
+        },
     })
 }
 
@@ -731,6 +876,50 @@ mod tests {
         assert_eq!(names, [".L", ".Q"]);
         assert!((m[0][0] + std::f64::consts::FRAC_1_SQRT_2).abs() < 1e-15);
         assert!((m[1][1] + 0.816_496_580_927_726).abs() < 1e-15);
+    }
+
+    #[test]
+    fn prediction_reuses_fitted_levels_and_poly_basis() {
+        let fitted = design("y ~ poly(x, 2) + a + I(x > 3)");
+        assert_eq!(fitted.predvars.levels[0].0, "a");
+        assert_eq!(fitted.predvars.poly[0].0, "poly(x, 2)");
+        let again = prediction_design(
+            "y ~ poly(x, 2) + a + I(x > 3)",
+            &data(),
+            &fitted.predvars,
+            false,
+        )
+        .unwrap();
+        // The training rows rebuild the training design; the row whose only
+        // missing value is the response is predicted too.
+        assert_eq!(again.retained_rows, [0, 1, 2, 3, 4, 5]);
+        for (a, b) in again.x.iter().flatten().zip(fitted.x.iter().flatten()) {
+            assert!((a - b).abs() < 1e-14, "{a} != {b}");
+        }
+        // One new row: level q only, x outside the fitted range, no response column.
+        let new = Data::new(vec![
+            ("x".into(), Column::Numeric(vec![Some(9.0)])),
+            ("a".into(), Column::Text(vec![Some("q".into())])),
+        ])
+        .unwrap();
+        let row = prediction_design(
+            "y ~ poly(x, 2) + a + I(x > 3)",
+            &new,
+            &fitted.predvars,
+            false,
+        )
+        .unwrap();
+        assert_eq!(row.columns, fitted.columns);
+        assert_eq!(row.x[0][3..], [1.0, 0.0, 1.0]);
+        let unseen = Data::new(vec![
+            ("x".into(), Column::Numeric(vec![Some(2.0)])),
+            ("a".into(), Column::Text(vec![Some("z".into())])),
+        ])
+        .unwrap();
+        let message = prediction_design("y ~ a + x", &unseen, &design("y ~ a + x").predvars, false)
+            .unwrap_err()
+            .to_string();
+        assert!(message.contains("factor a has new level z"), "{message}");
     }
 
     #[test]

@@ -789,6 +789,7 @@ function stats_gamma_sf_array(array $values, float $shape, float $scale = 1.0): 
  *   assign: list<int>,
  *   intercept: bool,
  *   named: array<string,float>,
+ *   predvars: array{levels:array<string,list<string>>,poly:array<string,array{alpha:list<float>,norm2:list<float>}>},
  *   t_statistics?: list<float>,
  *   rss?: float,
  *   residual_variance?: float,
@@ -860,6 +861,7 @@ function stats_glm(string $formula, mixed $data, string $family = 'gaussian', st
  *   assign: list<int>,
  *   intercept: bool,
  *   named: array<string,float>,
+ *   predvars: array{levels:array<string,list<string>>,poly:array<string,array{alpha:list<float>,norm2:list<float>}>},
  * }
  * @throws \Exception Statistical or input error (codes 1001–1008); unsupported functions/families/random terms raise 1007.
  */
@@ -904,6 +906,7 @@ function stats_hello(): string {}
  *   assign: list<int>,
  *   intercept: bool,
  *   named: array<string,float>,
+ *   predvars: array{levels:array<string,list<string>>,poly:array<string,array{alpha:list<float>,norm2:list<float>}>},
  * }
  * @throws \Exception Statistical or input error (codes 1001–1008); unsupported functions/families/random terms raise 1007.
  */
@@ -958,6 +961,7 @@ function stats_lm(string $formula, mixed $data, string $missing = 'drop', mixed 
  *   assign: list<int>,
  *   intercept: bool,
  *   named: array<string,float>,
+ *   predvars: array{levels:array<string,list<string>>,poly:array<string,array{alpha:list<float>,norm2:list<float>}>},
  * }
  * @throws \Exception Statistical or input error (codes 1001–1008); unsupported functions/families/random terms raise 1007.
  */
@@ -1941,6 +1945,35 @@ function stats_poisson_sf(float $k, float $lambda): float {}
  * @throws \Exception Invalid parameter (1001), NAN input (1003) or numerical failure (1006).
  */
 function stats_poisson_sf_array(array $counts, float $lambda): array {}
+
+/**
+ * Predictions for new data from a stats_lm, stats_glm, stats_lmer or stats_glmer result, like R's predict():
+ * the fit's formula is rebuilt over newdata with the fitted factor levels and poly() basis (its predvars key).
+ * A level the fit never saw is an error. Rows with missing predictors predict null and are listed in missing_rows.
+ * type 'response' applies the inverse link; se_fit uses the delta method on that scale. Intervals ('confidence' or
+ * 'prediction', t with df_residual) are for stats_lm fits. Mixed fits add random effects of known groups (random: false
+ * gives population predictions; allow_new_levels predicts unseen groups at zero). GLM standard errors use the
+ * covariance at the final coefficients (docs/r-compatibility.qmd).
+ * @param array<string,mixed> $fit A formula fit result (needs formula, coefficients, covariance, columns and predvars)
+ * @param array<string,list<int|float|bool|string|null>|array{levels:list<string>,codes:list<int|null>,ordered:bool}>|object $newdata Named columns, as for the fit; the response may be absent
+ * @param string $type 'link' (linear predictor) or 'response'
+ * @param string $interval 'none', 'confidence' or 'prediction'
+ * @param bool $random Mixed fits: include random effects (lme4 re.form = NULL) or not (re.form = NA)
+ * @return array{
+ *   fit: list<float|null>,
+ *   se_fit?: list<float|null>,
+ *   df?: int,
+ *   residual_scale?: float,
+ *   lower?: list<float|null>,
+ *   upper?: list<float|null>,
+ *   level: float|null,
+ *   n_input: int,
+ *   n_predicted: int,
+ *   missing_rows: list<int>,
+ * }
+ * @throws \Exception Input error (1001), malformed fit, new levels, or unsupported options (1007).
+ */
+function stats_predict(array $fit, mixed $newdata, string $type = 'link', bool $se_fit = false, string $interval = 'none', float $level = 0.95, bool $random = true, bool $allow_new_levels = false): array {}
 
 /**
  * Predictor matrix: rows are observations. A fixed intercept is prepended by default.

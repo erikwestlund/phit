@@ -183,7 +183,10 @@ numeric column. Missing weights delete their rows. Weights must be positive.
 
 Formula fits add these keys to the matrix result: `formula`, `response`,
 `columns` (aligned with `coefficients`), `terms`, `assign`, `intercept`, and
-`named` (`column => coefficient`). `stats_glm` also returns `family` and `link`.
+`named` (`column => coefficient`), and `predvars`. `predvars` holds the state that
+prediction must reuse: each factor's levels after deletion and each orthogonal
+`poly()` basis's recurrence coefficients (R's `xlevels` and `predvars`).
+`stats_glm` also returns `family` and `link`.
 All list keys of the matrix functions are unchanged.
 
 Random-effect terms in `stats_lm` or `stats_glm` raise 1007 and name
@@ -206,6 +209,43 @@ the diagonal of each block.
 family and logit link, over the `stats_logistic_mixed` core. `quadrature_points`
 corresponds to lme4's `nAGQ`. Responses follow `stats_glm`. `random_effects_cond_var`
 gives the conditional variance of each group's mode, as lme4's `postVar`.
+
+## Prediction: stats_predict
+
+`stats_predict($fit, $newdata)` predicts from any formula fit, as R's `predict()`
+does for `lm`, `glm` and `merMod` objects. It rebuilds the fit's formula over
+`$newdata`, which needs the predictor columns but not the response.
+
+```php
+$fit = stats_glm('am ~ wt + poly(hp, 2)', $cars, family: 'binomial');
+$p = stats_predict($fit, ['wt' => [2.2, 3.4], 'hp' => [95, 180]], type: 'response', se_fit: true);
+// $p['fit'] probabilities, $p['se_fit'] delta-method standard errors
+```
+
+- Factors are coded with the levels the fit saw. A level the fit never saw raises
+  1001 with R's message (`factor g has new level z`). Logical and character
+  columns work the same way.
+- `poly(x, k)` evaluates the fitted orthogonal basis at the new values, as R's
+  `predict.poly()` does. It is not refitted to the new data.
+- `offset()` terms are evaluated over `$newdata` and added.
+- A row with a missing predictor predicts `null` and is listed in `missing_rows`.
+  Every list has one entry per `$newdata` row.
+- `type: 'link'` (the default) returns the linear predictor. `type: 'response'`
+  applies the inverse link, and `se_fit` then uses the delta method, as R does.
+- `interval: 'confidence'` or `'prediction'` adds `lower` and `upper` for
+  `stats_lm` fits, using t with `df_residual` at `level`. A prediction interval
+  adds the residual variance; as in R, it assumes constant variance for a weighted fit.
+- For `stats_lmer` and `stats_glmer` fits, predictions add each known group's
+  random effects (lme4's default `re.form = NULL`). `random: false` gives
+  population predictions (`re.form = NA`), and the grouping columns can then be
+  absent. An unseen group raises 1001 unless `allow_new_levels: true`, which
+  predicts it at the population level. Mixed predictions have no standard errors,
+  as in lme4.
+
+GLM standard errors use the covariance at the final coefficients. R's
+`predict.glm()` uses `vcov()`, which reuses the last IRLS weights (see
+[R compatibility](r-compatibility.qmd)). The two agree to about 1e-5 relative
+on well-conditioned fits and can differ by about 1e-4 near separation.
 
 ## Differences from R
 
@@ -246,5 +286,17 @@ design values within 1e-12 relative, and fit quantities within the matrix suites
 and adaptive quadrature. The references include the `ranef(condVar = TRUE)`
 conditional variances, which are also compared for `stats_lmm` on the ML schools
 case. `tests/formula-mixed.php` uses the tolerances of the
-existing lme4 suites. Both fixtures are indexed in the
+existing lme4 suites.
+
+`tests/generate-predict-fixtures.R` saves 25 `predict()` references: `lm()` with
+orthogonal `poly()`, factors, logicals, ordered interactions, offsets, weights,
+no intercept, standard errors, and confidence and prediction intervals; `glm()`
+on the link and response scales for every family and link (including
+`cbind()` responses and offsets); and `lmer()`/`glmer()` conditional, population
+and response-scale predictions with an unseen group. The new data include values
+outside the fitted range, missing rows and a factor whose level set differs from
+the fit. GLM standard errors are compared tightly with the final-coefficient value
+recomputed in R and loosely (1e-3 relative) with R's own `se.fit`.
+`tests/predict.php` also checks that predicting the training data reproduces the
+fitted values, and the error messages. All fixtures are indexed in the
 [reference manifest](verifications/reference-manifest.json).

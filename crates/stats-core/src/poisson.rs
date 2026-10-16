@@ -44,10 +44,8 @@ fn deviance(eta: &DVector<f64>, y: &DVector<f64>) -> f64 {
 }
 
 fn weighted_likelihood(eta: &DVector<f64>, y: &DVector<f64>, weights: &[f64]) -> f64 {
-    eta.iter()
-        .zip(y.iter())
-        .zip(weights)
-        .map(|((e, v), w)| {
+    crate::observations::compensated_sum(eta.iter().zip(y.iter()).zip(weights).map(
+        |((e, v), w)| {
             w * if *v >= 16.0 {
                 // Log mass via deviance + Stirling error avoids subtracting O(y log y)
                 // terms when a large fitted mean is close to the observed count.
@@ -65,8 +63,8 @@ fn weighted_likelihood(eta: &DVector<f64>, y: &DVector<f64>, weights: &[f64]) ->
             } else {
                 v * e - e.exp() - statrs::function::gamma::ln_gamma(v + 1.0)
             }
-        })
-        .sum()
+        },
+    ))
 }
 
 fn weighted_deviance(eta: &DVector<f64>, y: &DVector<f64>, weights: &[f64]) -> f64 {

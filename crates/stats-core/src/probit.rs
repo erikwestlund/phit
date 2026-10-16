@@ -73,11 +73,12 @@ fn separated(eta: &DVector<f64>, y: &DVector<f64>) -> bool {
 }
 
 fn weighted_likelihood(eta: &DVector<f64>, y: &DVector<f64>, weights: &[f64]) -> f64 {
-    eta.iter()
-        .zip(y.iter())
-        .zip(weights)
-        .map(|((e, v), w)| w * (v * log_probability(*e) + (1.0 - v) * log_probability(-*e)))
-        .sum()
+    crate::observations::compensated_sum(
+        eta.iter()
+            .zip(y.iter())
+            .zip(weights)
+            .map(|((e, v), w)| w * (v * log_probability(*e) + (1.0 - v) * log_probability(-*e))),
+    )
 }
 // Independent of beta: compute the grouped-binomial likelihood constant once.
 fn likelihood_constant(y: &DVector<f64>, weights: &[f64]) -> f64 {

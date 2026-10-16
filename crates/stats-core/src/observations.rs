@@ -49,3 +49,22 @@ pub(crate) fn prepare(
     }
     Ok((weights, offset))
 }
+
+/// Neumaier-compensated sum. IRLS line searches compare log-likelihoods that
+/// differ by a few ulps near the optimum; plain sequential summation accumulates
+/// systematic rounding (intercept-only fits repeat the same few terms), which can
+/// make the exact Newton step look like a decrease and stall the search.
+pub(crate) fn compensated_sum(values: impl IntoIterator<Item = f64>) -> f64 {
+    let mut sum = 0.0_f64;
+    let mut compensation = 0.0_f64;
+    for value in values {
+        let total = sum + value;
+        compensation += if sum.abs() >= value.abs() {
+            (sum - total) + value
+        } else {
+            (value - total) + sum
+        };
+        sum = total;
+    }
+    sum + compensation
+}

@@ -197,11 +197,15 @@ Random-effect terms in `stats_lm` or `stats_glm` raise 1007 and name
 interaction groups `(1 | g1:g2)`, and nesting `(1 | g1/g2)`. Nesting expands to
 `(1 | g1) + (1 | g2:g1)`, with lme4's group name and `g2level:g1level` labels.
 The result is the `stats_lmm_fit` contract. Each `random` entry also has `label`,
-`group`, `columns`, and `correlated`.
+`group`, `columns`, and `correlated`. Its `effects_cond_var` lists one k×k
+conditional covariance per group, in `group_labels` order. These are the blocks that
+`ranef(fit, condVar = TRUE)` attaches as `postVar`. For `(x || g)`, lme4 reports only
+the diagonal of each block.
 
 `stats_glmer` supports exactly one random intercept `(1 | g)` with the binomial
 family and logit link, over the `stats_logistic_mixed` core. `quadrature_points`
-corresponds to lme4's `nAGQ`. Responses follow `stats_glm`.
+corresponds to lme4's `nAGQ`. Responses follow `stats_glm`. `random_effects_cond_var`
+gives the conditional variance of each group's mode, as lme4's `postVar`.
 
 ## Differences from R
 
@@ -239,6 +243,8 @@ design values within 1e-12 relative, and fit quantities within the matrix suites
 
 `tests/generate-formula-lme4-fixtures.R` saves 10 lme4 references (7 `lmer()` and
 3 `glmer()` fits), including crossed, nested, correlated, and uncorrelated terms
-and adaptive quadrature. `tests/formula-mixed.php` uses the tolerances of the
+and adaptive quadrature. The references include the `ranef(condVar = TRUE)`
+conditional variances, which are also compared for `stats_lmm` on the ML schools
+case. `tests/formula-mixed.php` uses the tolerances of the
 existing lme4 suites. Both fixtures are indexed in the
 [reference manifest](verifications/reference-manifest.json).

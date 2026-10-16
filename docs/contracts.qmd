@@ -481,6 +481,7 @@ throw exceptions. No partial failed fit is returned.
 | group_labels | list<int\|string>, first retained appearance, type preserved |
 | group_sizes | list<int>, length G, retained observations per group |
 | random_effects | list<float>, length G, shrunken conditional group-intercept estimates |
+| random_effects_cond_var | list<float>, length G, conditional variance of each group intercept given y at the estimates, tau²/(1 + n_g tau²/sigma²); lme4 `ranef(condVar = TRUE)` |
 | n_groups | int, number of retained groups |
 | residual_variance, sigma | float, ML residual variance and its square root |
 | random_intercept_variance | float, estimated between-group variance |
@@ -642,7 +643,16 @@ convergence does not establish global optimality or model identifiability.
 
 Theta order is term order, then lower-triangular **column-major** order; independent
 terms include diagonals only. Each term's covariance is `sigma² L Lᵀ`. Random effects
-are conditional means (BLUPs), ordered by retained group then z column. Dense limits
+are conditional means (BLUPs), ordered by retained group then z column. Each term's
+`effects_cond_var` gives, per group, the k×k conditional covariance of that group's
+effect vector given y at the estimated theta and sigma. It is the group's diagonal
+block of `sigma² Λ (ΛᵀZᵀWZΛ + I)⁻¹ Λᵀ`, the matrix lme4 reports through
+`ranef(condVar = TRUE)` (the `postVar` attribute). The variance is conditional on the
+fixed effects, as in lme4. It uses the REML or ML sigma according to `method`.
+Blocks between different terms are not returned. A zero relative factor gives a
+zero block. lme4 splits `(x || g)` into one-column terms and reports only the
+diagonal; here the term is one block, so its off-diagonal conditional covariances
+are also returned. Dense limits
 are q≤512 random coefficients and n(q+p+1)≤50,000,000 entries; exceeding them fails
 explicitly. The existing `stats_lmm` remains the faster random-intercept ML path.
 
@@ -654,7 +664,7 @@ The result contains:
 | covariance, conf_int | p×p fixed-effect covariance, p×2 95% normal Wald intervals |
 | fixed_fitted, fitted | float arrays: offset+Xβ; offset+Xβ plus all random terms |
 | residuals, marginal_residuals | y−fitted; y−fixed_fitted, retained row order |
-| random | term array; each has k×k covariance, group×k effects, group_labels, group_sizes |
+| random | term array; each has k×k covariance, group×k effects, group×k×k effects_cond_var, group_labels, group_sizes |
 | theta | relative Cholesky parameters in the order above |
 | residual_variance, sigma | positive residual scale and its square root |
 | log_likelihood | marginal ML likelihood or restricted REML likelihood, according to method |
@@ -728,6 +738,7 @@ optimality or scientific model adequacy.
 | fixed_fitted | probabilities evaluated at group effect zero; **not** population probabilities averaged over random effects |
 | fitted, linear_predictor, residuals | probabilities/log odds at conditional group modes; canonical y−fitted; retained row order |
 | random_effects | conditional group **modes**, log-odds scale; not posterior means |
+| random_effects_cond_var | per group, tau²/h_g with h_g = 1 + tau² Σ w_i μ_i(1−μ_i) the conditional-mode Hessian at the final parameters (lme4 `ranef(condVar = TRUE)` for `glmer`, the same for Laplace and quadrature); zero when tau = 0 |
 | group_labels, group_sizes, n_groups | typed labels/counts in first retained appearance order |
 | random_intercept_sd, random_intercept_variance | float tau and tau²; no Gaussian residual variance is estimated |
 | log_likelihood, neg2_log_likelihood | normalized approximate marginal binomial likelihood and −2 times it; includes binomial coefficients for every integration setting |

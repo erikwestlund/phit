@@ -36,8 +36,8 @@ the estimator reuse experiment is recorded in the [v0.2 assessment](v0.2.qmd).
 | Logistic | Integer trial weights; grouped-binomial proportions; additive offsets; binomial likelihood constant and deviance | R `glm(binomial("logit"))` |
 | Probit | Integer trial weights; grouped-binomial proportions; additive offsets; expected-information covariance | R `glm(binomial("probit"))` |
 | Poisson | Positive prior weights; offsets (including log exposure); weighted likelihood and deviance | R `glm(poisson("log"))` |
-| Binomial random intercept | ML; trial counts and offsets; Laplace/2..61-node adaptive quadrature; conditional modes; joint observed-information inference | R `glmer(binomial)` plus independent SciPy integration |
-| Gaussian mixed | ML/REML; correlated or independent random slopes; multiple random terms; crossed/nested groups; positive prior weights; offsets; starting values; singular covariance boundaries | R `lmer()` with all four optimizer wrappers |
+| Binomial random intercept | ML; trial counts and offsets; Laplace/2..61-node adaptive quadrature; conditional modes and their conditional variances; joint observed-information inference | R `glmer(binomial)` plus independent SciPy integration |
+| Gaussian mixed | ML/REML; correlated or independent random slopes; multiple random terms; crossed/nested groups; positive prior weights; offsets; starting values; singular covariance boundaries; conditional covariances of the random effects (`ranef(condVar = TRUE)`) | R `lmer()` with all four optimizer wrappers |
 
 The new mixed call is `stats_lmm_fit()`. The existing `stats_lmm()` remains the
 optimized one-group random-intercept ML call used by the million-row benchmarks.

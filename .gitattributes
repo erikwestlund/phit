@@ -17,3 +17,6 @@ docs/_freeze/** linguist-generated=true
 /docs/figures/*.png export-ignore
 /docs/figures/*.svg export-ignore
 /docs/search.json export-ignore
+
+# CSV fixtures test exact bytes (CRLF line endings, BOM).
+tests/fixtures/csv/*.csv -text

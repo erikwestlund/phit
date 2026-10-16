@@ -1,0 +1,168 @@
+---
+title: "Reading CSV files"
+---
+
+`stats_read_csv()` reads a delimited text file into typed columns. It is the
+native reader behind phibble's `Frame::fromCsv()`. Its records, names, guessed
+types, values, and problem messages match phibble's PHP reader, which follows
+readr 2 (`readr::read_delim()`). phibble keeps name repair, `col_select`, factor
+and `parse_number()` columns, and the problems warning in PHP.
+
+```php
+stats_read_csv(string $path, array $options = []): array;
+```
+
+## Options
+
+Every option is optional. The defaults are readr's.
+
+| Option | Default | Meaning |
+|---|---|---|
+| `delimiter` | `','` | One byte. |
+| `quote` | `'"'` | One byte, or `''` for no quoting. |
+| `escape_double` | `true` | `""` inside quotes is one `"`. |
+| `escape_backslash` | `false` | `\x` is `x`, inside and outside quotes. |
+| `na` | `['', 'NA']` | Strings read as NA, compared after trimming. A quoted `"NA"` is also NA. |
+| `trim_ws` | `true` | Trim spaces and tabs from values (and PHP `trim()` from header names). |
+| `skip` | `0` | Raw lines skipped before the header. |
+| `n_max` | `null` | Maximum number of data rows. |
+| `comment` | `''` | Text from this prefix to the end of the line is ignored. A line that starts with it is dropped. |
+| `skip_empty_rows` | `true` | Empty lines after the header are skipped. When false, each becomes an all-NA row and a problem. |
+| `col_names` | `true` | When false, the first record is data and the names are `X1`..`Xn`. |
+| `types` | `[]` | Type codes keyed by 0-based column position. Missing positions are guessed. |
+| `guess_max` | `1000` | Rows sampled for guessing. |
+| `decimal_mark` | `'.'` | One byte. |
+| `grouping_mark` | `null` | `null` uses `.` when the decimal mark is `,` and `,` otherwise. `''` means none. |
+
+The type codes are `?` (guess), `l` (bool), `i` (int), `d` (double), `c`
+(string), `D` (date), `T` (datetime), and `_` (skip). phibble reads `f`
+(factor) and `n` (number) columns by requesting `c` and parsing in PHP.
+
+## Result
+
+```php
+[
+    'names' => list<string>,
+    'columns' => list<null|array{
+        type: 'bool'|'int'|'float'|'string'|'date'|'datetime',
+        values: list<bool|int|float|string|null>,
+        failed: int,
+    }>,
+    'problems' => list<string>,
+]
+```
+
+Values use phibble's storage form. Bools, ints, and floats are PHP scalars and
+strings are strings. A date is an int count of days since 1970-01-01. A
+datetime is an int count of microseconds since the epoch in UTC. NA is `null`.
+A skipped column is `null`. `failed` counts values that did not parse under the
+column's explicit or guessed type; those values are `null`. phibble turns
+nonzero counts into its `column 'x': n values could not be parsed as type`
+problems.
+
+`problems` holds one entry per ragged row, such as
+`row 7: expected 5 columns, got 4`. The row number is the record's position in
+the file, counting skipped lines and the header. A multi-line quoted field
+counts as one record. A file that ends inside a quoted field adds
+`row N: unterminated quoted field at end of file`.
+
+## Records
+
+- Short rows are padded with NA. Long rows put the extra fields, joined by the
+  delimiter, into the last column.
+- A UTF-8 byte order mark is removed from the start of the first field.
+- LF and CRLF line endings are accepted. Quoted fields can hold delimiters and
+  line breaks, which are kept as written.
+- An unterminated quote at the end of the file closes the field there.
+- Bytes are passed through unchanged. There is no encoding validation.
+- An empty file, or one with only empty lines, returns no names and no columns.
+  A header-only file returns names and empty columns, guessed as bool.
+
+phibble tokenizes with PHP's `fgetcsv()` when it can (no comment, `""`
+escapes, no backslash escapes, and a quote character) and with its own
+character-level reader otherwise. The native reader reproduces both. The two
+differ in small ways:
+
+- With `fgetcsv()`, whitespace before an opening quote is dropped, text after
+  a closing quote is appended to the field, and one trailing CR is removed from
+  an unquoted field.
+- The character-level reader folds CRLF to LF everywhere, including inside
+  quotes. A quote opens a quoted section only when the field so far is
+  whitespace. Text after the comment prefix ends the record, so a line holding
+  only spaces and a comment is a one-field record.
+
+## Guessing
+
+Values are trimmed and NA-mapped first. The guess uses every row when there are
+at most `guess_max`. Otherwise it uses `guess_max - 1` evenly spaced rows
+(`step = intdiv(rows, guess_max)`: rows 0, step, 2·step, and so on) plus the
+last row, as vroom does. The first rule that fits every sampled value wins.
+
+1. **bool**: `T F TRUE FALSE True False true false t f`.
+2. **int**: an optional sign, then digits with optional grouping marks between
+   them, that fits in 64 bits. An unsigned leading zero (`007`) stays text;
+   `0` and `-07` are ints.
+3. **double**: `[+-]inf` or `[+-]nan` (any case), or a decimal number with an
+   optional decimal mark, exponent, and grouping marks. `1.` and `1,` qualify.
+   The leading-zero rule applies: `0e5` and `00.5` stay text.
+4. **date**: `YYYY-MM-DD` or `YYYY/MM/DD` (the separators may differ).
+5. **datetime**: `YYYY-MM-DD[(T| )HH[:MM[:SS[.fraction]]]][Z|±HH[[:]MM]]`.
+6. Otherwise **string**.
+
+An all-NA column is bool. phibble differs from readr in one rule: whole
+numbers guess as int, where readr guesses double. The date and datetime rules
+check only the shape. A column whose values look like dates guesses date even
+when a value is not a calendar date, and that value then fails to parse.
+
+## Parsing
+
+The column's type is applied to every row. A guessed numeric column allows the
+grouping mark. An explicitly typed one does not, as in phibble.
+
+- **bool** also accepts `1` and `0`.
+- **int** accepts leading zeros and a `+` sign.
+- **double** accepts PHP numeric strings (when the decimal mark is `.`),
+  `inf` and `nan`, and the guessing grammar.
+- **date** needs a valid calendar date in years 0001 to 9999.
+- **datetime** needs a valid date, hours up to 23, and minutes and seconds up
+  to 59. Fractions are truncated to microseconds. An offset converts to UTC
+  and no offset means UTC. Offsets up to ±24:59 are accepted, as by PHP's
+  `DateTimeImmutable`. A date alone is midnight UTC.
+
+## Errors
+
+A missing or unreadable file and invalid options throw `\ValueError` (not the
+statistical exception). Invalid options include an unknown key, a wrong value
+type, a multi-byte delimiter, quote, decimal mark, or grouping mark, an unknown
+type code, and a negative `skip` or `n_max`. The decimal and grouping marks
+must differ and cannot be a digit, sign, `e`, `E`, or newline.
+
+## Differences from readr
+
+These follow phibble's reader:
+
+- Whole numbers guess as int.
+- A lone CR does not end a line, because `fgetcsv()` splits lines on LF only.
+  A file with CR-only line endings reads as one record.
+- The byte order mark is removed after tokenizing. A quoted first header
+  (`\xEF\xBB\xBF"id"`) therefore keeps its quotes.
+- With a comment prefix, a value followed by a comment is trimmed (`2 # x`
+  reads as `2`).
+- Date and datetime guessing checks the shape only.
+
+## Performance
+
+On an Apple Silicon Mac with PHP 8.5, a 1,000,000-row file with int, float,
+string, date, and datetime columns (59 MB) reads in about 0.11 seconds,
+including building the PHP arrays. phibble's `csv_guess` benchmark (1,000,000
+rows) takes 0.12 seconds through `Frame::fromCsv()` with the extension and
+1.0 seconds with phibble's PHP reader.
+
+## Verification
+
+`tests/csv.php` checks quoting, escapes, NA handling, trimming, every option,
+every type code, the guessing rules, datetimes, ragged rows, and the error
+cases. `tests/csv-phibble.php` runs when `PHIBBLE_AUTOLOAD` points at phibble's
+`vendor/autoload.php`. It compares both readers through `Frame::fromCsv()` on
+the fixtures and on thousands of random files and option combinations. It
+requires identical names, types, values, and warnings.

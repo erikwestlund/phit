@@ -83,6 +83,14 @@ uses reliability weights. See the [numerical notes](docs/draw-numerics.qmd) for
 shapes, tolerances, examples and independent verification. Stan evaluation, PSIS
 and moment-matching control belong to the consuming CmdStan interface.
 
+## Reading CSV files
+
+`stats_read_csv($path, $options)` reads delimited text into typed columns with
+readr's options, type guessing, and problem reports. It is the native reader
+behind phibble's `Frame::fromCsv()` and matches phibble's PHP reader exactly.
+A 1,000,000-row file reads in about 0.1 seconds. See the
+[CSV contract](docs/io.qmd).
+
 ## Poisson counts with exposure
 
 Different observation periods belong in an offset on the **log scale**:

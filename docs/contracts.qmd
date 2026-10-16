@@ -155,6 +155,17 @@ symmetry/rank tolerances, formulas, implementation boundaries and verification.
 Stan evaluation, PSIS, moment-matching iteration and diagnostics belong to the
 consuming CmdStan package.
 
+## CSV input
+
+```php
+stats_read_csv(string $path, array $options = []): array;
+```
+
+The reader returns `['names' => list<string>, 'columns' => list<null|array{type,
+values, failed}>, 'problems' => list<string>]`. Missing or unreadable files and
+invalid options throw `\ValueError`. The options, type rules, and storage forms
+are defined in [Reading CSV files](io.qmd).
+
 ## Fixed-intercept convention and migration
 
 All seven PHP estimators append `bool $intercept = true` to their existing

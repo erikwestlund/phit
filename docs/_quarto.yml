@@ -89,6 +89,7 @@ website:
           - verification.qmd
           - draw-numerics.qmd
           - benchmarks/draws.qmd
+          - io.qmd
           - documentation.qmd
       - href: notebooks/index.qmd
         text: Walkthrough index

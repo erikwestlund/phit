@@ -66,8 +66,8 @@ project:
     - verifications/poisson.php
 
 website:
-  site-url: "https://erikwestlund.github.io/php-stat-models/"
-  title: "PHP Statistical Models"
+  site-url: "https://erikwestlund.github.io/php-stats/"
+  title: "PHP Stats"
   sidebar:
     style: docked
     search: true

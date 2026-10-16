@@ -242,7 +242,7 @@ Regression tests check codes for logistic/probit, both simple mixed calls and
 general Gaussian mixed grouping, including invalid values on rows that would
 otherwise be dropped. Statistical algorithms and public signatures are unchanged.
 
-The [first GitHub CI run](https://github.com/erikwestlund/php-stat-models/actions/runs/38188972784)
+The [first GitHub CI run](https://github.com/erikwestlund/php-stats/actions/runs/38188972784)
 failed during macOS binding generation with incompatible Clang ARM builtin headers;
 Linux was cancelled by matrix fail-fast. The workflow now aligns Homebrew compiler,
 libclang and resource headers, and lets both platforms finish independently. This

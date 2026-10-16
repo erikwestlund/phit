@@ -141,7 +141,7 @@ and frozen outputs support browsing/rendering without rerunning scientific check
 
 ## Publish GitHub Pages
 
-The repository serves [the documentation website](https://erikwestlund.github.io/php-stat-models/)
+The repository serves [the documentation website](https://erikwestlund.github.io/php-stats/)
 from the main branch's `/docs` directory. After editing .qmd sources or refreshing
 frozen results, run:
 

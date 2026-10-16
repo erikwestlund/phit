@@ -626,12 +626,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td>Binomial random intercept</td>
-<td>ML; trial counts and offsets; Laplace/2..61-node adaptive quadrature; conditional modes; joint observed-information inference</td>
+<td>ML; trial counts and offsets; Laplace/2..61-node adaptive quadrature; conditional modes and their conditional variances; joint observed-information inference</td>
 <td>R <code>glmer(binomial)</code> plus independent SciPy integration</td>
 </tr>
 <tr class="even">
 <td>Gaussian mixed</td>
-<td>ML/REML; correlated or independent random slopes; multiple random terms; crossed/nested groups; positive prior weights; offsets; starting values; singular covariance boundaries</td>
+<td>ML/REML; correlated or independent random slopes; multiple random terms; crossed/nested groups; positive prior weights; offsets; starting values; singular covariance boundaries; conditional covariances of the random effects (<code>ranef(condVar = TRUE)</code>)</td>
 <td>R <code>lmer()</code> with all four optimizer wrappers</td>
 </tr>
 </tbody>

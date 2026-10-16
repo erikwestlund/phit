@@ -700,8 +700,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="records">Records</h2>
 <ul>
 <li>Short rows are padded with NA. Long rows put the extra fields, joined by the delimiter, into the last column.</li>
-<li>A UTF-8 byte order mark is removed from the start of the first field.</li>
-<li>LF and CRLF line endings are accepted. Quoted fields can hold delimiters and line breaks, which are kept as written.</li>
+<li>A UTF-8 byte order mark at the start of the file is removed before tokenizing (when <code>skip</code> is 0), so a quoted first header loses its quotes. One at the start of the first record after skipped lines is also removed.</li>
+<li>LF and CRLF line endings are accepted. Text with no LF reads CR as the line ending. Otherwise a lone CR is data. Quoted fields can hold delimiters and line breaks, which are kept as written.</li>
 <li>An unterminated quote at the end of the file closes the field there.</li>
 <li>Bytes are passed through unchanged. There is no encoding validation.</li>
 <li>An empty file, or one with only empty lines, returns no names and no columns. A header-only file returns names and empty columns, guessed as bool.</li>
@@ -745,8 +745,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>These follow phibble’s reader:</p>
 <ul>
 <li>Whole numbers guess as int.</li>
-<li>A lone CR does not end a line, because <code>fgetcsv()</code> splits lines on LF only. A file with CR-only line endings reads as one record.</li>
-<li>The byte order mark is removed after tokenizing. A quoted first header (<code>\xEF\xBB\xBF"id"</code>) therefore keeps its quotes.</li>
 <li>With a comment prefix, a value followed by a comment is trimmed (<code>2 # x</code> reads as <code>2</code>).</li>
 <li>Date and datetime guessing checks the shape only.</li>
 </ul>

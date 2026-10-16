@@ -352,7 +352,7 @@ fn finish_result(
     if output.get("singular").and_then(|v| v.bool()) == Some(true) {
         warnings.push("random-effect covariance is singular or near singular".into());
     }
-    if function == "stats_logistic_mixed"
+    if matches!(function, "stats_logistic_mixed" | "stats_glmer")
         && output.get("quadrature_points").and_then(|v| v.long()) == Some(1)
     {
         warnings.push("Laplace integration is approximate; assess quadrature sensitivity for rare events or small groups".into());
@@ -645,6 +645,116 @@ pub fn stats_lmm(
     )
 }
 
+fn lmm_output(
+    result: stats_core::LmmResult,
+    reml: bool,
+    term_labels: Vec<Vec<GroupLabel>>,
+) -> PhpResult<ZBox<ZendHashTable>> {
+    let mut out = ZendHashTable::new();
+    out.insert("coefficients", result.coefficients)?;
+    out.insert("covariance", result.covariance)?;
+    out.insert("std_errors", result.std_errors)?;
+    out.insert("z_statistics", result.z_statistics)?;
+    out.insert("p_values", result.p_values)?;
+    out.insert(
+        "conf_int",
+        result
+            .conf_int
+            .into_iter()
+            .map(|v| v.to_vec())
+            .collect::<Vec<_>>(),
+    )?;
+    out.insert("fixed_fitted", result.fixed_fitted)?;
+    out.insert("fitted", result.fitted)?;
+    out.insert("residuals", result.residuals)?;
+    out.insert("marginal_residuals", result.marginal_residuals)?;
+    out.insert("residual_variance", result.residual_variance)?;
+    out.insert("sigma", result.sigma)?;
+    out.insert("log_likelihood", result.log_likelihood)?;
+    out.insert("aic", result.aic)?;
+    out.insert("bic", result.bic)?;
+    out.insert("df_residual", result.df_residual)?;
+    out.insert("n_parameters", result.n_parameters)?;
+    out.insert("theta", result.theta)?;
+    out.insert("singular", result.singular)?;
+    out.insert("method", if reml { "REML" } else { "ML" })?;
+    out.insert("optimizer", result.optimizer.name())?;
+    out.insert(
+        "optimizer_implementation",
+        match result.optimizer {
+            stats_core::LmmOptimizer::Bobyqa => "bobyqa 0.3.2 / PRIMA Rust port",
+            stats_core::LmmOptimizer::NelderMead => "argmin 0.11.0 / Nelder-Mead",
+        },
+    )?;
+    out.insert("converged", true)?;
+    out.insert("evaluations", result.evaluations)?;
+    let mut output_terms = ZendHashTable::new();
+    for (term, labels) in result.terms.into_iter().zip(term_labels) {
+        let mut t = ZendHashTable::new();
+        t.insert("covariance", term.covariance)?;
+        t.insert("effects", term.effects)?;
+        t.insert("group_labels", label_values(&labels)?)?;
+        t.insert("group_sizes", term.group_sizes)?;
+        output_terms.push(t)?;
+    }
+    out.insert("random", output_terms)?;
+    Ok(out)
+}
+
+fn logistic_mixed_output(
+    r: stats_core::LogisticMixedResult,
+    group_labels: &[GroupLabel],
+) -> PhpResult<ZBox<ZendHashTable>> {
+    let mut out = ZendHashTable::new();
+    out.insert("coefficients", r.coefficients)?;
+    out.insert("covariance", r.covariance)?;
+    out.insert("std_errors", r.std_errors)?;
+    out.insert("z_statistics", r.z_statistics)?;
+    out.insert("p_values", r.p_values)?;
+    out.insert(
+        "conf_int",
+        r.conf_int
+            .into_iter()
+            .map(|v| v.to_vec())
+            .collect::<Vec<_>>(),
+    )?;
+    out.insert("fixed_fitted", r.fixed_fitted)?;
+    out.insert("fitted", r.fitted)?;
+    out.insert("linear_predictor", r.linear_predictor)?;
+    out.insert("residuals", r.residuals)?;
+    out.insert("random_effects", r.random_effects)?;
+    out.insert("group_sizes", r.group_sizes)?;
+    out.insert("group_labels", label_values(group_labels)?)?;
+    out.insert("n_groups", group_labels.len())?;
+    out.insert("random_intercept_variance", r.random_intercept_variance)?;
+    out.insert("random_intercept_sd", r.random_intercept_sd)?;
+    out.insert("log_likelihood", r.log_likelihood)?;
+    out.insert("neg2_log_likelihood", r.neg2_log_likelihood)?;
+    out.insert("aic", r.aic)?;
+    out.insert("bic", r.bic)?;
+    out.insert("n_parameters", r.n_parameters)?;
+    out.insert("df_residual", r.df_residual)?;
+    out.insert("quadrature_points", r.quadrature_points)?;
+    out.insert(
+        "integration",
+        if r.quadrature_points == 1 {
+            "laplace"
+        } else {
+            "adaptive_gauss_hermite"
+        },
+    )?;
+    out.insert("evaluations", r.evaluations)?;
+    out.insert("gradient_max", r.gradient_max)?;
+    out.insert("boundary", r.boundary)?;
+    out.insert("singular", r.singular)?;
+    out.insert("family", "binomial")?;
+    out.insert("link", "logit")?;
+    out.insert("method", "ML")?;
+    out.insert("optimizer", "bobyqa")?;
+    out.insert("converged", true)?;
+    Ok(out)
+}
+
 #[php_function]
 #[php(defaults(
     missing = "\"drop\"",
@@ -863,54 +973,7 @@ pub fn stats_lmm_fit(
         options,
     )
     .map_err(stats_exception)?;
-    let mut out = ZendHashTable::new();
-    out.insert("coefficients", result.coefficients)?;
-    out.insert("covariance", result.covariance)?;
-    out.insert("std_errors", result.std_errors)?;
-    out.insert("z_statistics", result.z_statistics)?;
-    out.insert("p_values", result.p_values)?;
-    out.insert(
-        "conf_int",
-        result
-            .conf_int
-            .into_iter()
-            .map(|v| v.to_vec())
-            .collect::<Vec<_>>(),
-    )?;
-    out.insert("fixed_fitted", result.fixed_fitted)?;
-    out.insert("fitted", result.fitted)?;
-    out.insert("residuals", result.residuals)?;
-    out.insert("marginal_residuals", result.marginal_residuals)?;
-    out.insert("residual_variance", result.residual_variance)?;
-    out.insert("sigma", result.sigma)?;
-    out.insert("log_likelihood", result.log_likelihood)?;
-    out.insert("aic", result.aic)?;
-    out.insert("bic", result.bic)?;
-    out.insert("df_residual", result.df_residual)?;
-    out.insert("n_parameters", result.n_parameters)?;
-    out.insert("theta", result.theta)?;
-    out.insert("singular", result.singular)?;
-    out.insert("method", if reml { "REML" } else { "ML" })?;
-    out.insert("optimizer", result.optimizer.name())?;
-    out.insert(
-        "optimizer_implementation",
-        match result.optimizer {
-            stats_core::LmmOptimizer::Bobyqa => "bobyqa 0.3.2 / PRIMA Rust port",
-            stats_core::LmmOptimizer::NelderMead => "argmin 0.11.0 / Nelder-Mead",
-        },
-    )?;
-    out.insert("converged", true)?;
-    out.insert("evaluations", result.evaluations)?;
-    let mut output_terms = ZendHashTable::new();
-    for (term, labels) in result.terms.into_iter().zip(term_labels) {
-        let mut t = ZendHashTable::new();
-        t.insert("covariance", term.covariance)?;
-        t.insert("effects", term.effects)?;
-        t.insert("group_labels", label_values(&labels)?)?;
-        t.insert("group_sizes", term.group_sizes)?;
-        output_terms.push(t)?;
-    }
-    out.insert("random", output_terms)?;
+    let out = lmm_output(result, reml, term_labels)?;
     finish_result(out, n, retained, dropped, "stats_lmm_fit")
 }
 
@@ -987,53 +1050,7 @@ pub fn stats_logistic_mixed(
     };
     let r = stats_core::fit_logistic_random_intercept(input.x, input.y, indices, options)
         .map_err(stats_exception)?;
-    let mut out = ZendHashTable::new();
-    out.insert("coefficients", r.coefficients)?;
-    out.insert("covariance", r.covariance)?;
-    out.insert("std_errors", r.std_errors)?;
-    out.insert("z_statistics", r.z_statistics)?;
-    out.insert("p_values", r.p_values)?;
-    out.insert(
-        "conf_int",
-        r.conf_int
-            .into_iter()
-            .map(|v| v.to_vec())
-            .collect::<Vec<_>>(),
-    )?;
-    out.insert("fixed_fitted", r.fixed_fitted)?;
-    out.insert("fitted", r.fitted)?;
-    out.insert("linear_predictor", r.linear_predictor)?;
-    out.insert("residuals", r.residuals)?;
-    out.insert("random_effects", r.random_effects)?;
-    out.insert("group_sizes", r.group_sizes)?;
-    out.insert("group_labels", label_values(&group_labels)?)?;
-    out.insert("n_groups", group_labels.len())?;
-    out.insert("random_intercept_variance", r.random_intercept_variance)?;
-    out.insert("random_intercept_sd", r.random_intercept_sd)?;
-    out.insert("log_likelihood", r.log_likelihood)?;
-    out.insert("neg2_log_likelihood", r.neg2_log_likelihood)?;
-    out.insert("aic", r.aic)?;
-    out.insert("bic", r.bic)?;
-    out.insert("n_parameters", r.n_parameters)?;
-    out.insert("df_residual", r.df_residual)?;
-    out.insert("quadrature_points", r.quadrature_points)?;
-    out.insert(
-        "integration",
-        if r.quadrature_points == 1 {
-            "laplace"
-        } else {
-            "adaptive_gauss_hermite"
-        },
-    )?;
-    out.insert("evaluations", r.evaluations)?;
-    out.insert("gradient_max", r.gradient_max)?;
-    out.insert("boundary", r.boundary)?;
-    out.insert("singular", r.singular)?;
-    out.insert("family", "binomial")?;
-    out.insert("link", "logit")?;
-    out.insert("method", "ML")?;
-    out.insert("optimizer", "bobyqa")?;
-    out.insert("converged", true)?;
+    let out = logistic_mixed_output(r, &group_labels)?;
     finish_result(
         out,
         input.n_input,

@@ -800,6 +800,69 @@ function stats_gamma_sf_array(array $values, float $shape, float $scale = 1.0): 
  */
 function stats_glm(string $formula, mixed $data, string $family = 'gaussian', string $link = '', string $missing = 'drop', mixed $weights = NULL): array {}
 
+/**
+ * Binomial random-intercept model from a formula, like lme4::glmer(family = binomial): exactly one (1 | g) term over the
+ * stats_logistic_mixed core (Laplace by default, adaptive quadrature with quadrature_points > 1). Responses as in stats_glm.
+ * Formula syntax and R differences: docs/formulas.qmd. Rows with null/NAN in any variable the formula uses are
+ * dropped with one E_WARNING (missing 'raise' rejects them); retained_rows/dropped_rows are original positions.
+ * @param string $formula R formula, e.g. 'y ~ log(x) + f * z + offset(log(t))'
+ * @param array<string,list<int|float|bool|string|null>|array{levels:list<string>,codes:list<int|null>,ordered:bool}>|object $data Named columns or factor descriptors; objects use toModelData(), else toColumns()
+ * @param string $family 'gaussian', 'binomial' or 'poisson'
+ * @param string $link '' (canonical), 'identity', 'logit', 'probit' or 'log'
+ * @param array<int|float|null>|string|null $weights Positive prior weights aligned with the original rows, or a column name
+ * @return array{
+ *   coefficients: list<float>,
+ *   covariance: list<list<float>>,
+ *   std_errors: list<float>,
+ *   p_values: list<float>,
+ *   conf_int: list<array{float,float}>,
+ *   fitted: list<float>,
+ *   residuals: list<float>,
+ *   log_likelihood: float,
+ *   df_residual: int,
+ *   diagnostics: array{converged:bool,solver:string,warnings:list<string>,iterations?:int,evaluations?:int,gradient_max?:float,boundary?:bool,singular?:bool},
+ *   n_input: int,
+ *   n_observations: int,
+ *   n_dropped: int,
+ *   retained_rows: list<int>,
+ *   dropped_rows: list<int>,
+ *   z_statistics: list<float>,
+ *   fixed_fitted: list<float>,
+ *   linear_predictor: list<float>,
+ *   aic: float,
+ *   bic: float,
+ *   n_parameters: int,
+ *   group_labels: list<int|string>,
+ *   group_sizes: list<int>,
+ *   random_effects: list<float>,
+ *   n_groups: int,
+ *   random_intercept_sd: float,
+ *   random_intercept_variance: float,
+ *   neg2_log_likelihood: float,
+ *   quadrature_points: int,
+ *   integration: string,
+ *   method: string,
+ *   family: string,
+ *   link: string,
+ *   optimizer: string,
+ *   converged: bool,
+ *   evaluations: int,
+ *   gradient_max: float,
+ *   boundary: bool,
+ *   singular: bool,
+ *   random: list<array{label:string,group:string,columns:list<string>}>,
+ *   formula: string,
+ *   response: string,
+ *   columns: list<string>,
+ *   terms: list<string>,
+ *   assign: list<int>,
+ *   intercept: bool,
+ *   named: array<string,float>,
+ * }
+ * @throws \Exception Statistical or input error (codes 1001–1008); unsupported functions/families/random terms raise 1007.
+ */
+function stats_glmer(string $formula, mixed $data, string $family = 'binomial', string $link = '', string $missing = 'drop', mixed $weights = NULL, int $quadrature_points = 1, int $max_evaluations = 20000, float $tolerance = 1.0E-7): array {}
+
 function stats_hello(): string {}
 
 /**
@@ -843,6 +906,59 @@ function stats_hello(): string {}
  * @throws \Exception Statistical or input error (codes 1001–1008); unsupported functions/families/random terms raise 1007.
  */
 function stats_lm(string $formula, mixed $data, string $missing = 'drop', mixed $weights = NULL): array {}
+
+/**
+ * Gaussian mixed model from an lme4-style formula, like lme4::lmer(): fixed terms as in stats_lm and random bars
+ * (x | g), (x || g), (1 | g1) + (1 | g2), (1 | g1:g2), (1 | g1/g2) mapped onto the stats_lmm_fit core. REML by default.
+ * Groups and effects follow first appearance after deletion, not lme4's sorted levels; terms keep formula order.
+ * Formula syntax and R differences: docs/formulas.qmd. Rows with null/NAN in any variable the formula uses are
+ * dropped with one E_WARNING (missing 'raise' rejects them); retained_rows/dropped_rows are original positions.
+ * @param string $formula R formula, e.g. 'y ~ log(x) + f * z + offset(log(t))'
+ * @param array<string,list<int|float|bool|string|null>|array{levels:list<string>,codes:list<int|null>,ordered:bool}>|object $data Named columns or factor descriptors; objects use toModelData(), else toColumns()
+ * @param array<int|float|null>|string|null $weights Positive prior weights aligned with the original rows, or a column name
+ * @return array{
+ *   coefficients: list<float>,
+ *   covariance: list<list<float>>,
+ *   std_errors: list<float>,
+ *   p_values: list<float>,
+ *   conf_int: list<array{float,float}>,
+ *   fitted: list<float>,
+ *   residuals: list<float>,
+ *   log_likelihood: float,
+ *   df_residual: int,
+ *   diagnostics: array{converged:bool,solver:string,warnings:list<string>,iterations?:int,evaluations?:int,gradient_max?:float,boundary?:bool,singular?:bool},
+ *   n_input: int,
+ *   n_observations: int,
+ *   n_dropped: int,
+ *   retained_rows: list<int>,
+ *   dropped_rows: list<int>,
+ *   z_statistics: list<float>,
+ *   fixed_fitted: list<float>,
+ *   marginal_residuals: list<float>,
+ *   aic: float,
+ *   residual_variance: float,
+ *   sigma: float,
+ *   method: string,
+ *   converged: bool,
+ *   n_parameters: int,
+ *   bic: float,
+ *   theta: list<float>,
+ *   singular: bool,
+ *   optimizer: string,
+ *   optimizer_implementation: string,
+ *   evaluations: int,
+ *   random: list<array{covariance:list<list<float>>,effects:list<list<float>>,group_labels:list<int|string>,group_sizes:list<int>,label:string,group:string,columns:list<string>,correlated:bool}>,
+ *   formula: string,
+ *   response: string,
+ *   columns: list<string>,
+ *   terms: list<string>,
+ *   assign: list<int>,
+ *   intercept: bool,
+ *   named: array<string,float>,
+ * }
+ * @throws \Exception Statistical or input error (codes 1001–1008); unsupported functions/families/random terms raise 1007.
+ */
+function stats_lmer(string $formula, mixed $data, bool $reml = true, string $missing = 'drop', mixed $weights = NULL, ?array $start = NULL, int $max_evaluations = 20000, float $tolerance = 1.0E-7, string $optimizer = 'bobyqa', float $objective_tolerance = 1.0E-12): array {}
 
 /**
  * Predictor matrix: rows are observations. A fixed intercept is prepended by default.

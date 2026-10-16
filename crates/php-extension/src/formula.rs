@@ -545,9 +545,207 @@ pub fn stats_glm(
     finish_result(output, design.n_input, retained, dropped, "stats_glm")
 }
 
+fn group_indices(groups: &[GroupLabel]) -> (Vec<usize>, Vec<crate::GroupLabel>) {
+    // First-appearance order after deletion, as stats_lmm_fit/stats_logistic_mixed use.
+    let mut labels = Vec::new();
+    let mut map = std::collections::HashMap::new();
+    let indices = groups
+        .iter()
+        .map(|g| {
+            *map.entry(g.clone()).or_insert_with(|| {
+                labels.push(match g {
+                    GroupLabel::Integer(v) => crate::GroupLabel::Integer(*v),
+                    GroupLabel::Text(v) => crate::GroupLabel::Text(v.clone()),
+                });
+                labels.len() - 1
+            })
+        })
+        .collect();
+    (indices, labels)
+}
+
+fn require_random(design: &ModelDesign, function: &str) -> PhpResult<()> {
+    if design.random.is_empty() {
+        return Err(invalid(&format!(
+            "{function} needs at least one random-effect term such as (1 | g); use stats_lm or stats_glm for fixed effects only"
+        )));
+    }
+    Ok(())
+}
+
+fn positive_count(value: i64, what: &str, kind: ErrorKind) -> PhpResult<usize> {
+    usize::try_from(value).map_err(|_| input_exception(kind, &format!("{what} must be positive")))
+}
+
+/// Gaussian mixed model from an lme4-style formula over the stats_lmm_fit core.
+#[php_function]
+#[php(defaults(
+    reml = true,
+    missing = "\"drop\"",
+    max_evaluations = 20000,
+    tolerance = 1e-7,
+    optimizer = "\"bobyqa\"",
+    objective_tolerance = 1e-12
+))]
+#[allow(clippy::too_many_arguments)] // Named PHP arguments mirror stats_lmm_fit.
+pub fn stats_lmer(
+    formula: &str,
+    data: &Zval,
+    reml: bool,
+    missing: &str,
+    weights: Option<&Zval>,
+    start: Option<&ZendHashTable>,
+    max_evaluations: i64,
+    tolerance: f64,
+    optimizer: &str,
+    objective_tolerance: f64,
+) -> PhpResult<ZBox<ZendHashTable>> {
+    let optimizer = match optimizer {
+        "bobyqa" => stats_core::LmmOptimizer::Bobyqa,
+        "nelder_mead" => stats_core::LmmOptimizer::NelderMead,
+        _ => {
+            return Err(input_exception(
+                ErrorKind::Unsupported,
+                "optimizer must be 'bobyqa' or 'nelder_mead'",
+            ));
+        }
+    };
+    let start = start
+        .map(|v| {
+            v.values()
+                .map(|v| {
+                    crate::number(v)?.ok_or_else(|| invalid("start cannot contain missing values"))
+                })
+                .collect::<PhpResult<Vec<_>>>()
+        })
+        .transpose()?;
+    let Prepared { design, weights } = prepare(formula, data, missing, weights, true)?;
+    require_random(&design, "stats_lmer")?;
+    let y = numeric_response(&design, "stats_lmer")?;
+    let mut term_labels = Vec::new();
+    let terms = design
+        .random
+        .iter()
+        .map(|term| {
+            let (groups, labels) = group_indices(&term.groups);
+            term_labels.push(labels);
+            stats_core::RandomTerm {
+                z: term.z.clone(),
+                groups,
+                correlated: term.correlated,
+            }
+        })
+        .collect();
+    let options = stats_core::LmmOptions {
+        reml,
+        optimizer,
+        objective_tolerance,
+        offset: design.offset.clone().unwrap_or_else(|| vec![0.0; y.len()]),
+        weights,
+        start,
+        max_evaluations: positive_count(
+            max_evaluations,
+            "max_evaluations",
+            ErrorKind::InvalidInput,
+        )?,
+        tolerance,
+    };
+    let result =
+        stats_core::fit_lmm(design.x.clone(), y, terms, options).map_err(stats_exception)?;
+    let mut output = crate::lmm_output(result, reml, term_labels)?;
+    if let Some(random) = output.get_mut("random").and_then(|v| v.array_mut()) {
+        for (i, term) in design.random.iter().enumerate() {
+            if let Some(t) = random.get_index_mut(i as i64).and_then(|v| v.array_mut()) {
+                t.insert("label", term.label.clone())?;
+                t.insert("group", term.group.clone())?;
+                t.insert("columns", term.columns.clone())?;
+                t.insert("correlated", term.correlated)?;
+            }
+        }
+    }
+    add_names(&mut output, &design)?;
+    let (retained, dropped) = rows(&design);
+    finish_result(output, design.n_input, retained, dropped, "stats_lmer")
+}
+
+/// Binomial random-intercept model from a formula over the stats_logistic_mixed core.
+#[php_function]
+#[php(defaults(
+    family = "\"binomial\"",
+    link = "\"\"",
+    missing = "\"drop\"",
+    quadrature_points = 1,
+    max_evaluations = 20000,
+    tolerance = 1e-7
+))]
+#[allow(clippy::too_many_arguments)] // Named PHP arguments mirror stats_logistic_mixed.
+pub fn stats_glmer(
+    formula: &str,
+    data: &Zval,
+    family: &str,
+    link: &str,
+    missing: &str,
+    weights: Option<&Zval>,
+    quadrature_points: i64,
+    max_evaluations: i64,
+    tolerance: f64,
+) -> PhpResult<ZBox<ZendHashTable>> {
+    if family != "binomial" || !matches!(link, "" | "logit") {
+        return Err(input_exception(
+            ErrorKind::Unsupported,
+            &format!(
+                "stats_glmer supports family 'binomial' with the logit link only (got '{family}'/'{link}')"
+            ),
+        ));
+    }
+    let Prepared {
+        design,
+        mut weights,
+    } = prepare(formula, data, missing, weights, true)?;
+    require_random(&design, "stats_glmer")?;
+    if design.random.len() != 1 || design.random[0].columns != ["(Intercept)"] {
+        return Err(input_exception(
+            ErrorKind::Unsupported,
+            "stats_glmer supports exactly one random intercept, (1 | g); random slopes and several terms are not implemented",
+        ));
+    }
+    let y = binomial_response(&design, &mut weights)?;
+    let (indices, labels) = group_indices(&design.random[0].groups);
+    let options = stats_core::LogisticMixedOptions {
+        offset: design.offset.clone().unwrap_or_else(|| vec![0.0; y.len()]),
+        weights,
+        quadrature_points: positive_count(
+            quadrature_points,
+            "quadrature_points",
+            ErrorKind::Unsupported,
+        )?,
+        max_evaluations: positive_count(
+            max_evaluations,
+            "max_evaluations",
+            ErrorKind::InvalidInput,
+        )?,
+        tolerance,
+    };
+    let r = stats_core::fit_logistic_random_intercept(design.x.clone(), y, indices, options)
+        .map_err(stats_exception)?;
+    let mut output = crate::logistic_mixed_output(r, &labels)?;
+    let mut random = ZendHashTable::new();
+    let mut term = ZendHashTable::new();
+    term.insert("label", design.random[0].label.clone())?;
+    term.insert("group", design.random[0].group.clone())?;
+    term.insert("columns", design.random[0].columns.clone())?;
+    random.push(term)?;
+    output.insert("random", random)?;
+    add_names(&mut output, &design)?;
+    let (retained, dropped) = rows(&design);
+    finish_result(output, design.n_input, retained, dropped, "stats_glmer")
+}
+
 pub fn register(module: ModuleBuilder) -> ModuleBuilder {
     module
         .function(wrap_function!(stats_model_matrix))
         .function(wrap_function!(stats_lm))
         .function(wrap_function!(stats_glm))
+        .function(wrap_function!(stats_lmer))
+        .function(wrap_function!(stats_glmer))
 }

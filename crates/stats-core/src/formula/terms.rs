@@ -256,13 +256,13 @@ fn group_factors(expr: &Expr) -> Result<Vec<Vec<Expr>>, StatsError> {
             Ok(out)
         }
         Expr::Binary(Op::Div, l, r) => {
-            // lme4: (x | a/b) = (x | a) + (x | a:b).
+            // lme4: (x | a/b) = (x | a) + (x | b:a), naming the inner factor first.
             let left = group_factors(l)?;
             let right = group_factors(r)?;
             let all: Vec<Expr> = left.iter().flatten().cloned().collect();
             let mut out = left;
             for b in right {
-                out.push(all.iter().chain(b.iter()).cloned().collect());
+                out.push(b.iter().chain(all.iter()).cloned().collect());
             }
             Ok(out)
         }

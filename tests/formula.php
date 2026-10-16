@@ -180,8 +180,8 @@ $direct = stats_lmm_fit(x: array_map(fn($h) => [$h], $schools['study_hours']), y
 $through = stats_lmm_fit(x: $mm['x'], y: $mm['y'], random: [$slopes], intercept: false);
 fcompare($through['coefficients'], $direct['coefficients'], 'model matrix to stats_lmm_fit', 1e-10, 1e-10);
 $nested = stats_model_matrix('y ~ x + (1 | g/f) + (x | g:f)', $base + ['f' => [1, 1, 2, 2, 1, 2]]);
-fcheck(array_column($nested['random'], 'label') === ['1 | g', '1 | g:f', 'x | g:f'], 'nested bars expand like lme4');
-fcheck($nested['random'][1]['groups'][0] === 'a:1' && $nested['random'][0]['groups'][0] === 'a', 'interaction group labels');
+fcheck(array_column($nested['random'], 'label') === ['1 | g', '1 | f:g', 'x | g:f'], 'nested bars expand like lme4');
+fcheck($nested['random'][1]['groups'][0] === '1:a' && $nested['random'][2]['groups'][0] === 'a:1' && $nested['random'][0]['groups'][0] === 'a', 'interaction group labels');
 fcheck(stats_model_matrix('y ~ x + (1 | x)', $base)['random'][0]['groups'][0] === 1, 'integer group labels stay integers');
 
 // Optional integration with a real phibble Frame when PHIBBLE_AUTOLOAD names its autoloader.

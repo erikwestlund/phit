@@ -14,7 +14,8 @@ GENERATORS={'ols-r':'tests/generate-fixtures.R','logistic-r':'tests/generate-log
  'distributions-mpmath':'docs/verifications/compare_distributions.py',
  'descriptive-r':'tests/generate-distribution-fixtures.R',
  'rng-python-r':'tests/generate-rng-fixtures.py',
- 'formula-r':'tests/generate-formula-fixtures.R'}
+ 'formula-r':'tests/generate-formula-fixtures.R',
+ 'formula-lme4-r':'tests/generate-formula-lme4-fixtures.R'}
 POLICY={'ols-r':'1e-9 + 1e-7*abs(reference); zero/perfect fit conventions tested separately',
  'logistic-r':'1e-9 + 1e-7*abs(reference)','probit-r':'1e-9 + 1e-7*abs(reference)','poisson-r':'1e-9 + 1e-7*abs(reference)',
  'r-compatibility':'1e-7 + 1e-6*abs(reference)',
@@ -28,6 +29,7 @@ POLICY={'ols-r':'1e-9 + 1e-7*abs(reference); zero/perfect fit conventions tested
  'distributions-mpmath':'Same operation-specific policy as R; 60-digit references rounded once, null denotes unavailable. Reference choice uses only saved R/mpmath values, never the native result.',
  'descriptive-r':'Relative 1e-12, exact zero; scalar/batch type-7 quantiles must agree exactly. Missing/error conventions tested separately.',
  'formula-r':'model.matrix columns/terms/rows exact; values 1e-12 + 1e-12*abs(reference); lm/glm fits 1e-9 + 1e-7*abs(reference) (orthogonal poly() designs use the fit tolerance). GLM references are polished by restarting glm() from its own solution.',
+ 'formula-lme4-r':'lmer as lmm-expanded-r bobyqa (likelihood/AIC/BIC 5e-6 + 1e-9*abs(reference); estimates 1e-5 + 1e-5*abs(reference)); glmer as logistic-mixed-r (likelihood 1e-6 + 1e-8*abs(reference); SE/covariance 2e-5 + 2e-3*abs(reference); others 2e-5 + 2e-4*abs(reference))',
  'rng-python-r':'Independent ChaCha/seed/Open01 uniforms exact; R inverse-CDF values 1e-15 + 1e-12*abs(reference); discrete/point-mass samples exact. Prefix/repeatability, limits and moments tested separately.'}
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def compact_ref(ref):return {k:v for k,v in ref.items() if k not in ['result','results','expected']}
@@ -49,10 +51,10 @@ for stem,generator in GENERATORS.items():
   if isinstance(c.get('reference'),dict):metadata['reference']=compact_ref(c['reference'])
   if references:metadata['references']={k:compact_ref(v) for k,v in references.items()}
   if 'nlme_reference' in c:metadata['nlme_reference']=compact_ref(c['nlme_reference'])
-  if stem=='formula-r':
-   inputs={k:c[k] for k in ['function','formula','family','link','weights'] if k in c}
+  if stem in ['formula-r','formula-lme4-r']:
+   inputs={k:c[k] for k in ['function','formula','family','link','weights','reml','quadrature_points','bars'] if k in c}
    inputs['data']=data['datasets'][c['dataset']]
-   n=len(expected['retained_rows']);p=len(expected['columns']);quantities=list(expected)
+   n=expected['n_observations'] if 'n_observations' in expected else len(expected['retained_rows']);p=len(expected['columns']);quantities=list(expected)
   elif stem.startswith('distributions-') or stem=='rng-python-r':
    n=len(c['input']);p=1;quantities=[c['operation']]
   elif stem=='descriptive-r':
@@ -69,6 +71,8 @@ for stem,generator in GENERATORS.items():
   'cases':cases})
  if stem.startswith('distributions-') or stem=='descriptive-r':
   report['fixtures'][-1]['model_specification']='Explicit distribution parameterization/evaluation points or numeric descriptive slices; no model fit or data filtering in reference generation.'
+ if stem=='formula-lme4-r':
+  report['fixtures'][-1]['model_specification']='Named-column datasets (schools, cbpp, seeded crossed/nested panel) with lme4 formula strings; lmer/glmer bobyqa rhoend 1e-9 (glmer tolPwrss 1e-12) under LC_COLLATE=C.'
  if stem=='formula-r':
   report['fixtures'][-1]['model_specification']='Named-column datasets (repository CSVs and a seeded synthetic frame) with formula strings; R model.frame/model.matrix/lm/glm under LC_COLLATE=C.'
  if stem=='rng-python-r':

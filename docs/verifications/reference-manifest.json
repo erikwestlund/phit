@@ -23317,6 +23317,295 @@
           ]
         }
       ]
+    },
+    {
+      "path": "tests/fixtures/formula-lme4-r.json",
+      "sha256": "baace10c7e7c71eb39cacfc871a7e5fefb5d414f6ef28c0ed16a601303c472de",
+      "generator": "tests/generate-formula-lme4-fixtures.R",
+      "generator_sha256": "30a51905ae11ffc2de95a4b2e1f289db75bf6eedf9244133c3263549a2075158",
+      "software_recorded_in_fixture": {
+        "reference": "R version 4.6.1 (2026-06-24)",
+        "lme4": "2.0.6",
+        "collation": "C"
+      },
+      "tolerance_policy": "lmer as lmm-expanded-r bobyqa (likelihood/AIC/BIC 5e-6 + 1e-9*abs(reference); estimates 1e-5 + 1e-5*abs(reference)); glmer as logistic-mixed-r (likelihood 1e-6 + 1e-8*abs(reference); SE/covariance 2e-5 + 2e-3*abs(reference); others 2e-5 + 2e-4*abs(reference))",
+      "model_specification": "Named-column datasets (schools, cbpp, seeded crossed/nested panel) with lme4 formula strings; lmer/glmer bobyqa rhoend 1e-9 (glmer tolPwrss 1e-12) under LC_COLLATE=C.",
+      "cases": [
+        {
+          "name": "lmer_schools_intercept_reml",
+          "dataset": "schools",
+          "reference": {
+            "optimizer": "bobyqa",
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "messages": []
+          },
+          "inputs_sha256": "a45f8e2d069316bb6f25ed6e449f3b973d254b2967fb70d30d8f4a0116564da1",
+          "n": 250,
+          "p": 2,
+          "compared_quantities": [
+            "columns",
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "n_observations",
+            "random_covariances",
+            "sigma",
+            "residual_variance",
+            "log_likelihood",
+            "aic",
+            "bic"
+          ]
+        },
+        {
+          "name": "lmer_schools_intercept_ml",
+          "dataset": "schools",
+          "reference": {
+            "optimizer": "bobyqa",
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "messages": []
+          },
+          "inputs_sha256": "e465469a8ff3d497b68dc2cc4387222fce80ff16537f48ec8a4521fa976d96e0",
+          "n": 250,
+          "p": 3,
+          "compared_quantities": [
+            "columns",
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "n_observations",
+            "random_covariances",
+            "sigma",
+            "residual_variance",
+            "log_likelihood",
+            "aic",
+            "bic"
+          ]
+        },
+        {
+          "name": "lmer_panel_slopes",
+          "dataset": "panel",
+          "reference": {
+            "optimizer": "bobyqa",
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "messages": []
+          },
+          "inputs_sha256": "fb063b38c49351cc15ea1dbce341329f91a7bfade44c10272c1fcded676aa610",
+          "n": 379,
+          "p": 2,
+          "compared_quantities": [
+            "columns",
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "n_observations",
+            "random_covariances",
+            "sigma",
+            "residual_variance",
+            "log_likelihood",
+            "aic",
+            "bic"
+          ]
+        },
+        {
+          "name": "lmer_panel_uncorrelated",
+          "dataset": "panel",
+          "reference": {
+            "optimizer": "bobyqa",
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "messages": []
+          },
+          "inputs_sha256": "a94ad7258ea37b8d20358b7915835432365544239c7db5cbc9526f623c3bd15c",
+          "n": 379,
+          "p": 2,
+          "compared_quantities": [
+            "columns",
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "n_observations",
+            "random_covariances",
+            "sigma",
+            "residual_variance",
+            "log_likelihood",
+            "aic",
+            "bic"
+          ]
+        },
+        {
+          "name": "lmer_panel_crossed",
+          "dataset": "panel",
+          "reference": {
+            "optimizer": "bobyqa",
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "messages": []
+          },
+          "inputs_sha256": "e606831d482f6ac8c486dc9b084691c512ec8a5bab55be0a7b51e0f8edd0af85",
+          "n": 379,
+          "p": 2,
+          "compared_quantities": [
+            "columns",
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "n_observations",
+            "random_covariances",
+            "sigma",
+            "residual_variance",
+            "log_likelihood",
+            "aic",
+            "bic"
+          ]
+        },
+        {
+          "name": "lmer_panel_slopes_crossed_ml",
+          "dataset": "panel",
+          "reference": {
+            "optimizer": "bobyqa",
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "messages": []
+          },
+          "inputs_sha256": "0498c0ddd3bbd388e96650479f8b26654b9f566fc7932ab7ce197e7dbce459ca",
+          "n": 379,
+          "p": 2,
+          "compared_quantities": [
+            "columns",
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "n_observations",
+            "random_covariances",
+            "sigma",
+            "residual_variance",
+            "log_likelihood",
+            "aic",
+            "bic"
+          ]
+        },
+        {
+          "name": "lmer_panel_nested",
+          "dataset": "panel",
+          "reference": {
+            "optimizer": "bobyqa",
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "messages": []
+          },
+          "inputs_sha256": "fc5dcbaabbdc0ec13417c8fe95df9f6f2e5bd9d83b82172dcad4e1d9989cfb0b",
+          "n": 379,
+          "p": 2,
+          "compared_quantities": [
+            "columns",
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "n_observations",
+            "random_covariances",
+            "sigma",
+            "residual_variance",
+            "log_likelihood",
+            "aic",
+            "bic"
+          ]
+        },
+        {
+          "name": "glmer_cbpp_laplace",
+          "dataset": "cbpp",
+          "reference": {
+            "optimizer": "bobyqa",
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "messages": []
+          },
+          "inputs_sha256": "634f9ad2803cfd2c10296bb328c5b6d1697de1f483a67e4888005d373b0bac07",
+          "n": 56,
+          "p": 4,
+          "compared_quantities": [
+            "columns",
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "n_observations",
+            "random_intercept_variance",
+            "log_likelihood",
+            "aic",
+            "bic"
+          ]
+        },
+        {
+          "name": "glmer_cbpp_agq",
+          "dataset": "cbpp",
+          "reference": {
+            "optimizer": "bobyqa",
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "messages": []
+          },
+          "inputs_sha256": "a63a3572058db8dbdd9619597b83e9169e18ebbad2ccf62a3c2964d69bc94b46",
+          "n": 56,
+          "p": 4,
+          "compared_quantities": [
+            "columns",
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "n_observations",
+            "random_intercept_variance",
+            "log_likelihood",
+            "aic",
+            "bic"
+          ]
+        },
+        {
+          "name": "glmer_panel_binary",
+          "dataset": "panel",
+          "reference": {
+            "optimizer": "bobyqa",
+            "rhoend": 1e-09,
+            "optimizer_code": [
+              0
+            ],
+            "messages": []
+          },
+          "inputs_sha256": "07655e7f95ecaa3f7d305a2f5a8c6fc7232b4c1eb3ad225734166ff0bdccecce",
+          "n": 382,
+          "p": 2,
+          "compared_quantities": [
+            "columns",
+            "coefficients",
+            "covariance",
+            "std_errors",
+            "n_observations",
+            "random_intercept_variance",
+            "log_likelihood",
+            "aic",
+            "bic"
+          ]
+        }
+      ]
     }
   ]
 }

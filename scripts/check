@@ -23,7 +23,7 @@ esac
 "$PHP" -n -d "extension=$extension" -r 'if (stats_hello() === "") exit(1);'
 "$PHP" -n -d "extension=$extension" scripts/php-stubs.php --check
 "$PHP" -n -l stubs/php-stats.php
-for suite in ols logistic probit poisson formula lmm r-compatibility lmm-expanded logistic-mixed stability intercept distributions descriptive rng draws; do
+for suite in ols logistic probit poisson formula formula-mixed lmm r-compatibility lmm-expanded logistic-mixed stability intercept distributions descriptive rng draws; do
     "$PHP" -n -d "extension=$extension" "tests/$suite.php"
 done
 for example in ols logistic probit poisson lmm lmm-slopes logistic-mixed poisson-offset distributions rng draws; do

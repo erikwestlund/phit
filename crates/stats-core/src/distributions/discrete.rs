@@ -7,9 +7,9 @@ use super::special::{
     TINY, ln_beta_lower_fraction, ln_binomial_raw, ln_binomial_raw_split, ln_gamma_lower_series,
     ln_gamma_upper_fraction, ln_poisson_raw, log_tail,
 };
+use super::{beta_inc, gamma_inc};
 use super::{finite, positive};
 use crate::{ErrorKind, StatsError};
-use cdflib::special::{beta_inc, gamma_inc};
 
 /// Largest supported binomial size: integers are exact in a double up to 2^53.
 pub const MAX_BINOMIAL_SIZE: u64 = 1 << 53;

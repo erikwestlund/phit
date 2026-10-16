@@ -55,6 +55,10 @@ pub(super) fn continuous(p: f64, start: f64, lower: f64, upper: f64, f: &LogTail
     if gx == 0.0 {
         return x;
     }
+    // A failed tail evaluation (NaN) must surface as a failure, not steer the search.
+    if gx.is_nan() {
+        return f64::NAN;
+    }
     // Bracket [a, b] with g(a) < 0 < g(b).
     let (mut a, mut b) = (lower, upper);
     if gx < 0.0 {
@@ -66,7 +70,11 @@ pub(super) fn continuous(p: f64, start: f64, lower: f64, upper: f64, f: &LogTail
                 if next == f64::INFINITY {
                     return upper;
                 }
-                if g(next) >= 0.0 {
+                let gn = g(next);
+                if gn.is_nan() {
+                    return f64::NAN;
+                }
+                if gn >= 0.0 {
                     b = next;
                     break;
                 }
@@ -82,7 +90,11 @@ pub(super) fn continuous(p: f64, start: f64, lower: f64, upper: f64, f: &LogTail
                 if next == f64::NEG_INFINITY {
                     return lower;
                 }
-                if g(next) <= 0.0 {
+                let gn = g(next);
+                if gn.is_nan() {
+                    return f64::NAN;
+                }
+                if gn <= 0.0 {
                     a = next;
                     break;
                 }
@@ -107,6 +119,9 @@ pub(super) fn continuous(p: f64, start: f64, lower: f64, upper: f64, f: &LogTail
         gx = g(x);
         if gx == 0.0 {
             return x;
+        }
+        if gx.is_nan() {
+            return f64::NAN;
         }
         if gx < 0.0 {
             a = x;
@@ -166,14 +181,23 @@ pub(super) fn discrete(
         return max;
     }
     const FUZZ: f64 = 64.0 * f64::EPSILON;
+    // A NaN tail compares as "not reached"; remember it and fail at the end.
+    let failed = std::cell::Cell::new(false);
     let reached = |k: f64| {
-        if p > 0.5 {
-            sf(k) <= (1.0 - p) * (1.0 + FUZZ)
+        let (value, hit) = if p > 0.5 {
+            let v = sf(k);
+            (v, v <= (1.0 - p) * (1.0 + FUZZ))
         } else if p < TINY {
-            log_cdf(k) >= p.ln() + (-FUZZ).ln_1p()
+            let v = log_cdf(k);
+            (v, v >= p.ln() + (-FUZZ).ln_1p())
         } else {
-            cdf(k) >= p * (1.0 - FUZZ)
+            let v = cdf(k);
+            (v, v >= p * (1.0 - FUZZ))
+        };
+        if value.is_nan() {
+            failed.set(true);
         }
+        hit
     };
     let limit = if max.is_finite() {
         max
@@ -214,6 +238,9 @@ pub(super) fn discrete(
                 break;
             }
             if candidate >= limit {
+                if failed.get() {
+                    return f64::NAN;
+                }
                 return if max.is_finite() { max } else { f64::INFINITY };
             }
             lo = candidate;
@@ -228,5 +255,5 @@ pub(super) fn discrete(
             lo = k;
         }
     }
-    hi
+    if failed.get() { f64::NAN } else { hi }
 }

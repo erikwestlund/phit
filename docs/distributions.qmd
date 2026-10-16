@@ -108,6 +108,11 @@ and nested array elements are not numeric inputs; malformed batch elements raise
 no distribution `missing` option. Nonfinite parameters raise 1003; invalid domains
 and quantile probabilities outside `[0,1]` raise 1001. Binomial size above `2^53`
 raises 1007. A NAN numerical result raises 1006; it is not returned as a value.
+Parameters so extreme that the incomplete beta or gamma cannot be evaluated also
+raise 1006 promptly: a beta-type sum $a + b$ beyond the double range, a beta-type
+parameter above $10^{300}$ evaluated within $10^{-300}$ of an end of the support, or
+a gamma-type shape or point above $10^{300}$ (for example `stats_f_cdf(2, 3, PHP_FLOAT_MAX)`
+or `stats_gamma_cdf(1e30, 1e30)`). Earlier builds could hang or panic on such input.
 
 Outside support, density/mass is zero and log density/mass is `-INF`. Boundary
 densities can be infinite, for example a beta shape below one at a support endpoint.

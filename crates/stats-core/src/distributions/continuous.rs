@@ -5,10 +5,11 @@ use super::special::{
     LN_SQRT_2PI, TINY, ln_beta_lower_fraction, ln_gamma_lower_series, ln_gamma_upper_fraction,
     ln_one_minus_exp_neg, ln_poisson_raw, log_tail, normal_log_lower_tail, softplus,
 };
+use super::{beta_inc, gamma_inc};
 use super::{finite, positive};
 use crate::StatsError;
 use cdflib::special::internal::algdiv;
-use cdflib::special::{beta_inc, beta_log, cumnor, dinvnr, dt1, gamma_inc, gamma_log};
+use cdflib::special::{beta_log, cumnor, dinvnr, dt1, gamma_log};
 
 const INV_SQRT_2PI: f64 = 0.398_942_280_401_432_7;
 

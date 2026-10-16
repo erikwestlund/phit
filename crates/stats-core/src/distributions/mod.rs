@@ -26,6 +26,35 @@ pub use rng::{MAX_RNG_DRAWS, sample_quantiles};
 
 use crate::{ErrorKind, StatsError};
 
+// cdflib's TOMS 708/654 ports never return for some extreme arguments (their
+// continued fractions spin once a NaN or overflow appears) and panic in the deep
+// asymptotic regime of the incomplete gamma. Fuzzing found the hanging regimes:
+// an overflowing beta a + b, a beta parameter above 1e300 with x or 1 - x below
+// 1e-300, and a gamma shape or point above 1e300. Those return NaN up front, and
+// any remaining panic becomes NaN; the distributions report NaN as a numerical
+// failure (code 1006).
+const CDFLIB_ARGUMENT_LIMIT: f64 = 1e300;
+
+fn without_panic(evaluate: impl FnOnce() -> (f64, f64)) -> (f64, f64) {
+    std::panic::catch_unwind(std::panic::AssertUnwindSafe(evaluate)).unwrap_or((f64::NAN, f64::NAN))
+}
+
+pub(crate) fn beta_inc(a: f64, b: f64, x: f64, y: f64) -> (f64, f64) {
+    if !(a + b).is_finite()
+        || (a.max(b) > CDFLIB_ARGUMENT_LIMIT && x.min(y) < 1.0 / CDFLIB_ARGUMENT_LIMIT)
+    {
+        return (f64::NAN, f64::NAN);
+    }
+    without_panic(|| cdflib::special::beta_inc(a, b, x, y))
+}
+
+pub(crate) fn gamma_inc(a: f64, x: f64) -> (f64, f64) {
+    if a.is_nan() || x.is_nan() || a > CDFLIB_ARGUMENT_LIMIT || x > CDFLIB_ARGUMENT_LIMIT {
+        return (f64::NAN, f64::NAN);
+    }
+    without_panic(|| cdflib::special::gamma_inc(a, x))
+}
+
 pub(crate) fn finite(name: &str, value: f64) -> Result<f64, StatsError> {
     if value.is_finite() {
         Ok(value)

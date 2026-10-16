@@ -88,15 +88,20 @@ pub fn fit_ols(x: Vec<Vec<f64>>, y: Vec<f64>) -> Result<OlsResult, StatsError> {
         ));
     }
     let scaled = DMatrix::from_fn(n, p, |i, j| design[(i, j)] / scales[j]);
-    let svd = scaled.svd(true, true);
-    let tolerance = f64::EPSILON * n.max(p) as f64 * svd.singular_values[0];
+    // Householder QR, then SVD of the small R: X = Q R and R = U S V' give the
+    // singular values and V of X without forming its n-by-p left factor.
+    let qr = scaled.qr();
+    let mut qty = outcomes.clone();
+    qr.q_tr_mul(&mut qty);
+    let svd = qr.r().svd(true, true);
+    let tolerance = f64::EPSILON * n.max(p) as f64 * svd.singular_values.max();
     if svd.singular_values.iter().any(|s| *s <= tolerance) {
         return Err(error(
             ErrorKind::RankDeficiency,
             "design is rank deficient at numerical precision",
         ));
     }
-    let beta_scaled = svd.solve(&outcomes, tolerance).map_err(|_| {
+    let beta_scaled = svd.solve(&qty.rows(0, p), tolerance).map_err(|_| {
         error(
             ErrorKind::FactorizationFailure,
             "least-squares factorization failed",

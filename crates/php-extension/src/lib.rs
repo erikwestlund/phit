@@ -255,7 +255,13 @@ fn prepare_data(
             dropped_rows.push(i as i64);
         } else {
             // Collect only complete rows; no missing sentinel reaches stats-core.
-            complete_x.push(row.into_iter().flatten().collect());
+            // Reserve the intercept column up front instead of shifting each row later.
+            let mut design_row = Vec::with_capacity(row.len() + usize::from(intercept));
+            if intercept {
+                design_row.push(1.0);
+            }
+            design_row.extend(row.into_iter().flatten());
+            complete_x.push(design_row);
             complete_y.extend(outcome);
             complete_weights.extend(weights[i]);
             complete_offset.extend(offset[i]);
@@ -277,7 +283,7 @@ fn prepare_data(
         groups: complete_groups,
         weights: complete_weights,
         offset: complete_offset,
-        x: fixed_design(complete_x, intercept),
+        x: complete_x,
         y: complete_y,
         n_input: n,
         retained_rows,

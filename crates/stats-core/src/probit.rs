@@ -235,7 +235,9 @@ fn fit_data_limit(
         let weighted = DMatrix::from_fn(n, p, |i, j| {
             scaled[(i, j)] * root_weights[i] * weights[i].sqrt()
         });
-        let svd = weighted.svd(true, true);
+        // QR first; the SVD of the small R has the same singular values and V.
+        let qr = weighted.qr();
+        let svd = qr.r().svd(true, true);
         let tolerance = f64::EPSILON * n.max(p) as f64 * svd.singular_values[0];
         if svd.singular_values.iter().any(|s| *s <= tolerance) {
             return Err(error(
@@ -263,7 +265,9 @@ fn fit_data_limit(
                 "probit calculation overflowed; separation or extreme scaling may be present",
             ));
         }
-        let step = svd.solve(&rhs, tolerance).map_err(|_| {
+        let mut rhs = rhs;
+        qr.q_tr_mul(&mut rhs);
+        let step = svd.solve(&rhs.rows(0, p), tolerance).map_err(|_| {
             error(
                 ErrorKind::FactorizationFailure,
                 "least-squares factorization failed",
@@ -330,7 +334,7 @@ fn fit_data_limit(
             "final probit information exceeds floating-point range",
         ));
     }
-    let svd = weighted.svd(false, true);
+    let svd = weighted.qr().r().svd(false, true);
     let tolerance = f64::EPSILON * n.max(p) as f64 * svd.singular_values[0];
     if svd.singular_values.iter().any(|s| *s <= tolerance) {
         return Err(error(

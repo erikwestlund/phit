@@ -122,6 +122,7 @@ for ($case = 0; $case < $cases; $case++) {
         $rows[] = implode(mt_rand(0, 12) === 0 ? ',' : $delimiter, $fields);
     }
     $text = implode($end, $rows).(mt_rand(0, 2) > 0 ? $end : '');
+    if (mt_rand(0, 9) === 0) $text = "\xEF\xBB\xBF".$text;
     $options = ['delimiter' => $delimiter];
     if (mt_rand(0, 3) === 0) $options['quote'] = ['', "'", '"'][mt_rand(0, 2)];
     if (mt_rand(0, 4) === 0) $options['escapeDouble'] = false;

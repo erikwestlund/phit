@@ -148,9 +148,19 @@ column($r, 0, 'int', [1, 2], label: 'CRLF');
 column($r, 1, 'string', ['x', 'y'], label: 'CRLF');
 $r = csv("a,b\r\n\"x\r\ny\",1\r\n");
 column($r, 0, 'string', ["x\r\ny"], label: 'CRLF inside quotes');
-// Like phibble's reader (PHP's fgetcsv), a lone CR does not end a line.
-$r = csv("a,b\r1,2\r");
-same($r['names'], ['a', "b\r1", '2'], 'CR-only file');
+// Text without LF reads CR as the line ending; with LF, a lone CR is data.
+$r = csv("a,b\r1,2\r3,4\r");
+same($r['names'], ['a', 'b'], 'CR-only names');
+column($r, 0, 'int', [1, 3], label: 'CR-only');
+column($r, 1, 'int', [2, 4], label: 'CR-only');
+$r = csv("a,b\r1,2\r", ['comment' => '#']);
+column($r, 0, 'int', [1], label: 'CR-only, character reader');
+$r = csv("a\nx\ry\n");
+column($r, 0, 'string', ["x\ry"], label: 'lone CR with LF line endings');
+// The byte order mark goes before tokenizing, so a quoted header loses its quotes.
+same(csv("\xEF\xBB\xBF\"id\",\"x\"\n1,2\n")['names'], ['id', 'x'], 'BOM before a quoted header');
+same(csv("\xEF\xBB\xBF\"id\",\"x\"\n1,2\n", ['comment' => '#'])['names'], ['id', 'x'], 'BOM, character reader');
+same(csv("skipped\n\xEF\xBB\xBFid,x\n1,2\n", ['skip' => 1])['names'], ['id', 'x'], 'BOM after skipped lines');
 $r = csv("a,b\n1,\"open\n");
 column($r, 1, 'string', ["open\n"], label: 'unterminated');
 same($r['problems'], ['row 2: unterminated quoted field at end of file'], 'unterminated problem');

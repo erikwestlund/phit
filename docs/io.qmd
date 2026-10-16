@@ -70,8 +70,11 @@ counts as one record. A file that ends inside a quoted field adds
 
 - Short rows are padded with NA. Long rows put the extra fields, joined by the
   delimiter, into the last column.
-- A UTF-8 byte order mark is removed from the start of the first field.
-- LF and CRLF line endings are accepted. Quoted fields can hold delimiters and
+- A UTF-8 byte order mark at the start of the file is removed before
+  tokenizing (when `skip` is 0), so a quoted first header loses its quotes.
+  One at the start of the first record after skipped lines is also removed.
+- LF and CRLF line endings are accepted. Text with no LF reads CR as the line
+  ending. Otherwise a lone CR is data. Quoted fields can hold delimiters and
   line breaks, which are kept as written.
 - An unterminated quote at the end of the file closes the field there.
 - Bytes are passed through unchanged. There is no encoding validation.
@@ -142,10 +145,6 @@ must differ and cannot be a digit, sign, `e`, `E`, or newline.
 These follow phibble's reader:
 
 - Whole numbers guess as int.
-- A lone CR does not end a line, because `fgetcsv()` splits lines on LF only.
-  A file with CR-only line endings reads as one record.
-- The byte order mark is removed after tokenizing. A quoted first header
-  (`\xEF\xBB\xBF"id"`) therefore keeps its quotes.
 - With a comment prefix, a value followed by a comment is trimmed (`2 # x`
   reads as `2`).
 - Date and datetime guessing checks the shape only.

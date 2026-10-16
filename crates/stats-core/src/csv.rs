@@ -299,12 +299,25 @@ impl<'o> Tokenizer<'o> {
             line += 1;
         }
         let mut text = if exhausted { Vec::new() } else { data };
-        if fast {
-            // Keep the buffer; the skipped prefix is never read.
-        } else {
+        pos = pos.min(text.len());
+        // As phibble does before tokenizing: drop a byte order mark at the
+        // start of the file and read CR as the line ending when there is no LF.
+        if line == 0 && text[pos..].starts_with(b"\xEF\xBB\xBF") {
+            pos += 3;
+        }
+        let rest = &text[pos..];
+        let cr_only =
+            memchr::memchr(b'\n', rest).is_none() && memchr::memchr(b'\r', rest).is_some();
+        if cr_only {
+            text = rest
+                .iter()
+                .map(|&b| if b == b'\r' { b'\n' } else { b })
+                .collect();
+            pos = 0;
+        }
+        if !fast {
             // The character-level reader works on text with CRLF folded to LF.
-            let rest = &text[pos.min(text.len())..];
-            text = replace_crlf(rest);
+            text = replace_crlf(&text[pos..]);
             pos = 0;
         }
         Self {

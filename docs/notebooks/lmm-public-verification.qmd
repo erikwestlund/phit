@@ -32,7 +32,7 @@ sys.path.insert(0,str(ROOT/'docs/verifications'))
 from compare_lmm import public_cases,compare_case
 cases=public_cases()
 results=[compare_case(case,include_nlme=True) for case in cases]
-ORDER=[('R','R: lme4'),('nlme','R: nlme'),('Python','statsmodels'),('php-stats','PHP')]
+ORDER=[('R','R: lme4'),('nlme','R: nlme'),('Python','statsmodels'),('phit','PHP')]
 print('Versions:',results[0]['versions'])
 display(pd.DataFrame([dict(dataset=c['name'],observations=len(c['y']),groups=len(set(c['groups'])),
                            fixed_coefficients=len(c['x'][0]),formula=c['source']['formula'],
@@ -134,8 +134,8 @@ It is a numerical agreement plot, not a model residual diagnostic.
 render_figure('public-agreement')
 
 display(pd.DataFrame([dict(dataset=r['name'],
-                           largest_native_residual_difference_vs_lme4=r['max_absolute_errors_vs_R']['residuals']['php-stats'],
-                           largest_native_log_likelihood_difference_vs_lme4=r['max_absolute_errors_vs_R']['log_likelihood']['php-stats'],
+                           largest_native_residual_difference_vs_lme4=r['max_absolute_errors_vs_R']['residuals']['phit'],
+                           largest_native_log_likelihood_difference_vs_lme4=r['max_absolute_errors_vs_R']['log_likelihood']['phit'],
                            largest_native_residual_difference_vs_statsmodels=r['native_vs_python_max_errors']['residuals']) for r in results]))
 ```
 
@@ -176,7 +176,7 @@ pinned Python environment, but not mlmRev: it reads the saved Hsb82 CSV.
 
 ```sh
 cargo test --workspace --locked
-PHP=/opt/homebrew/bin/php STATS_EXTENSION="$PWD/target/release/libphp_stats.dylib" \
+PHP=/opt/homebrew/bin/php STATS_EXTENSION="$PWD/target/release/libphit.dylib" \
   .context/notebooks-venv/bin/python docs/verifications/compare_lmm.py --public
 QUARTO_PYTHON="$PWD/.context/notebooks-venv/bin/python" PHP=/opt/homebrew/bin/php \
   quarto render docs/notebooks/lmm-public-verification.qmd

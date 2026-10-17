@@ -184,7 +184,7 @@
       "df_residual": 6,
       "log_likelihood": -51.94647572424989
     },
-    "php-stats": {
+    "phit": {
       "coefficients": [
         372.47854453348816,
         21.47972427606449
@@ -267,63 +267,63 @@
     "max_absolute_errors_vs_R": {
       "coefficients": {
         "statsmodels": 1.7053025658242404e-13,
-        "php-stats": 1.9895196601282805e-12
+        "phit": 1.9895196601282805e-12
       },
       "covariance": {
         "statsmodels": 1.4551915228366852e-11,
-        "php-stats": 6.548361852765083e-11
+        "phit": 6.548361852765083e-11
       },
       "std_errors": {
         "statsmodels": 2.842170943040401e-14,
-        "php-stats": 1.4210854715202004e-13
+        "phit": 1.4210854715202004e-13
       },
       "t_statistics": {
         "statsmodels": 1.7763568394002505e-15,
-        "php-stats": 9.992007221626409e-15
+        "phit": 9.992007221626409e-15
       },
       "p_values": {
         "statsmodels": 2.7755575615628914e-16,
-        "php-stats": 2.4702462297909733e-15
+        "phit": 2.4702462297909733e-15
       },
       "conf_int": {
         "statsmodels": 2.4442670110147446e-12,
-        "php-stats": 2.6716406864579767e-12
+        "phit": 2.6716406864579767e-12
       },
       "fitted": {
         "statsmodels": 6.821210263296962e-13,
-        "php-stats": 9.094947017729282e-13
+        "phit": 9.094947017729282e-13
       },
       "residuals": {
         "statsmodels": 5.684341886080801e-13,
-        "php-stats": 9.379164112033322e-13
+        "phit": 9.379164112033322e-13
       },
       "rss": {
         "statsmodels": 8.731149137020111e-11,
-        "php-stats": 3.4924596548080444e-10
+        "phit": 3.4924596548080444e-10
       },
       "residual_variance": {
         "statsmodels": 1.4551915228366852e-11,
-        "php-stats": 5.820766091346741e-11
+        "phit": 5.820766091346741e-11
       },
       "sigma": {
         "statsmodels": 2.842170943040401e-14,
-        "php-stats": 1.7053025658242404e-13
+        "phit": 1.7053025658242404e-13
       },
       "r_squared": {
         "statsmodels": 0.0,
-        "php-stats": 1.1102230246251565e-16
+        "phit": 1.1102230246251565e-16
       },
       "adj_r_squared": {
         "statsmodels": 1.1102230246251565e-16,
-        "php-stats": 1.1102230246251565e-16
+        "phit": 1.1102230246251565e-16
       },
       "df_residual": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "log_likelihood": {
         "statsmodels": 7.105427357601002e-15,
-        "php-stats": 7.105427357601002e-15
+        "phit": 7.105427357601002e-15
       }
     }
   },
@@ -550,7 +550,7 @@
       "df_residual": 5,
       "log_likelihood": -51.465885898720714
     },
-    "php-stats": {
+    "phit": {
       "coefficients": [
         516.1808603197125,
         11.932972993616644,
@@ -648,63 +648,63 @@
     "max_absolute_errors_vs_R": {
       "coefficients": {
         "statsmodels": 4.547473508864641e-13,
-        "php-stats": 1.9895196601282805e-13
+        "phit": 1.9895196601282805e-13
       },
       "covariance": {
         "statsmodels": 1.4551915228366852e-11,
-        "php-stats": 1.8917489796876907e-10
+        "phit": 1.8917489796876907e-10
       },
       "std_errors": {
         "statsmodels": 5.684341886080802e-14,
-        "php-stats": 2.8421709430404007e-13
+        "phit": 2.8421709430404007e-13
       },
       "t_statistics": {
         "statsmodels": 1.9984014443252818e-15,
-        "php-stats": 1.3322676295501878e-15
+        "phit": 1.3322676295501878e-15
       },
       "p_values": {
         "statsmodels": 4.996003610813204e-16,
-        "php-stats": 1.3877787807814457e-16
+        "phit": 1.3877787807814457e-16
       },
       "conf_int": {
         "statsmodels": 6.821210263296962e-13,
-        "php-stats": 2.2737367544323206e-13
+        "phit": 2.2737367544323206e-13
       },
       "fitted": {
         "statsmodels": 2.2737367544323206e-12,
-        "php-stats": 1.8189894035458565e-12
+        "phit": 1.8189894035458565e-12
       },
       "residuals": {
         "statsmodels": 2.3705482021796342e-12,
-        "php-stats": 1.6768808563938364e-12
+        "phit": 1.6768808563938364e-12
       },
       "rss": {
         "statsmodels": 2.9103830456733704e-11,
-        "php-stats": 1.1641532182693481e-10
+        "phit": 1.1641532182693481e-10
       },
       "residual_variance": {
         "statsmodels": 7.275957614183426e-12,
-        "php-stats": 2.1827872842550278e-11
+        "phit": 2.1827872842550278e-11
       },
       "sigma": {
         "statsmodels": 2.842170943040401e-14,
-        "php-stats": 5.684341886080802e-14
+        "phit": 5.684341886080802e-14
       },
       "r_squared": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "adj_r_squared": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "df_residual": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "log_likelihood": {
         "statsmodels": 7.105427357601002e-15,
-        "php-stats": 7.105427357601002e-15
+        "phit": 7.105427357601002e-15
       }
     }
   },
@@ -866,7 +866,7 @@
       "df_residual": 3,
       "log_likelihood": 2.516218226362458
     },
-    "php-stats": {
+    "phit": {
       "coefficients": [
         0.05000000000000699,
         2.009999999999998
@@ -940,63 +940,63 @@
     "max_absolute_errors_vs_R": {
       "coefficients": {
         "statsmodels": 4.6629367034256575e-15,
-        "php-stats": 5.169475958410885e-15
+        "phit": 5.169475958410885e-15
       },
       "covariance": {
         "statsmodels": 2.914335439641036e-16,
-        "php-stats": 1.8041124150158794e-16
+        "phit": 1.8041124150158794e-16
       },
       "std_errors": {
         "statsmodels": 7.216449660063518e-16,
-        "php-stats": 4.440892098500626e-16
+        "phit": 4.440892098500626e-16
       },
       "t_statistics": {
         "statsmodels": 1.0658141036401503e-13,
-        "php-stats": 8.526512829121202e-14
+        "phit": 8.526512829121202e-14
       },
       "p_values": {
         "statsmodels": 1.7319479184152442e-14,
-        "php-stats": 1.7985612998927536e-14
+        "phit": 1.7985612998927536e-14
       },
       "conf_int": {
         "statsmodels": 6.994405055138486e-15,
-        "php-stats": 6.217248937900877e-15
+        "phit": 6.217248937900877e-15
       },
       "fitted": {
         "statsmodels": 4.440892098500626e-15,
-        "php-stats": 5.773159728050814e-15
+        "phit": 5.773159728050814e-15
       },
       "residuals": {
         "statsmodels": 4.107825191113079e-15,
-        "php-stats": 5.863365348801608e-15
+        "phit": 5.863365348801608e-15
       },
       "rss": {
         "statsmodels": 7.494005416219807e-16,
-        "php-stats": 2.0816681711721685e-16
+        "phit": 2.0816681711721685e-16
       },
       "residual_variance": {
         "statsmodels": 2.498001805406602e-16,
-        "php-stats": 6.938893903907228e-17
+        "phit": 6.938893903907228e-17
       },
       "sigma": {
         "statsmodels": 6.661338147750939e-16,
-        "php-stats": 1.942890293094024e-16
+        "phit": 1.942890293094024e-16
       },
       "r_squared": {
         "statsmodels": 1.1102230246251565e-16,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "adj_r_squared": {
         "statsmodels": 2.220446049250313e-16,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "df_residual": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "log_likelihood": {
         "statsmodels": 1.5987211554602254e-14,
-        "php-stats": 5.329070518200751e-15
+        "phit": 5.329070518200751e-15
       }
     }
   },
@@ -1243,7 +1243,7 @@
       "df_residual": 7,
       "log_likelihood": -6.275537005287037
     },
-    "php-stats": {
+    "phit": {
       "coefficients": [
         -1.5081081081081034,
         1.6648648648648645,
@@ -1347,63 +1347,63 @@
     "max_absolute_errors_vs_R": {
       "coefficients": {
         "statsmodels": 1.3322676295501878e-15,
-        "php-stats": 3.552713678800501e-15
+        "phit": 3.552713678800501e-15
       },
       "covariance": {
         "statsmodels": 3.608224830031759e-16,
-        "php-stats": 1.942890293094024e-16
+        "phit": 1.942890293094024e-16
       },
       "std_errors": {
         "statsmodels": 4.440892098500626e-16,
-        "php-stats": 1.6653345369377348e-16
+        "phit": 1.6653345369377348e-16
       },
       "t_statistics": {
         "statsmodels": 1.7763568394002505e-14,
-        "php-stats": 7.105427357601002e-15
+        "phit": 7.105427357601002e-15
       },
       "p_values": {
         "statsmodels": 1.3877787807814457e-17,
-        "php-stats": 1.249000902703301e-16
+        "phit": 1.249000902703301e-16
       },
       "conf_int": {
         "statsmodels": 2.220446049250313e-15,
-        "php-stats": 3.9968028886505635e-15
+        "phit": 3.9968028886505635e-15
       },
       "fitted": {
         "statsmodels": 3.552713678800501e-15,
-        "php-stats": 3.9968028886505635e-15
+        "phit": 3.9968028886505635e-15
       },
       "residuals": {
         "statsmodels": 2.1094237467877974e-15,
-        "php-stats": 3.858025010572419e-15
+        "phit": 3.858025010572419e-15
       },
       "rss": {
         "statsmodels": 3.1086244689504383e-15,
-        "php-stats": 1.7763568394002505e-15
+        "phit": 1.7763568394002505e-15
       },
       "residual_variance": {
         "statsmodels": 4.440892098500626e-16,
-        "php-stats": 2.220446049250313e-16
+        "phit": 2.220446049250313e-16
       },
       "sigma": {
         "statsmodels": 3.3306690738754696e-16,
-        "php-stats": 2.220446049250313e-16
+        "phit": 2.220446049250313e-16
       },
       "r_squared": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "adj_r_squared": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "df_residual": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "log_likelihood": {
         "statsmodels": 6.217248937900877e-15,
-        "php-stats": 3.552713678800501e-15
+        "phit": 3.552713678800501e-15
       }
     }
   },
@@ -1610,7 +1610,7 @@
       "df_residual": 8,
       "log_likelihood": -10.5729639571458
     },
-    "php-stats": {
+    "phit": {
       "coefficients": [
         1.9479166666666672,
         0.48177083333333126
@@ -1699,63 +1699,63 @@
     "max_absolute_errors_vs_R": {
       "coefficients": {
         "statsmodels": 2.0539125955565396e-15,
-        "php-stats": 1.7208456881689926e-15
+        "phit": 1.7208456881689926e-15
       },
       "covariance": {
         "statsmodels": 9.71445146547012e-17,
-        "php-stats": 5.204170427930421e-18
+        "phit": 5.204170427930421e-18
       },
       "std_errors": {
         "statsmodels": 2.220446049250313e-16,
-        "php-stats": 1.3877787807814457e-17
+        "phit": 1.3877787807814457e-17
       },
       "t_statistics": {
         "statsmodels": 4.263256414560601e-14,
-        "php-stats": 7.105427357601002e-15
+        "phit": 7.105427357601002e-15
       },
       "p_values": {
         "statsmodels": 1.2212453270876722e-15,
-        "php-stats": 2.2343238370581275e-15
+        "phit": 2.2343238370581275e-15
       },
       "conf_int": {
         "statsmodels": 2.4980018054066022e-15,
-        "php-stats": 3.164135620181696e-15
+        "phit": 3.164135620181696e-15
       },
       "fitted": {
         "statsmodels": 1.0658141036401503e-14,
-        "php-stats": 5.329070518200751e-15
+        "phit": 5.329070518200751e-15
       },
       "residuals": {
         "statsmodels": 1.1102230246251565e-14,
-        "php-stats": 5.2735593669694936e-15
+        "phit": 5.2735593669694936e-15
       },
       "rss": {
         "statsmodels": 7.993605777301127e-15,
-        "php-stats": 1.7763568394002505e-15
+        "phit": 1.7763568394002505e-15
       },
       "residual_variance": {
         "statsmodels": 9.992007221626409e-16,
-        "php-stats": 2.220446049250313e-16
+        "phit": 2.220446049250313e-16
       },
       "sigma": {
         "statsmodels": 6.661338147750939e-16,
-        "php-stats": 1.1102230246251565e-16
+        "phit": 1.1102230246251565e-16
       },
       "r_squared": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "adj_r_squared": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "df_residual": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "log_likelihood": {
         "statsmodels": 8.881784197001252e-15,
-        "php-stats": 3.552713678800501e-15
+        "phit": 3.552713678800501e-15
       }
     }
   },
@@ -2002,7 +2002,7 @@
       "df_residual": 7,
       "log_likelihood": -9.750720069060371
     },
-    "php-stats": {
+    "phit": {
       "coefficients": [
         0.11996285979566444,
         -24.675951717734424,
@@ -2106,63 +2106,63 @@
     "max_absolute_errors_vs_R": {
       "coefficients": {
         "statsmodels": 8.941458684574854e-14,
-        "php-stats": 1.0302869668521453e-13
+        "phit": 1.0302869668521453e-13
       },
       "covariance": {
         "statsmodels": 2.8705926524708048e-12,
-        "php-stats": 6.536993168992922e-13
+        "phit": 6.536993168992922e-13
       },
       "std_errors": {
         "statsmodels": 1.1723955140041653e-13,
-        "php-stats": 2.6645352591003757e-14
+        "phit": 2.6645352591003757e-14
       },
       "t_statistics": {
         "statsmodels": 1.7083556791419596e-13,
-        "php-stats": 1.1984857550828565e-13
+        "phit": 1.1984857550828565e-13
       },
       "p_values": {
         "statsmodels": 1.2789769243681803e-13,
-        "php-stats": 8.926193117986259e-14
+        "phit": 8.926193117986259e-14
       },
       "conf_int": {
         "statsmodels": 2.913225216616411e-13,
-        "php-stats": 1.5631940186722204e-13
+        "phit": 1.5631940186722204e-13
       },
       "fitted": {
         "statsmodels": 2.948752353404416e-13,
-        "php-stats": 5.5067062021407764e-14
+        "phit": 5.5067062021407764e-14
       },
       "residuals": {
         "statsmodels": 2.9454216843305403e-13,
-        "php-stats": 5.5011550870176507e-14
+        "phit": 5.5011550870176507e-14
       },
       "rss": {
         "statsmodels": 5.861977570020827e-14,
-        "php-stats": 2.3092638912203256e-14
+        "phit": 2.3092638912203256e-14
       },
       "residual_variance": {
         "statsmodels": 8.43769498715119e-15,
-        "php-stats": 3.3306690738754696e-15
+        "phit": 3.3306690738754696e-15
       },
       "sigma": {
         "statsmodels": 5.551115123125783e-15,
-        "php-stats": 2.220446049250313e-15
+        "phit": 2.220446049250313e-15
       },
       "r_squared": {
         "statsmodels": 1.1102230246251565e-16,
-        "php-stats": 1.1102230246251565e-16
+        "phit": 1.1102230246251565e-16
       },
       "adj_r_squared": {
         "statsmodels": 1.1102230246251565e-16,
-        "php-stats": 1.1102230246251565e-16
+        "phit": 1.1102230246251565e-16
       },
       "df_residual": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "log_likelihood": {
         "statsmodels": 7.283063041541027e-14,
-        "php-stats": 3.019806626980426e-14
+        "phit": 3.019806626980426e-14
       }
     }
   },
@@ -2325,7 +2325,7 @@
       "df_residual": 2,
       "log_likelihood": 6.517895992712887
     },
-    "php-stats": {
+    "phit": {
       "coefficients": [
         0.11999999999999833,
         2.0100000000000016
@@ -2404,63 +2404,63 @@
     "max_absolute_errors_vs_R": {
       "coefficients": {
         "statsmodels": 3.552713678800501e-15,
-        "php-stats": 1.7763568394002505e-15
+        "phit": 1.7763568394002505e-15
       },
       "covariance": {
         "statsmodels": 1.3877787807814457e-17,
-        "php-stats": 1.0842021724855044e-16
+        "phit": 1.0842021724855044e-16
       },
       "std_errors": {
         "statsmodels": 9.71445146547012e-17,
-        "php-stats": 7.494005416219807e-16
+        "phit": 7.494005416219807e-16
       },
       "t_statistics": {
         "statsmodels": 1.4210854715202004e-13,
-        "php-stats": 1.0373923942097463e-12
+        "phit": 1.0373923942097463e-12
       },
       "p_values": {
         "statsmodels": 8.881784197001252e-15,
-        "php-stats": 1.9984014443252818e-15
+        "phit": 1.9984014443252818e-15
       },
       "conf_int": {
         "statsmodels": 3.941291737419306e-15,
-        "php-stats": 4.440892098500626e-15
+        "phit": 4.440892098500626e-15
       },
       "fitted": {
         "statsmodels": 4.440892098500626e-15,
-        "php-stats": 5.329070518200751e-15
+        "phit": 5.329070518200751e-15
       },
       "residuals": {
         "statsmodels": 4.253541963095131e-15,
-        "php-stats": 5.5164206536062466e-15
+        "phit": 5.5164206536062466e-15
       },
       "rss": {
         "statsmodels": 2.949029909160572e-17,
-        "php-stats": 1.8388068845354155e-16
+        "phit": 1.8388068845354155e-16
       },
       "residual_variance": {
         "statsmodels": 1.474514954580286e-17,
-        "php-stats": 9.194034422677078e-17
+        "phit": 9.194034422677078e-17
       },
       "sigma": {
         "statsmodels": 1.1102230246251565e-16,
-        "php-stats": 6.800116025829084e-16
+        "phit": 6.800116025829084e-16
       },
       "r_squared": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "adj_r_squared": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "df_residual": {
         "statsmodels": 0.0,
-        "php-stats": 0.0
+        "phit": 0.0
       },
       "log_likelihood": {
         "statsmodels": 7.105427357601002e-15,
-        "php-stats": 3.907985046680551e-14
+        "phit": 3.907985046680551e-14
       }
     }
   }

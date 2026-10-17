@@ -10397,7 +10397,7 @@
       "path": "tests/fixtures/distributions-scipy.json",
       "sha256": "8e00e2586a55e608f14c083a28097b35ba35b299da5ebcbf0649da70825fa662",
       "generator": "docs/verifications/compare_distributions.py",
-      "generator_sha256": "94bfa04e6c6a186a38c44094c9231f38a796a10a576c7d375efc71570270756b",
+      "generator_sha256": "74a8fd7b12221a23f12137f5d69a915601849a0074f15f512f1b543f4def174c",
       "software_recorded_in_fixture": {
         "reference": "SciPy 1.18.1, NumPy 2.5.4",
         "recorded_at": "2026-10-12T13:06:21.866254+00:00",
@@ -15949,7 +15949,7 @@
       "path": "tests/fixtures/distributions-mpmath.json",
       "sha256": "9ed681a91b48a453b9c5e9cad77d38ea18d11c2cf4810505ccfc30b27838415c",
       "generator": "docs/verifications/compare_distributions.py",
-      "generator_sha256": "94bfa04e6c6a186a38c44094c9231f38a796a10a576c7d375efc71570270756b",
+      "generator_sha256": "74a8fd7b12221a23f12137f5d69a915601849a0074f15f512f1b543f4def174c",
       "software_recorded_in_fixture": {
         "reference": "mpmath 1.4.1 at 60 digits",
         "recorded_at": "2026-10-12T13:06:21.866254+00:00",
@@ -23649,7 +23649,7 @@
       "path": "tests/fixtures/predict-r.json",
       "sha256": "1da19ae09a1e669ccf91eb752de3a6d943f82b589313d0e6031a32b20092a6e1",
       "generator": "tests/generate-predict-fixtures.R",
-      "generator_sha256": "d5a006b69e9a9fc8f8cc7381f6df35d8f97109bade87cf20a4c4af7de64ba485",
+      "generator_sha256": "56bbb312c2f0bc5b3d494282e156f4c737b3d18dc0f84e2e6bdf925a3bed428f",
       "software_recorded_in_fixture": {
         "generator": "tests/generate-predict-fixtures.R",
         "r_version": "R version 4.6.1 (2026-06-24)",

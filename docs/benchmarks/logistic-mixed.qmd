@@ -78,7 +78,7 @@ The full measurements and errors are in the [saved report](logistic-mixed-result
 ## Reproduce
 
 ```sh
-cargo build -p php-stats --release --locked
+cargo build -p phit --release --locked
 PHP=/opt/homebrew/bin/php .context/notebooks-venv/bin/python \
   tests/benchmarks/run-logistic-mixed.py --sizes 1000,10000,100000 --repeats 3
 ```

@@ -22,7 +22,7 @@ WORKDIR /src
 COPY . .
 # Exercise the actual installer, not just a hand-written make approximation.
 RUN php /usr/local/bin/pie repository:add path /src \
-    && php /usr/local/bin/pie install 'erikwestlund/php-stats:*@dev' --no-interaction \
+    && php /usr/local/bin/pie install 'erikwestlund/phit:*@dev' --no-interaction \
        --with-php-config=/usr/local/bin/php-config --with-phpize-path=/usr/local/bin/phpize \
     && php tests/deployment.php
 
@@ -39,6 +39,6 @@ COPY --from=artifacts /out/ /
 FROM ${PHP_IMAGE} AS runtime
 COPY --from=checks /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 COPY --from=checks /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
-RUN php -r 'if (!extension_loaded("php_stats") || stats_hello() === "") exit(1);'
+RUN php -r 'if (!extension_loaded("phit") || stats_hello() === "") exit(1);'
 # Supply application files in a child image or mount /var/www/html. The upstream
 # PHP image retains its entrypoint and php-fpm foreground command.

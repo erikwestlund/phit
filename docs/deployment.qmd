@@ -9,13 +9,13 @@ installer live in the build environment.
 
 ## Names and supported packaging targets
 
-- Package: `erikwestlund/php-stats` (PIE/Packagist metadata).
-- Registered extension: **`php_stats`**; check `extension_loaded('php_stats')`.
-- Installed module: `php_stats.so`, including the macOS phpize install path.
-- Direct Cargo output remains `libphp_stats.so` on Linux and `libphp_stats.dylib`
+- Package: `erikwestlund/phit` (PIE/Packagist metadata).
+- Registered extension: **`phit`**; check `extension_loaded('phit')`.
+- Installed module: `phit.so`, including the macOS phpize install path.
+- Direct Cargo output remains `libphit.so` on Linux and `libphit.dylib`
   on macOS. They contain the same native extension, using different filenames.
 
-The registered name changed from `php-stats` because PIE forbids hyphens in
+The registered name changed from `phit` because PIE forbids hyphens in
 extension identifiers. Update `extension_loaded()`, `get_extension_funcs()`,
 `phpversion()` and Composer extension requirements accordingly. Native `stats_*`
 function names and their statistical contracts are unaffected.
@@ -32,9 +32,9 @@ a configured CI job is not a passed job.
 From the repository root:
 
 ```sh
-docker build --target checks -f docker/Dockerfile -t php-stats:checks .
-docker build -f docker/Dockerfile -t php-stats:local .
-./scripts/check-container php-stats:local php-stats:checks
+docker build --target checks -f docker/Dockerfile -t phit:checks .
+docker build -f docker/Dockerfile -t phit:local .
+./scripts/check-container phit:local phit:checks
 ```
 
 The build installs the extension through **PIE 1.5.0** and runs the Rust/PHP gate.
@@ -48,7 +48,7 @@ The image retains the official PHP entrypoint and foreground PHP-FPM command.
 Use it as an application base:
 
 ```dockerfile
-FROM php-stats:local
+FROM phit:local
 COPY app/ /var/www/html/
 ```
 
@@ -79,7 +79,7 @@ To build without enabling or changing your PHP configuration:
 
 ```sh
 pie repository:add --with-php-config=/path/to/php-config path "$PWD"
-pie build 'erikwestlund/php-stats:*@dev' \
+pie build 'erikwestlund/phit:*@dev' \
   --with-php-config=/path/to/php-config \
   --with-phpize-path=/path/to/phpize
 ```
@@ -93,7 +93,7 @@ requirements. Pin a release version once published.
 After Packagist registration and a tagged release, the public command will be:
 
 ```sh
-pie install erikwestlund/php-stats:0.1.0
+pie install erikwestlund/phit:0.1.0
 ```
 
 That public package command is a release target, not an available registry entry.
@@ -121,7 +121,7 @@ already built module and does not rerun Cargo under sudo. `INSTALL_ROOT` stages
 under the configured extension directory. On macOS, use the matching LLVM/header
 setup in the [development guide](development.qmd#environment).
 
-Add `extension=php_stats.so` to the relevant PHP INI configuration after a manual
+Add `extension=phit.so` to the relevant PHP INI configuration after a manual
 install. Inspect `php --ini` for CLI; check the FPM configuration separately.
 Verify the native functions through both. Rebuild for another PHP ABI,
 architecture, thread-safety/debug configuration, or platform.
@@ -136,7 +136,7 @@ docker build --target binaries --output type=local,dest=.context/binaries \
 ```
 
 The archive name includes the library version, PHP major/minor, architecture,
-NTS mode and Bookworm target. It contains `php_stats.so`, installation instructions,
+NTS mode and Bookworm target. It contains `phit.so`, installation instructions,
 a manifest, the project MIT license and dependency notices. A separate SHA-256
 file checks archive integrity. Dependency notices include the Cargo dependency
 closure and build dependencies; exact upstream MIT notices missing from published
@@ -165,7 +165,7 @@ build or test command. Maintainer publication remains a separate deliberate step
 4. Align both Cargo versions; create the corresponding `vX.Y.Z` tag when authorized.
 5. Publish the approved release artifacts and register/update Packagist metadata.
 
-Composer can declare `"ext-php_stats": "*"` as an application requirement. That
+Composer can declare `"ext-phit": "*"` as an application requirement. That
 checks availability; PIE or the deployment image installs the native extension.
 No userland Composer framework is needed.
 

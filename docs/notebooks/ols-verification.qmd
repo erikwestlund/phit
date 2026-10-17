@@ -56,7 +56,7 @@ The executable harness uses `y ~ . - 1` in R with the explicit design columns to
 simple_result = compare_case(simple)
 print(simple_result['versions'])
 rows = []
-for name in ['R', 'statsmodels', 'php-stats']:
+for name in ['R', 'statsmodels', 'phit']:
     result = simple_result[name]
     for i, label in enumerate(['intercept', 'area_m2']):
         rows.append({'implementation': name, 'term': label, 'coefficient': result['coefficients'][i],
@@ -65,7 +65,7 @@ for name in ['R', 'statsmodels', 'php-stats']:
 display(pd.DataFrame(rows))
 display(pd.DataFrame([{ 'implementation': name, **{key: simple_result[name][key] for key in
                      ['rss', 'sigma', 'df_residual', 'r_squared', 'adj_r_squared', 'log_likelihood']}}
-                     for name in ['R', 'statsmodels', 'php-stats']]))
+                     for name in ['R', 'statsmodels', 'phit']]))
 ```
 
 ## Automated agreement, including row deletion
@@ -79,13 +79,13 @@ results = [simple_result] + [compare_case(case) for case in cases() if case['nam
 summary = []
 for result in results:
     largest_error = max(error for errors in result['max_absolute_errors_vs_R'].values() for error in errors.values())
-    summary.append({'case': result['name'], 'n input': result['php-stats']['n_input'],
-                    'n retained': result['php-stats']['n_observations'],
-                    'n dropped': result['php-stats']['n_dropped'], 'largest absolute difference vs R': largest_error})
+    summary.append({'case': result['name'], 'n input': result['phit']['n_input'],
+                    'n retained': result['phit']['n_observations'],
+                    'n dropped': result['phit']['n_dropped'], 'largest absolute difference vs R': largest_error})
 display(pd.DataFrame(summary))
 missing = next(result for result in results if result['name'] == 'listwise_missing')
-print('Dropped original positions:', missing['php-stats']['dropped_rows'])
-print('Retained original positions:', missing['php-stats']['retained_rows'])
+print('Dropped original positions:', missing['phit']['dropped_rows'])
+print('Retained original positions:', missing['phit']['retained_rows'])
 print('PHP warning:', missing['warnings'][0]['message'])
 print('All three implementations agree for every case and checked field.')
 ```

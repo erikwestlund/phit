@@ -9,9 +9,9 @@ result keys, missing-data policy, ordering, validation or statistical convention
 and accompanied by relevant tests. PHP parameter names x, y and missing matter because
 callers can use named arguments.
 
-The registered PHP module is `php_stats` (previously `php-stats`). PIE requires
+The registered PHP module is `phit` (previously `phit`). PIE requires
 underscores in extension identifiers. Update extension identity checks and
-Composer requirements to `ext-php_stats`; the `stats_*` functions keep their names.
+Composer requirements to `ext-phit`; the `stats_*` functions keep their names.
 See [deployment](deployment.qmd) for supported packaging targets and installation.
 
 ## PHP entry points
@@ -66,7 +66,7 @@ and `_array` form: 182 functions in total. Continuous families use `pdf`, `logpd
 pmf/logpmf. Names follow `stats_{family}_{operation}` and
 `stats_{family}_{operation}_array`. The [distribution contract](distributions.qmd)
 lists every family, parameter name/default, domain and support. The generated
-`stubs/php-stats.php` is the exact signature reference.
+`stubs/phit.php` is the exact signature reference.
 
 Numeric arguments/elements accept PHP integers or floats; binomial `size` is an
 integer in `[0,2^53]`. Batch results are packed lists preserving iteration order,
@@ -767,7 +767,7 @@ binomial log likelihood before comparing LL/AIC/BIC. See the
 
 Existing signatures, argument names/defaults and result keys are compatibility-sensitive.
 The native fixture `tests/fixtures/php-api.json` and Reflection-based stub generator
-check them; `stubs/php-stats.php` includes each exact procedural signature and
+check them; `stubs/phit.php` includes each exact procedural signature and
 per-estimator result-array PHPDoc. Do not include the stubs in an application.
 
 Every successful estimator now adds `diagnostics`:

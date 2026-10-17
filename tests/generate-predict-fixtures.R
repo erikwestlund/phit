@@ -114,7 +114,7 @@ add("lm_weighted_confidence", "cars", "lm", "mpg ~ wt + hp", list(se_fit = TRUE,
   prediction(predict(fit, cars_new, se.fit = TRUE, interval = "confidence")), list(weights = "disp"))
 
 # R's vcov(glm) reuses the weights of the last IRLS iteration, computed one step
-# before the final coefficients; php-stats evaluates the information at the final
+# before the final coefficients; phit evaluates the information at the final
 # coefficients. se_fit_final is that standard error, recomputed here in R; R's own
 # predict() value stays as se_fit for a looser check.
 final_se <- function(fit, nd, type) {
@@ -135,7 +135,7 @@ final_se <- function(fit, nd, type) {
 glm_case <- function(name, dataset, formula, family, link, fit) {
   nd <- newdata[[dataset]]
   # glm()'s default deviance tolerance (1e-8) can leave probit coefficients ~1e-5
-  # from the optimum; references use a converged fit, as php-stats iterates further.
+  # from the optimum; references use a converged fit, as phit iterates further.
   fit <- update(fit, control = glm.control(epsilon = 1e-14, maxit = 200))
   for (type in c("link", "response")) {
     expected <- prediction(predict(fit, nd, type = type, se.fit = TRUE))

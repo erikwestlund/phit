@@ -32,15 +32,15 @@ jobs:
       - name: Create source archive and checksums
         run: |
           mkdir -p dist
-          git archive --format=tar.gz --prefix="php-stats-$RELEASE_VERSION/" HEAD > "dist/php-stats-$RELEASE_VERSION.tar.gz"
-          sha256sum "dist/php-stats-$RELEASE_VERSION.tar.gz" > dist/SHA256SUMS
+          git archive --format=tar.gz --prefix="phit-$RELEASE_VERSION/" HEAD > "dist/phit-$RELEASE_VERSION.tar.gz"
+          sha256sum "dist/phit-$RELEASE_VERSION.tar.gz" > dist/SHA256SUMS
       - name: Check required package files
         run: |
           python3 - <<'PY'
           import os, tarfile
           version = os.environ['RELEASE_VERSION']
-          with tarfile.open(f'dist/php-stats-{version}.tar.gz') as archive:
-              names = {p.name.removeprefix(f'php-stats-{version}/') for p in archive.getmembers()}
+          with tarfile.open(f'dist/phit-{version}.tar.gz') as archive:
+              names = {p.name.removeprefix(f'phit-{version}/') for p in archive.getmembers()}
           for path in ['LICENSE', 'composer.json', 'Cargo.lock', 'Cargo.toml',
                        'pie/config.m4', 'pie/Makefile.frag', 'crates/php-extension/src/lib.rs',
                        'crates/stats-core/src/lib.rs', 'tests/deployment.php']:
@@ -50,12 +50,12 @@ jobs:
       - name: Verify installation from the actual source archive
         run: |
           mkdir -p .context/source-test
-          tar -xzf "dist/php-stats-$RELEASE_VERSION.tar.gz" -C .context/source-test
-          source_root=".context/source-test/php-stats-$RELEASE_VERSION"
+          tar -xzf "dist/phit-$RELEASE_VERSION.tar.gz" -C .context/source-test
+          source_root=".context/source-test/phit-$RELEASE_VERSION"
           docker build --progress=plain --target checks -f "$source_root/docker/Dockerfile" -t archive-checks "$source_root"
           docker build --progress=plain -f "$source_root/docker/Dockerfile" -t archive-runtime "$source_root"
           "$source_root/scripts/check-container" archive-runtime archive-checks > dist/deployment.json
       - uses: actions/upload-artifact@v4
         with:
-          name: php-stats-source
+          name: phit-source
           path: dist/

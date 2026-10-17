@@ -5,7 +5,7 @@ workspace_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
 php_runtime="${PHP:-$(command -v php)}"
 fpm_runtime="${PHP_FPM:-$(command -v php-fpm)}"
 fcgi_client="${CGI_FCGI:-$(command -v cgi-fcgi)}"
-check_directory="$(mktemp -d "${TMPDIR:-/tmp}/php-stats-fpm.XXXXXX")"
+check_directory="$(mktemp -d "${TMPDIR:-/tmp}/phit-fpm.XXXXXX")"
 fpm_pid=''
 cleanup() {
     if [[ -n "$fpm_pid" ]]; then kill "$fpm_pid" 2>/dev/null || true; wait "$fpm_pid" 2>/dev/null || true; fi

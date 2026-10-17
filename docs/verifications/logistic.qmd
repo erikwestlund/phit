@@ -43,8 +43,8 @@ From the repository root with matching PHP development tools:
 export PHP=/opt/homebrew/bin/php
 export PHP_CONFIG=/opt/homebrew/bin/php-config
 cargo test --workspace --locked
-cargo build -p php-stats --locked
-php -n -d "extension=$PWD/target/debug/libphp_stats.dylib" tests/logistic.php
+cargo build -p phit --locked
+php -n -d "extension=$PWD/target/debug/libphit.dylib" tests/logistic.php
 .context/notebooks-venv/bin/python docs/verifications/compare_logistic.py
 QUARTO_PYTHON="$PWD/.context/notebooks-venv/bin/python" quarto render docs/notebooks/logistic-verification.qmd
 ```

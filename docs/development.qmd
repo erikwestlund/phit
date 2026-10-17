@@ -61,11 +61,11 @@ Run from the repository root with the environment above:
 
 ```sh
 cargo test --workspace --locked
-cargo build -p php-stats --locked
+cargo build -p phit --locked
 # macOS:
-export STATS_EXTENSION="$PWD/target/debug/libphp_stats.dylib"
+export STATS_EXTENSION="$PWD/target/debug/libphit.dylib"
 # Linux instead:
-# export STATS_EXTENSION="$PWD/target/debug/libphp_stats.so"
+# export STATS_EXTENSION="$PWD/target/debug/libphit.so"
 php -n -d "extension=$STATS_EXTENSION" -m
 php -n -d "extension=$STATS_EXTENSION" -r 'echo stats_hello(), PHP_EOL;'
 php -n -d "extension=$STATS_EXTENSION" tests/ols.php
@@ -88,8 +88,8 @@ php -n -d "extension=$STATS_EXTENSION" examples/logistic-mixed.php
 For persistent installation, the official optional [cargo-php workflow](https://ext-php.rs/getting-started/cargo-php.html)
 is `cargo install cargo-php --locked`, then from `crates/php-extension`,
 `cargo php install --release`. Back up php.ini first. Alternatively build with
-`cargo build -p php-stats --release --locked` and add
-`extension=/absolute/path/to/target/release/libphp_stats.dylib` (Linux: `.so`)
+`cargo build -p phit --release --locked` and add
+`extension=/absolute/path/to/target/release/libphit.dylib` (Linux: `.so`)
 to the CLI php.ini shown by `php --ini`. Then `php examples/ols.php` runs directly.
 Rebuild for each PHP version; `-n` skips ini files for isolated development tests.
 
@@ -105,7 +105,7 @@ permanent absolute path and enable it in the relevant PHP configuration.
 
 CLI and PHP-FPM may read different ini files. Enable the extension for FPM as well
 as CLI when serving web requests, and restart FPM after installation or replacement.
-Verify `extension_loaded('php_stats')` and `function_exists('stats_ols')` and `function_exists('stats_logistic')` in the
+Verify `extension_loaded('phit')` and `function_exists('stats_ols')` and `function_exists('stats_logistic')` in the
 actual application runtime. Once enabled, application code calls stats_ols(), stats_logistic(), stats_probit() or stats_poisson()
 directly. There is no per-call import, autoloader or Composer dependency.
 

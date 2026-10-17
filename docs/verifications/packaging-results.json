@@ -44,7 +44,7 @@
         "distribution_comparisons": 8618
       },
       "binary": {
-        "file": "php_stats-0.1.0-php8.3-aarch64-nts-bookworm.tar.gz",
+        "file": "phit-0.1.0-php8.3-aarch64-nts-bookworm.tar.gz",
         "sha256": "555d2a8151224931d499ab8d1234461c7d10c9184cc2041a176b5bb9e1ebb3bc",
         "extension_sha256": "9ed6b2a844f239190171c8a1364cd2c7ad320c9d7a291f753606e558073e1c24",
         "notice_packages": 107,
@@ -92,7 +92,7 @@
         "distribution_comparisons": 8618
       },
       "binary": {
-        "file": "php_stats-0.1.0-php8.4-aarch64-nts-bookworm.tar.gz",
+        "file": "phit-0.1.0-php8.4-aarch64-nts-bookworm.tar.gz",
         "sha256": "d815da4c4e31e229b4ca0734648538cec2b4b101331d61ee30973acaeffdab35",
         "extension_sha256": "997f90fac4670131bb1687efd118b0ad102a39210a1a84c6cb25ddae526a5f5e",
         "notice_packages": 107,
@@ -140,7 +140,7 @@
         "distribution_comparisons": 8618
       },
       "binary": {
-        "file": "php_stats-0.1.0-php8.5-aarch64-nts-bookworm.tar.gz",
+        "file": "phit-0.1.0-php8.5-aarch64-nts-bookworm.tar.gz",
         "sha256": "4deee08ccc21ea76cd0ddf624ddd595e73b1c6278d0edf0aca7630de3c92f387",
         "extension_sha256": "2905905d8d2ac81938e041a068d54da63dbc5110b1b1fe9f3f98ace338c9b7aa",
         "notice_packages": 107,

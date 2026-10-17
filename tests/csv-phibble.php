@@ -81,7 +81,7 @@ function nativeOptions(array $o): array {
     return $out;
 }
 
-$dir = sys_get_temp_dir().'/php-stats-csv-'.getmypid();
+$dir = sys_get_temp_dir().'/phit-csv-'.getmypid();
 @mkdir($dir);
 $compared = 0;
 

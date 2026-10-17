@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compare numerical summaries BEFORE timing PHP scalar/batch, Rust, R and SciPy.
 
-Build: cargo build -p php-stats --release --locked
+Build: cargo build -p phit --release --locked
        cargo build -p stats-core --release --locked --example distribution_bench
 Run: PHP=/opt/homebrew/bin/php .context/v02/python/bin/python tests/benchmarks/run-distributions.py
 """
@@ -116,7 +116,7 @@ def main():
         parser.error('sizes >= 2, repeats >= 3 and known operations required')
     php = os.environ.get('PHP', 'php')
     extension = Path(os.environ.get('STATS_EXTENSION', ROOT/'target/release'/
-                     ('libphp_stats.dylib' if platform.system() == 'Darwin' else 'libphp_stats.so'))).resolve()
+                     ('libphit.dylib' if platform.system() == 'Darwin' else 'libphit.so'))).resolve()
     native = ROOT/'target/release/examples/distribution_bench'
     if not extension.is_file() or not native.is_file():
         parser.error('Build the release extension and distribution_bench example first')

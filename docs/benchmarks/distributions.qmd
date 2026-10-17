@@ -130,7 +130,7 @@ covered by the existing Rust/PHP reference and intercept/offset suites.
 python3 -m venv .context/v02/python
 .context/v02/python/bin/pip install -r tests/benchmarks/distribution-requirements.txt
 # R with jsonlite is a development-only reference dependency.
-cargo build -p php-stats --release --locked
+cargo build -p phit --release --locked
 cargo build -p stats-core --release --locked --example distribution_bench
 PHP=/path/to/matching/php .context/v02/python/bin/python tests/benchmarks/run-distributions.py
 python3 scripts/distribution-docs.py
@@ -150,10 +150,10 @@ the same [PHP/Clang environment](../development.qmd), then run:
 mkdir -p .context/v02/baseline-src
 git archive 6342562 | tar -x -C .context/v02/baseline-src
 CARGO_TARGET_DIR="$PWD/.context/v02/baseline-target" cargo build \
-  --manifest-path .context/v02/baseline-src/Cargo.toml -p php-stats --release --locked
-# macOS; use libphp_stats.so on Linux.
+  --manifest-path .context/v02/baseline-src/Cargo.toml -p phit --release --locked
+# macOS; use libphit.so on Linux.
 PHP=/path/to/matching/php .context/v02/python/bin/python tests/benchmarks/run-v01.py \
-  --baseline .context/v02/baseline-target/release/libphp_stats.dylib \
+  --baseline .context/v02/baseline-target/release/libphit.dylib \
   --baseline-revision 6342562 --output docs/benchmarks/v02-preservation-results.json
 python3 scripts/distribution-docs.py
 ```

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 workspace_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
-workspace_site="php-stats-$(basename -- "$workspace_root")"
+workspace_site="phit-$(basename -- "$workspace_root")"
 
 for dependency in quarto herd; do
     if ! command -v "$dependency" >/dev/null 2>&1; then

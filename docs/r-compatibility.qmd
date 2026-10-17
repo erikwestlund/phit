@@ -95,7 +95,7 @@ reuses the weights of the last IRLS iteration, which were computed one step befo
 the final update. On well-conditioned fits the two agree far inside the tolerance.
 On designs near separation they can differ by about 1e-5 relative. For
 `am ~ factor(cyl) + wt` on `mtcars`, the Fisher information recomputed in R at
-`coef(fit)` matches the php-stats covariance to about 1e-9.
+`coef(fit)` matches the phit covariance to about 1e-9.
 
 Different optimizers can stop at slightly different variance estimates on a flat
 likelihood. The cross-optimizer tolerance accommodates that observed spread,
@@ -145,9 +145,9 @@ ledger: move an item to implemented only when that evidence exists.
 
 ```sh
 cargo test --workspace --locked
-cargo build -p php-stats --release --locked
-php -n -d "extension=$PWD/target/release/libphp_stats.dylib" tests/r-compatibility.php
-php -n -d "extension=$PWD/target/release/libphp_stats.dylib" tests/lmm-expanded.php
+cargo build -p phit --release --locked
+php -n -d "extension=$PWD/target/release/libphit.dylib" tests/r-compatibility.php
+php -n -d "extension=$PWD/target/release/libphit.dylib" tests/lmm-expanded.php
 PHP=/opt/homebrew/bin/php .context/notebooks-venv/bin/python docs/verifications/compare_r_compatibility.py
 # Refresh expected R values explicitly (R and lme4 are development dependencies):
 Rscript tests/generate-r-compatibility-fixtures.R

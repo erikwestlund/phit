@@ -14,15 +14,15 @@ fi
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets --locked -- -D warnings
 cargo test --workspace --locked
-cargo build -p php-stats --release --locked
+cargo build -p phit --release --locked
 case "$(uname -s)" in
- Darwin) extension="$workspace_root/target/release/libphp_stats.dylib" ;;
- Linux) extension="$workspace_root/target/release/libphp_stats.so" ;;
+ Darwin) extension="$workspace_root/target/release/libphit.dylib" ;;
+ Linux) extension="$workspace_root/target/release/libphit.so" ;;
  *) echo 'This release gate supports macOS/Linux' >&2; exit 1 ;;
 esac
 "$PHP" -n -d "extension=$extension" -r 'if (stats_hello() === "") exit(1);'
 "$PHP" -n -d "extension=$extension" scripts/php-stubs.php --check
-"$PHP" -n -l stubs/php-stats.php
+"$PHP" -n -l stubs/phit.php
 for suite in ols logistic probit poisson formula formula-mixed predict lmm r-compatibility lmm-expanded logistic-mixed stability intercept distributions descriptive rng draws csv csv-phibble extreme-inputs; do
     "$PHP" -n -d "extension=$extension" "tests/$suite.php"
 done

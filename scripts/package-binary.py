@@ -15,13 +15,13 @@ php = os.environ.get('PHP', 'php')
 php_config = os.environ.get('PHP_CONFIG', 'php-config')
 platform = json.loads(output(php, '-r', '''echo json_encode([
     'php'=>PHP_VERSION, 'os'=>PHP_OS_FAMILY, 'architecture'=>php_uname('m'),
-    'zts'=>(bool)PHP_ZTS, 'debug'=>(bool)PHP_DEBUG, 'version'=>phpversion('php_stats')]);'''))
+    'zts'=>(bool)PHP_ZTS, 'debug'=>(bool)PHP_DEBUG, 'version'=>phpversion('phit')]);'''))
 if platform['os'] != 'Linux' or platform['zts'] or platform['debug']:
     raise SystemExit('Binary packaging supports Linux NTS non-debug builds only')
 version = tomllib.loads((ROOT/'crates/php-extension/Cargo.toml').read_text())['package']['version']
 if platform['version'] != version:
     raise SystemExit('Loaded extension and source crate versions differ')
-artifact = Path(output(php_config, '--extension-dir'))/'php_stats.so'
+artifact = Path(output(php_config, '--extension-dir'))/'phit.so'
 if not artifact.is_file():
     raise SystemExit('Install and verify the extension before packaging')
 target = next(line.removeprefix('host: ') for line in output('rustc', '-vV').splitlines() if line.startswith('host: '))
@@ -38,7 +38,7 @@ def visit(key):
         if any(kind['kind'] != 'dev' for kind in dep['dep_kinds']):
             visit(dep['pkg'])
 
-visit(next(p['id'] for p in packages.values() if p['name'] == 'php-stats'))
+visit(next(p['id'] for p in packages.values() if p['name'] == 'phit'))
 notices = ['Dependency notices (including build dependencies). Project-owned code: MIT.\n']
 provenance = []
 for key in sorted(seen, key=lambda k: (packages[k]['name'], packages[k]['version'])):
@@ -65,13 +65,13 @@ for key in sorted(seen, key=lambda k: (packages[k]['name'], packages[k]['version
 
 # The distribution explicitly targets the pinned Debian Bookworm environment;
 # this artifact is not advertised as portable to Alpine/musl or older glibc.
-name = f"php_stats-{version}-php{'.'.join(platform['php'].split('.')[:2])}-{platform['architecture']}-nts-bookworm"
+name = f"phit-{version}-php{'.'.join(platform['php'].split('.')[:2])}-{platform['architecture']}-nts-bookworm"
 out = Path(sys.argv[1] if len(sys.argv) > 1 else ROOT/'dist')
 out.mkdir(parents=True, exist_ok=True)
 with tempfile.TemporaryDirectory() as temporary:
     payload = Path(temporary)/name
     payload.mkdir()
-    shutil.copyfile(artifact, payload/'php_stats.so')
+    shutil.copyfile(artifact, payload/'phit.so')
     shutil.copyfile(ROOT/'LICENSE', payload/'LICENSE')
     (payload/'THIRD_PARTY_NOTICES.txt').write_text(''.join(notices))
     report = dict(schema_version=1, artifact=name, **platform, rust=output('rustc', '--version'),
@@ -83,9 +83,9 @@ with tempfile.TemporaryDirectory() as temporary:
     (payload/'manifest.json').write_text(json.dumps(report, indent=2)+'\n')
     (payload/'INSTALL.txt').write_text(
         'Built and tested for the PHP/architecture/NTS/non-debug ABI in manifest.json, on Debian Bookworm.\n'
-        'Copy php_stats.so to the matching php-config --extension-dir.\n'
-        'Add extension=php_stats.so to the CLI and FPM configuration; restart FPM.\n'
-        'Verify extension_loaded("php_stats") and native model calls in both runtimes.\n'
+        'Copy phit.so to the matching php-config --extension-dir.\n'
+        'Add extension=phit.so to the CLI and FPM configuration; restart FPM.\n'
+        'Verify extension_loaded("phit") and native model calls in both runtimes.\n'
         'Keep LICENSE and THIRD_PARTY_NOTICES.txt when redistributing.\n')
     archive = out/f'{name}.tar.gz'
     with archive.open('wb') as file, gzip.GzipFile(filename='', fileobj=file, mode='wb', mtime=0) as compressed, tarfile.open(fileobj=compressed, mode='w') as tar:

@@ -18,7 +18,7 @@
     "cargo fmt --all -- --check",
     "cargo clippy --workspace --all-targets --locked -- -D warnings",
     "cargo test --workspace --locked",
-    "cargo build -p php-stats --release --locked",
+    "cargo build -p phit --release --locked",
     "PHP extension load",
     "PHP Reflection signatures/defaults/stubs",
     "All PHP suites and examples",
@@ -64,7 +64,7 @@
     "crates/stats-core/tests/stability.rs": "93924dd4aa830c268d60f06a077078b1b8e4c69d0b92e40d67e971fe569f7fb2",
     "scripts/check": "25d524034bcdacf09bbeda4b488b610cadf44ba3074451b53cd83c7ebbd24fa3",
     "scripts/php-stubs.php": "79ee5e5473747781a18d3bd49cafa7541cf5919613ed94a3740b4db2e6ed35f9",
-    "stubs/php-stats.php": "a95811d069895d85bf2eab50a33940b8bc34a1f750b031af7d00e60d719b05c2",
+    "stubs/phit.php": "a95811d069895d85bf2eab50a33940b8bc34a1f750b031af7d00e60d719b05c2",
     "tests/stability.php": "1acef19a72b18dce5c7d1c45c0fa2de6d6c7523dd4761f460c572f9c1877230e"
   },
   "fixture_sha256": {

@@ -7,7 +7,7 @@ function check(bool $ok, string $message): void {
     if (!$ok) throw new RuntimeException($message);
 }
 
-$dir = sys_get_temp_dir().'/php-stats-csv-test-'.getmypid();
+$dir = sys_get_temp_dir().'/phit-csv-test-'.getmypid();
 @mkdir($dir);
 $checked = 0;
 

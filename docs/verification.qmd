@@ -13,9 +13,9 @@ From the repository root:
 ```sh
 cargo fmt --all --check
 cargo test --workspace --locked
-cargo build -p php-stats --locked
-# macOS; use libphp_stats.so on Linux
-export STATS_EXTENSION="$PWD/target/debug/libphp_stats.dylib"
+cargo build -p phit --locked
+# macOS; use libphit.so on Linux
+export STATS_EXTENSION="$PWD/target/debug/libphit.dylib"
 php -n -d "extension=$STATS_EXTENSION" -m
 php -n -d "extension=$STATS_EXTENSION" -r 'echo stats_hello(), PHP_EOL;'
 php -n -d "extension=$STATS_EXTENSION" tests/ols.php

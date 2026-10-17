@@ -1,7 +1,7 @@
 # Use the workspace target so direct Cargo and PIE builds can share compilation.
 STATS_CARGO_TARGET_DIR = $(top_srcdir)/../target
-STATS_ARTIFACT = $(STATS_CARGO_TARGET_DIR)/release/libphp_stats.$(STATS_DYLIB_SUFFIX)
-STATS_MODULE = $(top_builddir)/modules/php_stats.so
+STATS_ARTIFACT = $(STATS_CARGO_TARGET_DIR)/release/libphit.$(STATS_DYLIB_SUFFIX)
+STATS_MODULE = $(top_builddir)/modules/phit.so
 
 .PHONY: stats-rust-build stats-artifact-check install-stats-rust
 all: stats-rust-build
@@ -12,7 +12,7 @@ ifneq ($(filter install install-modules install-stats-rust,$(MAKECMDGOALS)),)
 stats-rust-build: stats-artifact-check
 else
 stats-rust-build:
-	PHP="$(STATS_PHP)" PHP_CONFIG="$(PHP_CONFIG)" CARGO_TARGET_DIR="$(STATS_CARGO_TARGET_DIR)" "$(CARGO)" build --manifest-path "$(top_srcdir)/../Cargo.toml" -p php-stats --lib --release --locked
+	PHP="$(STATS_PHP)" PHP_CONFIG="$(PHP_CONFIG)" CARGO_TARGET_DIR="$(STATS_CARGO_TARGET_DIR)" "$(CARGO)" build --manifest-path "$(top_srcdir)/../Cargo.toml" -p phit --lib --release --locked
 	@mkdir -p "$(top_builddir)/modules"
 	cp "$(STATS_ARTIFACT)" "$(STATS_MODULE)"
 endif
@@ -23,4 +23,4 @@ stats-artifact-check:
 install: install-stats-rust
 install-stats-rust: stats-artifact-check
 	@mkdir -p "$(INSTALL_ROOT)$(EXTENSION_DIR)"
-	$(INSTALL) -m 755 "$(STATS_MODULE)" "$(INSTALL_ROOT)$(EXTENSION_DIR)/php_stats.so"
+	$(INSTALL) -m 755 "$(STATS_MODULE)" "$(INSTALL_ROOT)$(EXTENSION_DIR)/phit.so"

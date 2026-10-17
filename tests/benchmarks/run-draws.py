@@ -81,7 +81,7 @@ def main():
     php = os.environ.get('PHP', 'php')
     rscript = os.environ.get('RSCRIPT', 'Rscript')
     extension = os.environ.get('STATS_EXTENSION', str(ROOT/'target/release'/
-                       ('libphp_stats.dylib' if platform.system() == 'Darwin' else 'libphp_stats.so')))
+                       ('libphit.dylib' if platform.system() == 'Darwin' else 'libphit.so')))
     env = {**os.environ, **THREADS}
     commands = dict(PHP=[php, '-n', '-d', 'memory_limit=-1', '-d', f'extension={extension}', str(HERE/'draws.php')],
                     R=[rscript, str(HERE/'draws.R')])
@@ -100,7 +100,7 @@ def main():
                   cases=[])
     if platform.system() == 'Darwin':
         report['cpu'] = subprocess.check_output(['sysctl', '-n', 'machdep.cpu.brand_string'], text=True).strip()
-    with tempfile.TemporaryDirectory(prefix='php-stats-draw-bench-') as directory:
+    with tempfile.TemporaryDirectory(prefix='phit-draw-bench-') as directory:
         paths = []
         for n, p in [(1000, 4), (4000, 16), (10000, 32), (100000, 8)]:
             path = Path(directory)/f'{n}-{p}.json'

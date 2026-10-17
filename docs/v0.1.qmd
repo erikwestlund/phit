@@ -143,7 +143,7 @@ Limitations remain:
 
 ## PHP contract gate
 
-`stubs/php-stats.php` is for IDE/static-analysis indexing, **not runtime inclusion**.
+`stubs/phit.php` is for IDE/static-analysis indexing, **not runtime inclusion**.
 Generate it with the extension loaded:
 
 ```sh
@@ -242,7 +242,7 @@ Regression tests check codes for logistic/probit, both simple mixed calls and
 general Gaussian mixed grouping, including invalid values on rows that would
 otherwise be dropped. Statistical algorithms and public signatures are unchanged.
 
-The [first GitHub CI run](https://github.com/erikwestlund/php-stats/actions/runs/38188972784)
+The [first GitHub CI run](https://github.com/erikwestlund/phit/actions/runs/38188972784)
 failed during macOS binding generation with incompatible Clang ARM builtin headers;
 Linux was cancelled by matrix fail-fast. The workflow now aligns Homebrew compiler,
 libclang and resource headers, and lets both platforms finish independently. This
@@ -282,7 +282,7 @@ checks include the new suites and examples without changing the regression APIs.
 
 The [deployment guide](deployment.qmd) documents local PIE support, a pinned
 multi-stage PHP-FPM container, a versioned source/binary artifact workflow and
-actual installation checks. The registered module is now `php_stats` to satisfy
+actual installation checks. The registered module is now `phit` to satisfy
 PIE's naming rules; function names remain unchanged. Public registry/release
 publication is pending.
 

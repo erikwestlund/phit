@@ -62,7 +62,7 @@ repository's numerical backend.
 Build using the [matching PHP/header environment](../development.qmd), then run:
 
 ```sh
-cargo build -p php-stats --release --locked
+cargo build -p phit --release --locked
 # R and jsonlite are benchmark-only development dependencies.
 PHP=/opt/homebrew/bin/php python3 tests/benchmarks/run-draws.py
 # Optional overrides: RSCRIPT, STATS_EXTENSION; --repeats 5 --output /path/report.json

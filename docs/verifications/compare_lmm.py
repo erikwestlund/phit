@@ -53,7 +53,7 @@ def compare_case(case, include_nlme=False):
  groups=np.array([g for g,k in zip(case['groups'],keep) if k]);xx,yy=x[keep],y[keep]
  python_result,diagnostics=python_fit(xx,yy,groups,case['name']=='boundary')
  suffix='.dylib' if sys.platform=='darwin' else '.so'
- extension=Path(os.environ.get('STATS_EXTENSION',ROOT/f'target/debug/libphp_stats{suffix}')).resolve()
+ extension=Path(os.environ.get('STATS_EXTENSION',ROOT/f'target/debug/libphit{suffix}')).resolve()
  run=subprocess.run([os.environ.get('PHP','php'),'-n','-d',f'extension={extension}',str(HERE/'lmm.php')],input=json.dumps(dict(x=case['x'],y=case['y'],groups=case['groups'])),text=True,capture_output=True,check=True)
  native=json.loads(run.stdout)
  with tempfile.TemporaryDirectory() as directory:
@@ -71,7 +71,7 @@ def compare_case(case, include_nlme=False):
  errors={}
  for key,expected in reference['result'].items():
   errors[key]={}
-  implementations=[('Python',python_result),('php-stats',native['result'])]
+  implementations=[('Python',python_result),('phit',native['result'])]
   if nlme_reference is not None:implementations.insert(0,('nlme',nlme_reference['result']))
   for name,result in implementations:
    atol=policy.get('quantity_absolute',{}).get(key,policy['absolute'])
@@ -84,7 +84,7 @@ def compare_case(case, include_nlme=False):
  assert native['result']['n_groups']==len(set(groups)) and native['result']['converged']
  assert len(native['warnings'])==int(not keep.all())
  result=dict(name=case['name'],versions=dict(R=reference['version'],lme4=reference['lme4'],statsmodels=statsmodels.__version__,PHP=native['version'],Python=platform.python_version()),
-  R=reference['result'],Python=python_result,**{'php-stats':native['result']},python_diagnostics=diagnostics,warnings=native['warnings'],max_absolute_errors_vs_R=errors)
+  R=reference['result'],Python=python_result,**{'phit':native['result']},python_diagnostics=diagnostics,warnings=native['warnings'],max_absolute_errors_vs_R=errors)
  if nlme_reference is not None:
   result['nlme']=nlme_reference['result'];result['versions']['nlme']=nlme_reference['nlme']
  result['tolerance']=policy
@@ -92,7 +92,7 @@ def compare_case(case, include_nlme=False):
  if 'source' in case:result['source']=case['source']
  if include_nlme:
   result['profile_scores']={}
-  for name in ['R','nlme','Python','php-stats']:
+  for name in ['R','nlme','Python','phit']:
    fit=result[name];rho=fit['random_intercept_variance']/fit['residual_variance']
    residual=yy-xx@np.asarray(fit['coefficients']);q=0.;qprime=0.;logdetprime=0.
    for group in dict.fromkeys(groups):

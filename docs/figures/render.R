@@ -104,7 +104,7 @@ preservation <- function(){
 }
 public_agreement <- function(){
  path<-file.path(DOCS,'verifications','lmm-public-results.json');current_inputs<<-path;r<-read_json(path)
- d<-bind(lapply(r,function(c){ref<-v(c$R$fitted);data.frame(dataset=c$name,reference=ref,difference=1e6*(v(c[['php-stats']]$fitted)-ref))}))
+ d<-bind(lapply(r,function(c){ref<-v(c$R$fitted);data.frame(dataset=c$name,reference=ref,difference=1e6*(v(c[['phit']]$fitted)-ref))}))
  d$dataset<-factor(d$dataset,levels=vapply(r,function(c)c$name,''))
  p<-ggplot(d,aes(reference,difference))+geom_hline(yintercept=0,color='#64748B',linetype='dashed')+
   geom_point(color=unname(concept_colors['conditional']),alpha=.35,size=1.2)+facet_wrap(~dataset,ncol=2,scales='free')+

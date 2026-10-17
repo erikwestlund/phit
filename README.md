@@ -1,12 +1,12 @@
-# PHP Stats
+# phit
 
 Fit regressions directly in PHP. This native extension uses Rust for estimation
 and returns ordinary associative arrays with coefficients, uncertainty, fitted
 values, and model statistics.
 
-**[Documentation and math walkthroughs](https://erikwestlund.github.io/php-stats/)** ·
-[PHP API](https://erikwestlund.github.io/php-stats/contracts.html) · [Installation](https://erikwestlund.github.io/php-stats/development.html) ·
-[Verification](https://erikwestlund.github.io/php-stats/verification.html)
+**[Documentation and math walkthroughs](https://erikwestlund.github.io/phit/)** ·
+[PHP API](https://erikwestlund.github.io/phit/contracts.html) · [Installation](https://erikwestlund.github.io/phit/development.html) ·
+[Verification](https://erikwestlund.github.io/phit/verification.html)
 
 ```php
 // Simulated apartments: floor area (m²) predicts monthly rent.
@@ -49,7 +49,7 @@ and return coefficient names with the matrix function's results. See the
 Each fitter has its own documented inference and diagnostics. General Gaussian
 mixed models support explicit correlated/independent random designs; binomial
 mixed models currently support one grouping factor and a random intercept.
-See [supported structures and numerical limits](https://erikwestlund.github.io/php-stats/contracts.html).
+See [supported structures and numerical limits](https://erikwestlund.github.io/phit/contracts.html).
 
 ## Probability and descriptive statistics
 
@@ -119,38 +119,38 @@ and weight arrays must align with the original observations. See the complete
 ## Build and run
 
 Requires **PHP 8.3+**, matching PHP development headers, stable Rust, and Clang.
-Follow the [macOS/Linux setup guide](https://erikwestlund.github.io/php-stats/development.html) first, especially when
+Follow the [macOS/Linux setup guide](https://erikwestlund.github.io/phit/development.html) first, especially when
 selecting `php`, `php-config`, and libclang. In that configured shell:
 
 ```sh
-cargo build -p php-stats --release --locked
+cargo build -p phit --release --locked
 
-# macOS; use libphp_stats.so on Linux.
-export STATS_EXTENSION="$PWD/target/release/libphp_stats.dylib"
+# macOS; use libphit.so on Linux.
+export STATS_EXTENSION="$PWD/target/release/libphit.dylib"
 php -n -d "extension=$STATS_EXTENSION" examples/ols.php
 php -n -d "extension=$STATS_EXTENSION" examples/poisson-offset.php
 ```
 
 For a real application, install the compiled library and enable it in the
 application runtime's PHP configuration as described in
-[installation and deployment](https://erikwestlund.github.io/php-stats/development.html#running-in-an-application).
+[installation and deployment](https://erikwestlund.github.io/phit/development.html#running-in-an-application).
 Then call `stats_ols()`, `stats_poisson()`, etc. normally. The
-[PHP stubs](stubs/php-stats.php) support IDEs and static analysis; do not include
+[PHP stubs](stubs/phit.php) support IDEs and static analysis; do not include
 them at runtime.
 
 ## Server installation and containers
 
-The [deployment guide](https://erikwestlund.github.io/php-stats/deployment.html)
+The [deployment guide](https://erikwestlund.github.io/phit/deployment.html)
 explains PIE, PHP-FPM, Docker and versioned binary/source artifacts.
 
 ```sh
-docker build --target checks -f docker/Dockerfile -t php-stats:checks .
-docker build -f docker/Dockerfile -t php-stats:local .
-./scripts/check-container php-stats:local php-stats:checks
+docker build --target checks -f docker/Dockerfile -t phit:checks .
+docker build -f docker/Dockerfile -t phit:local .
+./scripts/check-container phit:local phit:checks
 ```
 
 The runtime image has the native extension enabled; use it as your application's
-PHP-FPM base. The registered extension name is `php_stats`. PIE support is prepared
+PHP-FPM base. The registered extension name is `phit`. PIE support is prepared
 for local checkouts; public Packagist installation and tagged releases are pending.
 
 ## Data and errors
@@ -177,20 +177,20 @@ The release gate checks Rust, native PHP signatures, integration suites, and
 examples. Deterministic fixtures compare appropriate quantities against R,
 statsmodels, lme4, and independent numerical integration. Tests need neither R
 nor Python for fitting; provenance and tolerances are documented in the
-[verification record](https://erikwestlund.github.io/php-stats/verification.html).
+[verification record](https://erikwestlund.github.io/phit/verification.html).
 
-The [Quarto walkthroughs](https://erikwestlund.github.io/php-stats/notebooks/index.html) explain matrices, estimation,
+The [Quarto walkthroughs](https://erikwestlund.github.io/phit/notebooks/index.html) explain matrices, estimation,
 likelihood, and inference with simulated and published data. Figures use a shared
-[R/ggplot2 strategy](https://erikwestlund.github.io/php-stats/visualization.html). R/Python are development tools;
+[R/ggplot2 strategy](https://erikwestlund.github.io/phit/visualization.html). R/Python are development tools;
 PHP runtime computation uses Rust-native nalgebra.
 
 The v0.1 fitting and packaging baseline is a **release candidate**, with the
 v0.2 numerical additions documented in the [readiness assessment](docs/v0.2.qmd).
 Read the
-[stabilization assessment](https://erikwestlund.github.io/php-stats/v0.1.html) for verified scope and remaining release
+[stabilization assessment](https://erikwestlund.github.io/phit/v0.1.html) for verified scope and remaining release
 gates.
 
 ## License
 
 [MIT](LICENSE). Bundled reference datasets and third-party assets retain their
-original licenses; see [licensing](https://erikwestlund.github.io/php-stats/licensing.html).
+original licenses; see [licensing](https://erikwestlund.github.io/phit/licensing.html).

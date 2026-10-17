@@ -133,7 +133,7 @@ display(ordered_table([{ "observations": case["n"], "coefficients": case["p"],
 ```sh
 export PHP=/opt/homebrew/bin/php
 export PHP_CONFIG=/opt/homebrew/bin/php-config
-cargo build -p php-stats --release --locked
+cargo build -p phit --release --locked
 .context/notebooks-venv/bin/python tests/benchmarks/run.py --model probit
 QUARTO_PYTHON="$PWD/.context/notebooks-venv/bin/python" quarto render docs/benchmarks/probit.qmd
 quarto render docs

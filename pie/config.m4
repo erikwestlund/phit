@@ -1,6 +1,6 @@
 dnl PIE uses phpize/configure/make; the numerical extension is compiled by Cargo.
-PHP_ARG_ENABLE([php-stats], [whether to enable PHP Stats],
-  [AS_HELP_STRING([--enable-php-stats], [Build the Rust php_stats extension])], [yes])
+PHP_ARG_ENABLE([phit], [whether to enable phit],
+  [AS_HELP_STRING([--enable-phit], [Build the Rust phit extension])], [yes])
 
 if test "$PHP_PHP_STATS" != "no"; then
   AC_PATH_PROG([CARGO], [cargo], [])

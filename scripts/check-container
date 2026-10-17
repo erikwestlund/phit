@@ -4,8 +4,8 @@ set -euo pipefail
 runtime_image="${1:?Usage: scripts/check-container RUNTIME_IMAGE CHECKS_IMAGE}"
 checks_image="${2:?Pass the checks-stage image with cgi-fcgi installed}"
 workspace_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
-check_directory="$(mktemp -d "${TMPDIR:-/tmp}/php-stats-container.XXXXXX")"
-container_name="php-stats-check-$$"
+check_directory="$(mktemp -d "${TMPDIR:-/tmp}/phit-container.XXXXXX")"
+container_name="phit-check-$$"
 started=false
 cleanup() {
     status=$?

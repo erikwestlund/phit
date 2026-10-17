@@ -126,7 +126,7 @@ def main():
     if any(p < 3 or n <= p for n, p in cases):
         parser.error('Require n > p >= 3')
     suffix = '.dylib' if sys.platform == 'darwin' else '.so'
-    extension = Path(os.environ.get('STATS_EXTENSION', ROOT / f'target/release/libphp_stats{suffix}')).resolve()
+    extension = Path(os.environ.get('STATS_EXTENSION', ROOT / f'target/release/libphit{suffix}')).resolve()
     if not extension.is_file():
         raise FileNotFoundError(f'Build the RELEASE extension first: {extension}')
     env = {**os.environ, **THREAD_ENV}

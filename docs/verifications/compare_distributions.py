@@ -439,7 +439,7 @@ def main():
         php = json.loads(args.php_results.read_text())
     else:
         suffix = '.dylib' if sys.platform == 'darwin' else '.so'
-        extension = ROOT / 'target/release' / f'libphp_stats{suffix}'
+        extension = ROOT / 'target/release' / f'libphit{suffix}'
         php = json.loads(subprocess.run(
             [os.environ.get('PHP', 'php'), '-n', '-d', f'extension={extension}',
              str(ROOT / 'docs/verifications/distributions.php')],

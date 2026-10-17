@@ -50,8 +50,8 @@ Normal inference with few groups can be unreliable.
 export PHP=/opt/homebrew/bin/php
 export PHP_CONFIG=/opt/homebrew/bin/php-config
 cargo test --workspace --locked
-cargo build -p php-stats --locked
-php -n -d "extension=$PWD/target/debug/libphp_stats.dylib" tests/lmm.php
+cargo build -p phit --locked
+php -n -d "extension=$PWD/target/debug/libphit.dylib" tests/lmm.php
 .context/notebooks-venv/bin/python docs/verifications/compare_lmm.py
 QUARTO_PYTHON="$PWD/.context/notebooks-venv/bin/python" quarto render docs/notebooks/lmm-verification.qmd
 ```

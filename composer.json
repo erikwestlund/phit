@@ -1,5 +1,5 @@
 {
-    "name": "erikwestlund/php-stats",
+    "name": "erikwestlund/phit",
     "description": "Native Rust statistical modeling for PHP: regression, likelihood and mixed models",
     "type": "php-ext",
     "license": "MIT",
@@ -7,7 +7,7 @@
         "php": ">=8.3 <8.6"
     },
     "php-ext": {
-        "extension-name": "php_stats",
+        "extension-name": "phit",
         "build-path": "pie",
         "support-nts": true,
         "support-zts": false,

@@ -38,7 +38,7 @@ def statsmodels_result(x, y):
 def compare_case(case):
     php = os.environ.get('PHP', 'php')
     suffix = '.dylib' if sys.platform == 'darwin' else '.so'
-    extension = Path(os.environ.get('STATS_EXTENSION', ROOT / 'target/debug' / ('libphp_stats' + suffix))).resolve()
+    extension = Path(os.environ.get('STATS_EXTENSION', ROOT / 'target/debug' / ('libphit' + suffix))).resolve()
     if not extension.is_file():
         raise FileNotFoundError(f'Build the extension first: {extension}')
     php_run = subprocess.run(
@@ -60,7 +60,7 @@ def compare_case(case):
     errors = {}
     for key, expected in reference['result'].items():
         errors[key] = {}
-        for name, result in [('statsmodels', python_result), ('php-stats', native['result'])]:
+        for name, result in [('statsmodels', python_result), ('phit', native['result'])]:
             actual = np.asarray(result[key])
             wanted = np.asarray(expected)
             np.testing.assert_allclose(actual, wanted, atol=1e-9, rtol=1e-7, err_msg=f'{case["name"]}/{name}/{key}')
@@ -79,7 +79,7 @@ def compare_case(case):
     return {'name': case['name'], 'input': {'x': case['x'], 'y': case['y']},
             'versions': {'R': reference['version'], 'statsmodels': statsmodels.__version__,
                          'numpy': np.__version__, 'Python': platform.python_version(), 'PHP': native['version']},
-            'R': reference['result'], 'statsmodels': python_result, 'php-stats': native['result'],
+            'R': reference['result'], 'statsmodels': python_result, 'phit': native['result'],
             'warnings': native['warnings'], 'max_absolute_errors_vs_R': errors}
 
 
@@ -96,5 +96,5 @@ if __name__ == '__main__':
     output = HERE / 'ols-results.json'
     output.write_text(json.dumps(results, indent=2, allow_nan=False) + '\n')
     for result in results:
-        print(f'{result["name"]}: R, statsmodels and PHP agree; n={result["php-stats"]["n_observations"]}')
+        print(f'{result["name"]}: R, statsmodels and PHP agree; n={result["phit"]["n_observations"]}')
     print(f'Wrote {output.relative_to(ROOT)}')

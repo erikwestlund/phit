@@ -7,7 +7,7 @@ from scipy.optimize import brentq,minimize
 from scipy.special import expit,gammaln,logsumexp
 ROOT=Path(__file__).resolve().parents[2]
 PHP=os.environ.get('PHP','/opt/homebrew/bin/php' if Path('/opt/homebrew/bin/php').exists() else 'php')
-EXT=Path(os.environ.get('STATS_EXTENSION',str(ROOT/'target/release'/('libphp_stats.dylib' if platform.system()=='Darwin' else 'libphp_stats.so'))))
+EXT=Path(os.environ.get('STATS_EXTENSION',str(ROOT/'target/release'/('libphit.dylib' if platform.system()=='Darwin' else 'libphit.so'))))
 INFERENCE={'covariance','std_errors','z_statistics','p_values','conf_int'}
 LIKELIHOOD={'log_likelihood','neg2_log_likelihood','aic','bic'}
 def compare(a,b,key):

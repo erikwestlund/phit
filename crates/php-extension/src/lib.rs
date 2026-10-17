@@ -1072,7 +1072,7 @@ pub fn stats_hello() -> String {
 #[php_module]
 pub fn get_module(module: ModuleBuilder) -> ModuleBuilder {
     let module = module
-        .name("php_stats") // Canonical PHP/PIE extension identifier (underscores required).
+        .name("phit") // Canonical PHP/PIE extension identifier: extension=phit, ext-phit.
         .function(wrap_function!(stats_hello))
         .function(wrap_function!(stats_ols))
         .function(wrap_function!(stats_logistic))

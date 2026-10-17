@@ -25,13 +25,13 @@ jobs:
       - name: Build and verify PIE installation
         env:
           PHP_IMAGE: ${{ matrix.image }}
-        run: docker build --progress=plain --build-arg "PHP_IMAGE=$PHP_IMAGE" --target checks -f docker/Dockerfile -t php-stats-checks .
+        run: docker build --progress=plain --build-arg "PHP_IMAGE=$PHP_IMAGE" --target checks -f docker/Dockerfile -t phit-checks .
       - name: Build production runtime
         env:
           PHP_IMAGE: ${{ matrix.image }}
-        run: docker build --progress=plain --build-arg "PHP_IMAGE=$PHP_IMAGE" -f docker/Dockerfile -t php-stats-runtime .
+        run: docker build --progress=plain --build-arg "PHP_IMAGE=$PHP_IMAGE" -f docker/Dockerfile -t phit-runtime .
       - name: Verify CLI and production FPM requests
-        run: ./scripts/check-container php-stats-runtime php-stats-checks > deployment.json
+        run: ./scripts/check-container phit-runtime phit-checks > deployment.json
       - name: Prepare tested binary and dependency notices
         env:
           PHP_IMAGE: ${{ matrix.image }}

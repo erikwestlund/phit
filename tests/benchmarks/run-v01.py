@@ -11,7 +11,7 @@ parser.add_argument('--output',type=Path,default=ROOT/'docs/benchmarks/v01-prese
 parser.add_argument('--baseline-revision',help='Record the source revision used for the supplied baseline library')
 args=parser.parse_args()
 if args.repeats<3:parser.error('use at least three repetitions')
-ext=ROOT/'target/release'/('libphp_stats.dylib' if platform.system()=='Darwin' else 'libphp_stats.so')
+ext=ROOT/'target/release'/('libphit.dylib' if platform.system()=='Darwin' else 'libphit.so')
 php=os.environ.get('PHP','php');env={**os.environ,**THREAD_ENV};report=dict(recorded_at=datetime.now(timezone.utc).isoformat(),platform=platform.platform(),thread_environment=THREAD_ENV,
  baseline_sha256=hashlib.sha256(args.baseline.read_bytes()).hexdigest(),baseline_revision=args.baseline_revision,extension_sha256=hashlib.sha256(ext.read_bytes()).hexdigest(),repeats=args.repeats,warmups=1,
  timing='complete PHP function call including input/output conversion; JSON outside timed fit; peak RSS covers whole worker',

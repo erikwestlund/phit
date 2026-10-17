@@ -3,7 +3,7 @@ from pathlib import Path
 import argparse, hashlib, json, os, platform, subprocess, warnings
 ROOT = Path(__file__).resolve().parents[2]
 PHP = os.environ.get('PHP', '/opt/homebrew/bin/php' if Path('/opt/homebrew/bin/php').exists() else 'php')
-EXT = Path(os.environ.get('STATS_EXTENSION', str(ROOT/'target/release'/('libphp_stats.dylib' if platform.system()=='Darwin' else 'libphp_stats.so'))))
+EXT = Path(os.environ.get('STATS_EXTENSION', str(ROOT/'target/release'/('libphit.dylib' if platform.system()=='Darwin' else 'libphit.so'))))
 
 def fit_php(case):
     return json.loads(subprocess.run([PHP,'-n','-d',f'extension={EXT}',str(ROOT/'tests/compatibility-fit.php')],

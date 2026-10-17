@@ -16,7 +16,7 @@
   "repeats": 5,
   "warmups": 1,
   "tolerance": "1e-11 + 1e-11*abs(reference)",
-  "extension": "/Users/erik/.polyscope/clones/ac9532b1/bronze-wolf/target/release/libphp_stats.dylib",
+  "extension": "/Users/erik/.polyscope/clones/ac9532b1/bronze-wolf/target/release/libphit.dylib",
   "boundaries": "Preloaded inputs; complete result computation/materialization; PHP array conversion and native validation included. Startup, JSON I/O and reference comparisons excluded. Per-call seconds from batches.",
   "cases": [
     {

@@ -67,7 +67,7 @@ $interval = stats_gamma_quantile_array(probabilities: [.025, .975], shape: 2, sc
 Scalar continuous evaluation uses argument `x`; discrete uses `k`. Batch continuous
 evaluation uses `values`; discrete uses `counts`; all batch quantiles use
 `probabilities`. Parameter names are part of the contract because PHP supports
-named arguments. The generated `stubs/php-stats.php` lists every exact
+named arguments. The generated `stubs/phit.php` lists every exact
 signature. Loading the extension makes all functions available globally.
 
 Batch evaluation constructs the distribution once, then streams input values

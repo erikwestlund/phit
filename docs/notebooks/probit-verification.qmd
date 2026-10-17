@@ -18,7 +18,7 @@ results = [compare_case(case) for case in cases()]
 first = results[0]
 print(first["versions"])
 rows = []
-for implementation in ["R", "statsmodels", "php-stats"]:
+for implementation in ["R", "statsmodels", "phit"]:
     fit = first[implementation]
     for j, label in enumerate(["intercept", "study hours", "practice score"]):
         rows.append({"implementation": implementation, "coefficient": label,
@@ -26,8 +26,8 @@ for implementation in ["R", "statsmodels", "php-stats"]:
                      "z": fit["z_statistics"][j], "p": fit["p_values"][j],
                      "95% lower": fit["conf_int"][j][0], "95% upper": fit["conf_int"][j][1]})
 display(pd.DataFrame(rows))
-display(pd.DataFrame([{ "case": r["name"], "retained n": r["php-stats"]["n_observations"],
-                        "iterations (PHP)": r["php-stats"]["iterations"],
+display(pd.DataFrame([{ "case": r["name"], "retained n": r["phit"]["n_observations"],
+                        "iterations (PHP)": r["phit"]["iterations"],
                         "max absolute difference vs R": max(e for values in r["max_absolute_errors_vs_R"].values() for e in values.values()),
                         "warnings": len(r["warnings"])} for r in results]))
 ```
@@ -77,12 +77,12 @@ fixed-intercept insertion.
 
 ```{python}
 missing = results[-1]
-print("Retained rows:", missing["php-stats"]["retained_rows"])
-print("Dropped rows:", missing["php-stats"]["dropped_rows"])
+print("Retained rows:", missing["phit"]["retained_rows"])
+print("Dropped rows:", missing["phit"]["dropped_rows"])
 print("PHP warnings:", missing["warnings"])
 display(pd.DataFrame([{ "implementation": name,
                        **{key: first[name][key] for key in ["log_likelihood", "deviance", "null_deviance", "aic", "df_residual"]}}
-                      for name in ["R", "statsmodels", "php-stats"]]))
+                      for name in ["R", "statsmodels", "phit"]]))
 ```
 
 The runner applies the identical retained sample before fitting reference models.

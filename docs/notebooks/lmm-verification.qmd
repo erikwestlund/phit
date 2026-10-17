@@ -18,14 +18,14 @@ results=[compare_case(c) for c in cases()]
 first=results[0]
 print(first['versions'])
 rows=[]
-for implementation in ['R','Python','php-stats']:
+for implementation in ['R','Python','phit']:
     fit=first[implementation]
     for j,label in enumerate(['intercept','study hours','prior score']):
         rows.append(dict(implementation=implementation,term=label,estimate=fit['coefficients'][j],SE=fit['std_errors'][j],z=fit['z_statistics'][j],p=fit['p_values'][j],lower95=fit['conf_int'][j][0],upper95=fit['conf_int'][j][1]))
 display(pd.DataFrame(rows))
 display(pd.DataFrame([dict(case=r['name'],Python_backend=r['python_diagnostics']['backend'],
                            max_absolute_difference_vs_R=max(e for values in r['max_absolute_errors_vs_R'].values() for e in values.values()),
-                           PHP_boundary=r['php-stats']['boundary'],missing_warnings=len(r['warnings'])) for r in results]))
+                           PHP_boundary=r['phit']['boundary'],missing_warnings=len(r['warnings'])) for r in results]))
 ```
 
 Comparisons include every fitted value/residual, fixed-effect inference, group
@@ -92,12 +92,12 @@ positive-variance optimizer solution as proof of exact boundary behavior.
 
 ```{python}
 keys=['residual_variance','random_intercept_variance','icc','log_likelihood','aic']
-display(pd.DataFrame([dict(implementation=name,**{k:first[name][k] for k in keys}) for name in ['R','Python','php-stats']]))
+display(pd.DataFrame([dict(implementation=name,**{k:first[name][k] for k in keys}) for name in ['R','Python','phit']]))
 print('Python fit warnings:', first['python_diagnostics']['warnings'])
 missing=results[-1]
-print('Dropped original rows:',missing['php-stats']['dropped_rows'])
+print('Dropped original rows:',missing['phit']['dropped_rows'])
 print('Missing-data warning:',missing['warnings'])
-print('Schools and effects:',list(zip(first['php-stats']['group_labels'],first['php-stats']['random_effects'])))
+print('Schools and effects:',list(zip(first['phit']['group_labels'],first['phit']['random_effects'])))
 ```
 
 See the [verification record](../verifications/lmm.qmd) for rejection tests,

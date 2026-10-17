@@ -160,7 +160,7 @@ display(ordered_table([dict(observations=case['n'],coefficients=case['p'],implem
 ```sh
 export PHP=/opt/homebrew/bin/php
 export PHP_CONFIG=/opt/homebrew/bin/php-config
-cargo build -p php-stats --release --locked
+cargo build -p phit --release --locked
 .context/notebooks-venv/bin/python tests/benchmarks/run.py --model lmm
 QUARTO_PYTHON="$PWD/.context/notebooks-venv/bin/python" quarto render docs/benchmarks/lmm.qmd
 quarto render docs

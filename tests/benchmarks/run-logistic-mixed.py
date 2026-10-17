@@ -8,7 +8,7 @@ from run import worker,THREAD_ENV
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
 parser=argparse.ArgumentParser();parser.add_argument('--sizes',default='1000,10000,100000');parser.add_argument('--repeats',type=int,default=3);args=parser.parse_args()
 if args.repeats<1:parser.error('repeats must be positive')
-php=os.environ.get('PHP','/opt/homebrew/bin/php' if Path('/opt/homebrew/bin/php').exists() else 'php');ext=Path(os.environ.get('STATS_EXTENSION',ROOT/'target/release'/('libphp_stats.dylib' if platform.system()=='Darwin' else 'libphp_stats.so')))
+php=os.environ.get('PHP','/opt/homebrew/bin/php' if Path('/opt/homebrew/bin/php').exists() else 'php');ext=Path(os.environ.get('STATS_EXTENSION',ROOT/'target/release'/('libphit.dylib' if platform.system()=='Darwin' else 'libphit.so')))
 env={**os.environ,**THREAD_ENV};report=dict(recorded_at=datetime.now(timezone.utc).isoformat(),platform=platform.platform(),
  model='binomial logit, one random intercept, Laplace',repeats=args.repeats,warmups=1,thread_environment=THREAD_ENV,
  extension_sha256=hashlib.sha256(ext.read_bytes()).hexdigest(),python_reference='Independent SciPy likelihood/optimizer; not BinomialBayesMixedGLM',

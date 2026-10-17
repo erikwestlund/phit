@@ -49,7 +49,7 @@ def validate(result, case):
 
 def main():
     php = os.environ.get('PHP','php')
-    extension = ROOT/'target/release'/('libphp_stats.dylib' if platform.system()=='Darwin' else 'libphp_stats.so')
+    extension = ROOT/'target/release'/('libphit.dylib' if platform.system()=='Darwin' else 'libphit.so')
     report = dict(recorded_at=datetime.now(timezone.utc).isoformat(),platform=platform.platform(),
         extension_sha256=hashlib.sha256(extension.read_bytes()).hexdigest(),seed=42,repeats=5,warmups=1,
         timing='Complete seeded batch call, including ChaCha initialization, inverse CDF and PHP result allocation; summaries/JSON excluded. Peak RSS covers the entire process.',

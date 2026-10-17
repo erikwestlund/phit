@@ -41,7 +41,7 @@ render reuses outputs.
 polyscope.json connects the workspace lifecycle to two scripts:
 
 - Setup runs scripts/workspace-up: render the saved documentation and link
-  docs/_site/ in Laravel Herd at http://php-stats-{{folder}}.test.
+  docs/_site/ in Laravel Herd at http://phit-{{folder}}.test.
 - Opening Preview runs setup again (safe to repeat), then starts Quarto's watcher
   with --no-serve. Herd serves the HTML without reserving a shared localhost port.
 - Archive runs scripts/workspace-down to remove this workspace's Herd link.
@@ -80,9 +80,9 @@ export QUARTO_PYTHON="$PWD/.context/notebooks-venv/bin/python"
 # macOS development installation; select matching paths on your platform.
 export PHP=/opt/homebrew/bin/php
 export PHP_CONFIG=/opt/homebrew/bin/php-config
-cargo build -p php-stats --locked
-export STATS_EXTENSION="$PWD/target/debug/libphp_stats.dylib"
-# Linux: use libphp_stats.so and matching PHP/PHP_CONFIG paths.
+cargo build -p phit --locked
+export STATS_EXTENSION="$PWD/target/debug/libphit.dylib"
+# Linux: use libphit.so and matching PHP/PHP_CONFIG paths.
 .context/notebooks-venv/bin/python docs/verifications/compare_ols.py
 quarto render docs/notebooks/ols-math.qmd
 quarto render docs/notebooks/ols-verification.qmd
@@ -141,7 +141,7 @@ and frozen outputs support browsing/rendering without rerunning scientific check
 
 ## Publish GitHub Pages
 
-The repository serves [the documentation website](https://erikwestlund.github.io/php-stats/)
+The repository serves [the documentation website](https://erikwestlund.github.io/phit/)
 from the main branch's `/docs` directory. After editing .qmd sources or refreshing
 frozen results, run:
 

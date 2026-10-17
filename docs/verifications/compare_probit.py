@@ -40,7 +40,7 @@ def compare_case(case):
                          log_likelihood=float(fit.llf), deviance=float(-2*fit.llf),
                          null_deviance=float(-2*null_ll), aic=float(fit.aic), df_residual=int(fit.df_resid))
     suffix = '.dylib' if sys.platform == 'darwin' else '.so'
-    extension = Path(os.environ.get('STATS_EXTENSION', ROOT / f'target/debug/libphp_stats{suffix}')).resolve()
+    extension = Path(os.environ.get('STATS_EXTENSION', ROOT / f'target/debug/libphit{suffix}')).resolve()
     native_run = subprocess.run([os.environ.get('PHP','php'),'-n','-d',f'extension={extension}',str(HERE/'probit.php')],
                                 input=json.dumps({'x':case['x'],'y':case['y']}),text=True,capture_output=True,check=True)
     native = json.loads(native_run.stdout)
@@ -57,7 +57,7 @@ def compare_case(case):
     errors = {}
     for key, expected in reference['result'].items():
         errors[key] = {}
-        for name, result in [('statsmodels',python_result),('php-stats',native['result'])]:
+        for name, result in [('statsmodels',python_result),('phit',native['result'])]:
             np.testing.assert_allclose(result[key],expected,atol=1e-9,rtol=1e-7,err_msg=f'{case["name"]}/{name}/{key}')
             errors[key][name] = float(np.max(np.abs(np.asarray(result[key])-expected)))
     retained, dropped = np.flatnonzero(keep).tolist(), np.flatnonzero(~keep).tolist()
@@ -70,7 +70,7 @@ def compare_case(case):
     return dict(name=case['name'], input={'x':case['x'],'y':case['y']},
                 versions={'R':reference['version'],'statsmodels':statsmodels.__version__,'numpy':np.__version__,
                           'Python':platform.python_version(),'PHP':native['version']},
-                **{'R':reference['result'],'statsmodels':python_result,'php-stats':native['result']},
+                **{'R':reference['result'],'statsmodels':python_result,'phit':native['result']},
                 warnings=native['warnings'],max_absolute_errors_vs_R=errors)
 
 
@@ -78,4 +78,4 @@ if __name__ == '__main__':
     results = [compare_case(case) for case in cases()]
     (HERE/'probit-results.json').write_text(json.dumps(results,indent=2,allow_nan=False)+'\n')
     for result in results:
-        print(f'{result["name"]}: R, statsmodels and PHP agree; n={result["php-stats"]["n_observations"]}')
+        print(f'{result["name"]}: R, statsmodels and PHP agree; n={result["phit"]["n_observations"]}')

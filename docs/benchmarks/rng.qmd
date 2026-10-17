@@ -60,7 +60,7 @@ Configure matching PHP/headers as in [development](../development.qmd). Python's
 standard library and R/jsonlite are reference tools only.
 
 ```sh
-cargo build -p php-stats --release --locked
+cargo build -p phit --release --locked
 PHP=/path/to/matching/php python3 tests/benchmarks/run-rng.py
 python3 scripts/distribution-docs.py
 ```

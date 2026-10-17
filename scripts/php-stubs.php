@@ -1,8 +1,8 @@
 <?php
 // Run with the built extension loaded. Reflection makes signatures/defaults authoritative.
 declare(strict_types=1);
-if (!extension_loaded('php_stats')) throw new RuntimeException('Load the php-stats extension before generating stubs');
-$functions = get_extension_funcs('php_stats'); sort($functions);
+if (!extension_loaded('phit')) throw new RuntimeException('Load the phit extension before generating stubs');
+$functions = get_extension_funcs('phit'); sort($functions);
 $common = ['coefficients'=>'list<float>','covariance'=>'list<list<float>>','std_errors'=>'list<float>',
  'p_values'=>'list<float>','conf_int'=>'list<array{float,float}>','fitted'=>'list<float>','residuals'=>'list<float>',
  'log_likelihood'=>'float','df_residual'=>'int','diagnostics'=>'array{converged:bool,solver:string,warnings:list<string>,iterations?:int,evaluations?:int,gradient_max?:float,boundary?:bool,singular?:bool}',
@@ -150,7 +150,7 @@ foreach ($functions as $name) {
  $text.='function '.$name.'('.implode(', ',$params).'): '.$r->getReturnType()." {}\n\n";
 }
 $text=rtrim($text)."\n";
-$root=dirname(__DIR__);$stub="$root/stubs/php-stats.php";$apiPath="$root/tests/fixtures/php-api.json";
+$root=dirname(__DIR__);$stub="$root/stubs/phit.php";$apiPath="$root/tests/fixtures/php-api.json";
 if(in_array('--check',$argv,true)){
  if(file_get_contents($stub)!==$text)throw new RuntimeException('PHP stubs drifted; regenerate scripts/php-stubs.php');
  if(json_decode(file_get_contents($apiPath),true,flags:JSON_THROW_ON_ERROR)!==$api)throw new RuntimeException('Native signatures/defaults changed; review compatibility before updating php-api.json');

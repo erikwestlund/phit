@@ -128,9 +128,9 @@ listwise policy with one warning and original retained/dropped positions.
 
 ```sh
 cargo test --workspace --locked
-cargo build -p php-stats --release --locked
-php -n -d "extension=$PWD/target/release/libphp_stats.dylib" tests/logistic-mixed.php
-php -n -d "extension=$PWD/target/release/libphp_stats.dylib" examples/logistic-mixed.php
+cargo build -p phit --release --locked
+php -n -d "extension=$PWD/target/release/libphit.dylib" tests/logistic-mixed.php
+php -n -d "extension=$PWD/target/release/libphit.dylib" examples/logistic-mixed.php
 PHP=/opt/homebrew/bin/php .context/notebooks-venv/bin/python docs/verifications/compare_logistic_mixed.py
 # Explicit reference refresh, not needed by ordinary Rust/PHP tests:
 Rscript tests/generate-logistic-mixed-fixtures.R

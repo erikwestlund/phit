@@ -9,7 +9,7 @@ installer live in the build environment.
 
 ## Names and supported packaging targets
 
-- Package: `erikwestlund/phit` (PIE/Packagist metadata).
+- Package: `phpstats/phit` (PIE/Packagist metadata).
 - Registered extension: **`phit`**; check `extension_loaded('phit')`.
 - Installed module: `phit.so`, including the macOS phpize install path.
 - Direct Cargo output remains `libphit.so` on Linux and `libphit.dylib`
@@ -78,7 +78,7 @@ To build without enabling or changing your PHP configuration:
 
 ```sh
 pie repository:add --with-php-config=/path/to/php-config path "$PWD"
-pie build 'erikwestlund/phit:*@dev' \
+pie build 'phpstats/phit:*@dev' \
   --with-php-config=/path/to/php-config \
   --with-phpize-path=/path/to/phpize
 ```
@@ -92,7 +92,7 @@ requirements. Pin a release version once published.
 After Packagist registration and a tagged release, the public command will be:
 
 ```sh
-pie install erikwestlund/phit:0.1.0
+pie install phpstats/phit:0.1.0
 ```
 
 That public package command is a release target, not an available registry entry.

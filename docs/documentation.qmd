@@ -141,7 +141,7 @@ and frozen outputs support browsing/rendering without rerunning scientific check
 
 ## Publish GitHub Pages
 
-The repository serves [the documentation website](https://erikwestlund.github.io/phit/)
+The repository serves [the documentation website](https://phpstats.github.io/phit/)
 from the main branch's `/docs` directory. After editing .qmd sources or refreshing
 frozen results, run:
 

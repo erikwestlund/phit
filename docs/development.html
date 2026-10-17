@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Development and installation – PHP Stats</title>
+<title>Development and installation – phit</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -136,7 +136,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">PHP Stats</a> 
+      <a href="./">phit</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -610,11 +610,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="build-and-run">Build and run</h2>
 <p>Run from the repository root with the environment above:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> test <span class="at">--workspace</span> <span class="at">--locked</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">-p</span> php-stats <span class="at">--locked</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">-p</span> phit <span class="at">--locked</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># macOS:</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">STATS_EXTENSION</span><span class="op">=</span><span class="st">"</span><span class="va">$PWD</span><span class="st">/target/debug/libphp_stats.dylib"</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">STATS_EXTENSION</span><span class="op">=</span><span class="st">"</span><span class="va">$PWD</span><span class="st">/target/debug/libphit.dylib"</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Linux instead:</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># export STATS_EXTENSION="$PWD/target/debug/libphp_stats.so"</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># export STATS_EXTENSION="$PWD/target/debug/libphit.so"</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$STATS_EXTENSION</span><span class="st">"</span> <span class="at">-m</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$STATS_EXTENSION</span><span class="st">"</span> <span class="at">-r</span> <span class="st">'echo stats_hello(), PHP_EOL;'</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$STATS_EXTENSION</span><span class="st">"</span> tests/ols.php</span>
@@ -632,13 +632,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$STATS_EXTENSION</span><span class="st">"</span> examples/lmm.php</span>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$STATS_EXTENSION</span><span class="st">"</span> examples/lmm-slopes.php</span>
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$STATS_EXTENSION</span><span class="st">"</span> examples/logistic-mixed.php</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>For persistent installation, the official optional <a href="https://ext-php.rs/getting-started/cargo-php.html">cargo-php workflow</a> is <code>cargo install cargo-php --locked</code>, then from <code>crates/php-extension</code>, <code>cargo php install --release</code>. Back up php.ini first. Alternatively build with <code>cargo build -p php-stats --release --locked</code> and add <code>extension=/absolute/path/to/target/release/libphp_stats.dylib</code> (Linux: <code>.so</code>) to the CLI php.ini shown by <code>php --ini</code>. Then <code>php examples/ols.php</code> runs directly. Rebuild for each PHP version; <code>-n</code> skips ini files for isolated development tests.</p>
+<p>For persistent installation, the official optional <a href="https://ext-php.rs/getting-started/cargo-php.html">cargo-php workflow</a> is <code>cargo install cargo-php --locked</code>, then from <code>crates/php-extension</code>, <code>cargo php install --release</code>. Back up php.ini first. Alternatively build with <code>cargo build -p phit --release --locked</code> and add <code>extension=/absolute/path/to/target/release/libphit.dylib</code> (Linux: <code>.so</code>) to the CLI php.ini shown by <code>php --ini</code>. Then <code>php examples/ols.php</code> runs directly. Rebuild for each PHP version; <code>-n</code> skips ini files for isolated development tests.</p>
 <p>For PIE installation, container builds, production FPM checks and release artifacts, see <a href="./deployment.html">installation and deployment</a>.</p>
 </section>
 <section id="running-in-an-application" class="level2">
 <h2 class="anchored" data-anchor-id="running-in-an-application">Running in an application</h2>
 <p>Build the release extension against the PHP installation used by the application. Deploy the library for that OS, architecture, PHP version and build configuration; a macOS dylib cannot be used by a Linux server. Keep the deployed library at a permanent absolute path and enable it in the relevant PHP configuration.</p>
-<p>CLI and PHP-FPM may read different ini files. Enable the extension for FPM as well as CLI when serving web requests, and restart FPM after installation or replacement. Verify <code>extension_loaded('php_stats')</code> and <code>function_exists('stats_ols')</code> and <code>function_exists('stats_logistic')</code> in the actual application runtime. Once enabled, application code calls stats_ols(), stats_logistic(), stats_probit() or stats_poisson() directly. There is no per-call import, autoloader or Composer dependency.</p>
+<p>CLI and PHP-FPM may read different ini files. Enable the extension for FPM as well as CLI when serving web requests, and restart FPM after installation or replacement. Verify <code>extension_loaded('phit')</code> and <code>function_exists('stats_ols')</code> and <code>function_exists('stats_logistic')</code> in the actual application runtime. Once enabled, application code calls stats_ols(), stats_logistic(), stats_probit() or stats_poisson() directly. There is no per-call import, autoloader or Composer dependency.</p>
 <p>PHP loads the library when it starts. Each call synchronously converts PHP arrays into owned Rust numeric vectors, fits the model, and returns an associative array. It does not launch R, a subprocess, or an external service. The deployed runtime needs the compiled library and its platform dependencies; Rust/Cargo and R are build/development tools.</p>
 </section>
 <section id="numerical-dependency-policy" class="level2">
@@ -730,7 +730,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/erikwestlund\.github\.io\/php-stats\/");
+        var filterRegex = new RegExp("https:\/\/erikwestlund\.github\.io\/phit\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

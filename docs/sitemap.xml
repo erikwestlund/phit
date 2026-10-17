@@ -1,211 +1,211 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/visualization.html</loc>
+    <loc>https://erikwestlund.github.io/phit/visualization.html</loc>
     <lastmod>2026-10-14T22:22:20.746Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/verifications/poisson.html</loc>
-    <lastmod>2026-10-14T22:22:20.742Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/verifications/poisson.html</loc>
+    <lastmod>2026-10-17T20:09:21.465Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/verifications/logistic.html</loc>
-    <lastmod>2026-10-14T22:22:20.741Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/verifications/logistic.html</loc>
+    <lastmod>2026-10-17T20:09:21.463Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/verifications/distributions.html</loc>
-    <lastmod>2026-10-14T22:22:20.732Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/verifications/distributions.html</loc>
+    <lastmod>2026-10-17T20:09:46.991Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/v0.2.html</loc>
+    <loc>https://erikwestlund.github.io/phit/v0.2.html</loc>
     <lastmod>2026-10-14T22:22:20.730Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/rng.html</loc>
+    <loc>https://erikwestlund.github.io/phit/rng.html</loc>
     <lastmod>2026-10-14T22:22:20.729Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/ols-math.html</loc>
+    <loc>https://erikwestlund.github.io/phit/ols-math.html</loc>
     <lastmod>2026-10-14T22:22:20.729Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/probit-verification.html</loc>
-    <lastmod>2026-10-14T22:22:20.728Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/notebooks/probit-verification.html</loc>
+    <lastmod>2026-10-17T20:09:21.441Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/poisson-verification.html</loc>
-    <lastmod>2026-10-14T22:22:20.728Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/notebooks/poisson-verification.html</loc>
+    <lastmod>2026-10-17T20:09:21.441Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/ols-verification.html</loc>
-    <lastmod>2026-10-14T22:22:20.728Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/notebooks/ols-verification.html</loc>
+    <lastmod>2026-10-17T20:09:21.441Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/logistic-verification.html</loc>
-    <lastmod>2026-10-14T22:22:20.728Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/notebooks/logistic-verification.html</loc>
+    <lastmod>2026-10-17T20:09:21.440Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/logistic-mixed-math.html</loc>
+    <loc>https://erikwestlund.github.io/phit/notebooks/logistic-mixed-math.html</loc>
     <lastmod>2026-10-14T22:22:20.727Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/lmm-verification.html</loc>
+    <loc>https://erikwestlund.github.io/phit/notebooks/lmm-verification.html</loc>
+    <lastmod>2026-10-17T20:09:21.439Z</lastmod>
+  </url>
+  <url>
+    <loc>https://erikwestlund.github.io/phit/notebooks/lmm-math.html</loc>
     <lastmod>2026-10-14T22:22:20.727Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/lmm-math.html</loc>
+    <loc>https://erikwestlund.github.io/phit/notebooks/index.html</loc>
     <lastmod>2026-10-14T22:22:20.727Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/index.html</loc>
+    <loc>https://erikwestlund.github.io/phit/licensing.html</loc>
     <lastmod>2026-10-14T22:22:20.727Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/licensing.html</loc>
-    <lastmod>2026-10-14T22:22:20.727Z</lastmod>
-  </url>
-  <url>
-    <loc>https://erikwestlund.github.io/php-stats/index.html</loc>
+    <loc>https://erikwestlund.github.io/phit/index.html</loc>
     <lastmod>2026-10-16T08:30:30.392Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/draw-numerics.html</loc>
+    <loc>https://erikwestlund.github.io/phit/draw-numerics.html</loc>
     <lastmod>2026-10-14T22:22:20.722Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/distributions.html</loc>
-    <lastmod>2026-10-16T08:04:00.800Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/distributions.html</loc>
+    <lastmod>2026-10-17T20:09:21.429Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/design-philosophy.html</loc>
+    <loc>https://erikwestlund.github.io/phit/design-philosophy.html</loc>
     <lastmod>2026-10-14T22:22:20.722Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/deployment.html</loc>
-    <lastmod>2026-10-16T02:58:07.165Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/deployment.html</loc>
+    <lastmod>2026-10-17T20:09:21.428Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/contracts.html</loc>
-    <lastmod>2026-10-16T10:06:27.721Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/contracts.html</loc>
+    <lastmod>2026-10-17T20:09:21.425Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/benchmarks/probit.html</loc>
-    <lastmod>2026-10-14T22:22:20.719Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/benchmarks/probit.html</loc>
+    <lastmod>2026-10-17T20:09:21.424Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/benchmarks/ols.html</loc>
-    <lastmod>2026-10-14T22:22:20.719Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/benchmarks/ols.html</loc>
+    <lastmod>2026-10-17T20:09:21.423Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/benchmarks/logistic-mixed.html</loc>
-    <lastmod>2026-10-14T22:22:20.718Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/benchmarks/logistic-mixed.html</loc>
+    <lastmod>2026-10-17T20:09:21.421Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/benchmarks/draws.html</loc>
-    <lastmod>2026-10-14T22:22:20.710Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/benchmarks/draws.html</loc>
+    <lastmod>2026-10-17T20:09:21.419Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/benchmarks/distributions.html</loc>
-    <lastmod>2026-10-14T22:22:20.710Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/benchmarks/distributions.html</loc>
+    <lastmod>2026-10-17T20:09:46.993Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/benchmarks/lmm.html</loc>
-    <lastmod>2026-10-14T22:22:20.717Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/benchmarks/lmm.html</loc>
+    <lastmod>2026-10-17T20:09:21.421Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/benchmarks/logistic.html</loc>
-    <lastmod>2026-10-16T08:07:33.616Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/benchmarks/logistic.html</loc>
+    <lastmod>2026-10-17T20:09:21.422Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/benchmarks/poisson.html</loc>
-    <lastmod>2026-10-14T22:22:20.719Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/benchmarks/poisson.html</loc>
+    <lastmod>2026-10-17T20:09:21.423Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/benchmarks/rng.html</loc>
-    <lastmod>2026-10-14T22:22:20.719Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/benchmarks/rng.html</loc>
+    <lastmod>2026-10-17T20:09:46.993Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/data/lmm/index.html</loc>
+    <loc>https://erikwestlund.github.io/phit/data/lmm/index.html</loc>
     <lastmod>2026-10-14T22:22:20.721Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/descriptive.html</loc>
+    <loc>https://erikwestlund.github.io/phit/descriptive.html</loc>
     <lastmod>2026-10-16T02:29:45.889Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/development.html</loc>
-    <lastmod>2026-10-14T22:22:20.722Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/development.html</loc>
+    <lastmod>2026-10-17T20:09:21.428Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/documentation.html</loc>
-    <lastmod>2026-10-16T02:58:07.165Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/documentation.html</loc>
+    <lastmod>2026-10-17T20:09:21.429Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/formulas.html</loc>
+    <loc>https://erikwestlund.github.io/phit/formulas.html</loc>
     <lastmod>2026-10-16T15:02:41.808Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/io.html</loc>
+    <loc>https://erikwestlund.github.io/phit/io.html</loc>
     <lastmod>2026-10-16T10:05:28.047Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/missing-data.html</loc>
+    <loc>https://erikwestlund.github.io/phit/missing-data.html</loc>
     <lastmod>2026-10-14T22:22:20.727Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/lmm-general-math.html</loc>
+    <loc>https://erikwestlund.github.io/phit/notebooks/lmm-general-math.html</loc>
     <lastmod>2026-10-14T22:22:20.727Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/lmm-public-verification.html</loc>
+    <loc>https://erikwestlund.github.io/phit/notebooks/lmm-public-verification.html</loc>
+    <lastmod>2026-10-17T20:09:21.436Z</lastmod>
+  </url>
+  <url>
+    <loc>https://erikwestlund.github.io/phit/notebooks/logistic-math.html</loc>
     <lastmod>2026-10-14T22:22:20.727Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/logistic-math.html</loc>
-    <lastmod>2026-10-14T22:22:20.727Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/notebooks/logistic-mixed-verification.html</loc>
+    <lastmod>2026-10-17T20:09:21.440Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/logistic-mixed-verification.html</loc>
-    <lastmod>2026-10-14T22:22:20.727Z</lastmod>
-  </url>
-  <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/ols-math.html</loc>
+    <loc>https://erikwestlund.github.io/phit/notebooks/ols-math.html</loc>
     <lastmod>2026-10-14T22:22:20.728Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/poisson-math.html</loc>
+    <loc>https://erikwestlund.github.io/phit/notebooks/poisson-math.html</loc>
     <lastmod>2026-10-14T22:22:20.728Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/probit-math.html</loc>
+    <loc>https://erikwestlund.github.io/phit/notebooks/probit-math.html</loc>
     <lastmod>2026-10-14T22:22:20.728Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/notebooks/r-compatibility.html</loc>
+    <loc>https://erikwestlund.github.io/phit/notebooks/r-compatibility.html</loc>
     <lastmod>2026-10-14T22:22:20.728Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/r-compatibility.html</loc>
-    <lastmod>2026-10-16T15:02:41.808Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/r-compatibility.html</loc>
+    <lastmod>2026-10-17T20:09:21.443Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/v0.1.html</loc>
-    <lastmod>2026-10-16T02:58:07.164Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/v0.1.html</loc>
+    <lastmod>2026-10-17T20:09:21.443Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/verification.html</loc>
-    <lastmod>2026-10-14T22:22:20.730Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/verification.html</loc>
+    <lastmod>2026-10-17T20:09:21.444Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/verifications/lmm.html</loc>
-    <lastmod>2026-10-14T22:22:20.739Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/verifications/lmm.html</loc>
+    <lastmod>2026-10-17T20:09:21.459Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/verifications/ols.html</loc>
+    <loc>https://erikwestlund.github.io/phit/verifications/ols.html</loc>
     <lastmod>2026-10-14T22:22:20.741Z</lastmod>
   </url>
   <url>
-    <loc>https://erikwestlund.github.io/php-stats/verifications/probit.html</loc>
-    <lastmod>2026-10-14T22:22:20.742Z</lastmod>
+    <loc>https://erikwestlund.github.io/phit/verifications/probit.html</loc>
+    <lastmod>2026-10-17T20:09:21.466Z</lastmod>
   </url>
 </urlset>

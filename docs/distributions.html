@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Probability distributions – PHP Stats</title>
+<title>Probability distributions – phit</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -165,7 +165,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">PHP Stats</a> 
+      <a href="./">phit</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -765,7 +765,7 @@ window.Quarto = {
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">$tails</span> <span class="op">=</span> stats_t_sf_array(values<span class="ot">:</span> [<span class="dv">1</span><span class="ot">,</span> <span class="dv">2</span><span class="ot">,</span> <span class="dv">3</span>]<span class="ot">,</span> df<span class="ot">:</span> <span class="dv">12</span>)<span class="ot">;</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="va">$logMass</span> <span class="op">=</span> stats_poisson_logpmf_array(counts<span class="ot">:</span> [<span class="dv">0</span><span class="ot">,</span> <span class="dv">2</span><span class="ot">,</span> <span class="dv">5</span>]<span class="ot">,</span> lambda<span class="ot">:</span> <span class="fl">3.2</span>)<span class="ot">;</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="va">$interval</span> <span class="op">=</span> stats_gamma_quantile_array(probabilities<span class="ot">:</span> [<span class="op">.</span><span class="bn">025</span><span class="ot">,</span> <span class="op">.</span><span class="dv">975</span>]<span class="ot">,</span> shape<span class="ot">:</span> <span class="dv">2</span><span class="ot">,</span> scale<span class="ot">:</span> <span class="dv">3</span>)<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Scalar continuous evaluation uses argument <code>x</code>; discrete uses <code>k</code>. Batch continuous evaluation uses <code>values</code>; discrete uses <code>counts</code>; all batch quantiles use <code>probabilities</code>. Parameter names are part of the contract because PHP supports named arguments. The generated <code>stubs/php-stats.php</code> lists every exact signature. Loading the extension makes all functions available globally.</p>
+<p>Scalar continuous evaluation uses argument <code>x</code>; discrete uses <code>k</code>. Batch continuous evaluation uses <code>values</code>; discrete uses <code>counts</code>; all batch quantiles use <code>probabilities</code>. Parameter names are part of the contract because PHP supports named arguments. The generated <code>stubs/phit.php</code> lists every exact signature. Loading the extension makes all functions available globally.</p>
 <p>Batch evaluation constructs the distribution once, then streams input values through the same core evaluation policy. Output is a packed list in input iteration order; keys are not retained. Empty input returns <code>[]</code>, but parameters are still validated. An invalid element rejects the entire call. No missing rows are dropped. The <a href="./benchmarks/distributions.html">benchmarks</a> quantify when batching saves PHP boundary overhead and when numerical evaluation dominates.</p>
 </section>
 <section id="tails-and-likelihoods" class="level2">
@@ -916,7 +916,7 @@ window.Quarto = {
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/erikwestlund\.github\.io\/php-stats\/");
+        var filterRegex = new RegExp("https:\/\/erikwestlund\.github\.io\/phit\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

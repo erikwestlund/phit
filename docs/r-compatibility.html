@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>R compatibility: target, coverage and remaining work – PHP Stats</title>
+<title>R compatibility: target, coverage and remaining work – phit</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -136,7 +136,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">PHP Stats</a> 
+      <a href="./">phit</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -684,7 +684,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="evidence-and-tolerance-policy">Evidence and tolerance policy</h2>
 <p>The <a href="./notebooks/r-compatibility.html">executed comparison notebook</a> fits 12 fixed-model cases and 15 mixed-model cases, including the published sleepstudy random-slope model under both ML and REML, plus three- and four-grouping-level nested designs. It checks coefficients, covariance, inference, every observation’s fitted/residual values, random effects/covariances, scale, likelihood and information criteria. Both native optimizers are compared against all four R wrappers. sleepstudy ML/REML also have independent statsmodels fits. Older fixtures and the four published random-intercept datasets remain tested.</p>
 <p>Fixed-model comparisons use <code>abs_error &lt;= 1e-7 + 1e-6 * abs(reference)</code>. Native BOBYQA versus R BOBYQA uses <code>1e-5 + 1e-5 * abs(reference)</code> for mixed estimates; cross-optimizer comparisons use <code>1e-3 + 3e-4 * abs(reference)</code>. <strong>All mixed likelihood/AIC/BIC comparisons</strong> use the stricter <code>5e-6 + 1e-9 * abs(reference)</code>. Shapes, sample metadata, grouping order, parameter counts and singular flags are exact where compared. The notebook reports actual errors, not only pass/fail.</p>
-<p>GLM covariances are evaluated at the final coefficients. R’s <code>vcov()</code> for a <code>glm</code> reuses the weights of the last IRLS iteration, which were computed one step before the final update. On well-conditioned fits the two agree far inside the tolerance. On designs near separation they can differ by about 1e-5 relative. For <code>am ~ factor(cyl) + wt</code> on <code>mtcars</code>, the Fisher information recomputed in R at <code>coef(fit)</code> matches the php-stats covariance to about 1e-9.</p>
+<p>GLM covariances are evaluated at the final coefficients. R’s <code>vcov()</code> for a <code>glm</code> reuses the weights of the last IRLS iteration, which were computed one step before the final update. On well-conditioned fits the two agree far inside the tolerance. On designs near separation they can differ by about 1e-5 relative. For <code>am ~ factor(cyl) + wt</code> on <code>mtcars</code>, the Fisher information recomputed in R at <code>coef(fit)</code> matches the phit covariance to about 1e-9.</p>
 <p>Different optimizers can stop at slightly different variance estimates on a flat likelihood. The cross-optimizer tolerance accommodates that observed spread, particularly covariance entries and small residuals on sleepstudy. It does not replace the stricter BOBYQA check or likelihood check.</p>
 <p>The R fixtures record each wrapper’s controls and warnings. They use tightened optimization controls and <code>boundary.tol=1e-3</code>, with lme4 checking whether snapping near-boundary Cholesky parameters to zero improves the objective. At the default boundary tolerance, one singular REML case was left just above zero by nloptwrap and classified nonsingular. Tightening nlminb excessively also produced singular convergence warnings. <strong>These fixtures validate explicit controls, not identity under every package default.</strong> The saved reference runs have convergence code zero and no warnings. The multi-level BOBYQA references also use a local R-only restart (rhobeg=0.001, rhoend=1e-9) to improve variance-component precision on flat profiles; no native estimates are used to seed R. Published historical benchmark reports retain their original model/optimizer definitions; their timings do not describe the new general fitter.</p>
 </section>
@@ -705,9 +705,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="reproduce" class="level2">
 <h2 class="anchored" data-anchor-id="reproduce">Reproduce</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> test <span class="at">--workspace</span> <span class="at">--locked</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">-p</span> php-stats <span class="at">--release</span> <span class="at">--locked</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$PWD</span><span class="st">/target/release/libphp_stats.dylib"</span> tests/r-compatibility.php</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$PWD</span><span class="st">/target/release/libphp_stats.dylib"</span> tests/lmm-expanded.php</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">-p</span> phit <span class="at">--release</span> <span class="at">--locked</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$PWD</span><span class="st">/target/release/libphit.dylib"</span> tests/r-compatibility.php</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> <span class="at">-n</span> <span class="at">-d</span> <span class="st">"extension=</span><span class="va">$PWD</span><span class="st">/target/release/libphit.dylib"</span> tests/lmm-expanded.php</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="va">PHP</span><span class="op">=</span>/opt/homebrew/bin/php <span class="ex">.context/notebooks-venv/bin/python</span> docs/verifications/compare_r_compatibility.py</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Refresh expected R values explicitly (R and lme4 are development dependencies):</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> tests/generate-r-compatibility-fixtures.R</span>
@@ -796,7 +796,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/erikwestlund\.github\.io\/php-stats\/");
+        var filterRegex = new RegExp("https:\/\/erikwestlund\.github\.io\/phit\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

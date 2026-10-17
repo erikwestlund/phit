@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Building and maintaining the documentation – PHP Stats</title>
+<title>Building and maintaining the documentation – phit</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -136,7 +136,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">PHP Stats</a> 
+      <a href="./">phit</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -595,7 +595,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="polyscope-workspace-preview">Polyscope workspace preview</h2>
 <p>polyscope.json connects the workspace lifecycle to two scripts:</p>
 <ul>
-<li>Setup runs scripts/workspace-up: render the saved documentation and link docs/_site/ in Laravel Herd at http://php-stats-{{folder}}.test.</li>
+<li>Setup runs scripts/workspace-up: render the saved documentation and link docs/_site/ in Laravel Herd at http://phit-{{folder}}.test.</li>
 <li>Opening Preview runs setup again (safe to repeat), then starts Quarto’s watcher with –no-serve. Herd serves the HTML without reserving a shared localhost port.</li>
 <li>Archive runs scripts/workspace-down to remove this workspace’s Herd link. Stop Preview to stop its watcher. Cleanup does not delete source or build outputs.</li>
 </ul>
@@ -613,9 +613,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># macOS development installation; select matching paths on your platform.</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PHP</span><span class="op">=</span>/opt/homebrew/bin/php</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PHP_CONFIG</span><span class="op">=</span>/opt/homebrew/bin/php-config</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">-p</span> php-stats <span class="at">--locked</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">STATS_EXTENSION</span><span class="op">=</span><span class="st">"</span><span class="va">$PWD</span><span class="st">/target/debug/libphp_stats.dylib"</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Linux: use libphp_stats.so and matching PHP/PHP_CONFIG paths.</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">-p</span> phit <span class="at">--locked</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">STATS_EXTENSION</span><span class="op">=</span><span class="st">"</span><span class="va">$PWD</span><span class="st">/target/debug/libphit.dylib"</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Linux: use libphit.so and matching PHP/PHP_CONFIG paths.</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="ex">.context/notebooks-venv/bin/python</span> docs/verifications/compare_ols.py</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render docs/notebooks/ols-math.qmd</span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render docs/notebooks/ols-verification.qmd</span>
@@ -643,7 +643,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="publish-github-pages" class="level2">
 <h2 class="anchored" data-anchor-id="publish-github-pages">Publish GitHub Pages</h2>
-<p>The repository serves <a href="https://erikwestlund.github.io/php-stats/">the documentation website</a> from the main branch’s <code>/docs</code> directory. After editing .qmd sources or refreshing frozen results, run:</p>
+<p>The repository serves <a href="https://erikwestlund.github.io/phit/">the documentation website</a> from the main branch’s <code>/docs</code> directory. After editing .qmd sources or refreshing frozen results, run:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/render-docs</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Commit the regenerated HTML/assets with their sources and push to main. <code>docs/.nojekyll</code> lets GitHub Pages serve the static Quarto website directly, including asset directories containing underscores. <code>quarto render docs</code> alone updates the workspace preview; the publication script also refreshes <code>/docs/index.html</code>.</p>
 
@@ -724,7 +724,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/erikwestlund\.github\.io\/php-stats\/");
+        var filterRegex = new RegExp("https:\/\/erikwestlund\.github\.io\/phit\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

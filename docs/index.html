@@ -581,7 +581,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>Fit statistical models directly in PHP using ordinary numeric arrays. The native Rust engine returns coefficients, uncertainty, fitted values, and model statistics. A fixed intercept is added automatically; <code>intercept: false</code> accepts a literal design or fits a model through the origin.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$result</span> <span class="op">=</span> stats_ols(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$result</span> <span class="op">=</span> Phit\fit_ols(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    x<span class="ot">:</span> [[<span class="fl">74.4</span>]<span class="ot">,</span> [<span class="fl">57.4</span>]<span class="ot">,</span> [<span class="fl">66.4</span>]<span class="ot">,</span> [<span class="fl">49.1</span>]<span class="ot">,</span> [<span class="fl">45.7</span>]<span class="ot">,</span> [<span class="fl">92.4</span>]<span class="ot">,</span> [<span class="fl">37.0</span>]<span class="ot">,</span> [<span class="fl">93.9</span>]]<span class="ot">,</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    y<span class="ot">:</span> [<span class="fl">1879.25</span><span class="ot">,</span> <span class="fl">1805.03</span><span class="ot">,</span> <span class="fl">2022.29</span><span class="ot">,</span> <span class="fl">1267.85</span><span class="ot">,</span> <span class="fl">1509.24</span><span class="ot">,</span> <span class="fl">2240.10</span><span class="ot">,</span> <span class="fl">959.51</span><span class="ot">,</span> <span class="fl">2386.54</span>]<span class="ot">,</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>)<span class="ot">;</span></span>
@@ -611,7 +611,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><a href="./rng.html">Seeded sampling</a>: local ChaCha20 streams, family APIs and reproducibility.</li>
 <li><a href="./v0.2.html">v0.2 readiness</a>: completed scope and release limits.</li>
 <li><a href="./draw-numerics.html">Posterior-draw kernels</a>: weighted moments, covariance maps and affine transformations.</li>
-<li><a href="./io.html">Reading CSV files</a>: <code>stats_read_csv()</code>, the native reader behind phibble’s <code>Frame::fromCsv()</code>.</li>
+<li><a href="./io.html">Reading CSV files</a>: <code>read_csv()</code>, the native reader behind phibble’s <code>Frame::fromCsv()</code>.</li>
 </ul>
 </section>
 <section id="binary-logistic-regression" class="level2">

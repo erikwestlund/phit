@@ -588,7 +588,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>The native library installs into PHP itself. Applications call <code>stats_ols()</code>, <code>stats_poisson()</code> and the other functions directly after the extension is enabled. The deployed PHP process does not need Cargo, R or Python. Build tools and the installer live in the build environment.</p>
+<p>The native library installs into PHP itself. Applications call <code>fit_ols()</code>, <code>fit_poisson()</code> and the other functions directly after the extension is enabled. The deployed PHP process does not need Cargo, R or Python. Build tools and the installer live in the build environment.</p>
 <section id="names-and-supported-packaging-targets" class="level2">
 <h2 class="anchored" data-anchor-id="names-and-supported-packaging-targets">Names and supported packaging targets</h2>
 <ul>
@@ -597,7 +597,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Installed module: <code>phit.so</code>, including the macOS phpize install path.</li>
 <li>Direct Cargo output remains <code>libphit.so</code> on Linux and <code>libphit.dylib</code> on macOS. They contain the same native extension, using different filenames.</li>
 </ul>
-<p>The registered name changed from <code>phit</code> because PIE forbids hyphens in extension identifiers. Update <code>extension_loaded()</code>, <code>get_extension_funcs()</code>, <code>phpversion()</code> and Composer extension requirements accordingly. Native <code>stats_*</code> function names and their statistical contracts are unaffected.</p>
+<p>The registered extension name is <code>phit</code>: use it with <code>extension_loaded()</code>, <code>get_extension_funcs()</code>, <code>phpversion()</code> and Composer (<code>ext-phit</code>). Functions are in the <code>Phit</code> namespace (<code>Phit\fit_lm</code>, <code>Phit\dist_normal_cdf</code>).</p>
 <p>Package metadata targets <strong>PHP 8.3, 8.4 and 8.5</strong>, non-thread-safe PHP, Linux and macOS. Windows and ZTS are excluded. Container and binary builds use Debian Bookworm/glibc. Alpine/musl and older glibc builds are not covered by these binaries. The CI matrix targets Linux amd64 at all three PHP versions. Actual local evidence and its architecture/version are recorded separately in the verification section; a configured CI job is not a passed job.</p>
 </section>
 <section id="build-a-ready-to-use-php-fpm-image" class="level2">

@@ -579,14 +579,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Every supported distribution has a <code>stats_{family}_rng()</code> function that returns ordinary PHP numeric arrays. Sampling uses mature Rust RNG libraries already in the dependency graph: pinned <code>rand 0.9.5</code> and <code>rand_chacha 0.9.0</code>, now explicit stats-core dependencies. No package versions were upgraded. Each call owns and restarts its own ChaCha20 state from the supplied seed.</p>
+<p>Every supported distribution has a <code>dist_{family}_rng()</code> function that returns ordinary PHP numeric arrays. Sampling uses mature Rust RNG libraries already in the dependency graph: pinned <code>rand 0.9.5</code> and <code>rand_chacha 0.9.0</code>, now explicit stats-core dependencies. No package versions were upgraded. Each call owns and restarts its own ChaCha20 state from the supplied seed.</p>
 <section id="api-and-state-ownership" class="level2">
 <h2 class="anchored" data-anchor-id="api-and-state-ownership">API and state ownership</h2>
-<p>The signature is <code>stats_{family}_rng(int $n, int $seed, ...distribution parameters): array</code>. The family parameters and defaults are exactly those of the corresponding <a href="./distributions.html#families-and-parameterizations">probability API</a>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$normal</span> <span class="op">=</span> stats_normal_rng(n<span class="ot">:</span> <span class="dv">5</span><span class="ot">,</span> seed<span class="ot">:</span> <span class="dv">42</span>)<span class="ot">;</span> <span class="co">// Default mean 0, SD 1.</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">$measurements</span> <span class="op">=</span> stats_normal_rng(n<span class="ot">:</span> <span class="dv">8</span><span class="ot">,</span> seed<span class="ot">:</span> <span class="dv">20261012</span><span class="ot">,</span> mean<span class="ot">:</span> <span class="dv">10</span><span class="ot">,</span> sd<span class="ot">:</span> <span class="op">.</span><span class="dv">5</span>)<span class="ot">;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="va">$counts</span> <span class="op">=</span> stats_poisson_rng(n<span class="ot">:</span> <span class="dv">8</span><span class="ot">,</span> seed<span class="ot">:</span> <span class="dv">20261013</span><span class="ot">,</span> lambda<span class="ot">:</span> <span class="fl">3.2</span>)<span class="ot">;</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="va">$beta</span> <span class="op">=</span> stats_beta_rng(n<span class="ot">:</span> <span class="dv">8</span><span class="ot">,</span> seed<span class="ot">:</span> <span class="dv">17</span><span class="ot">,</span> alpha<span class="ot">:</span> <span class="dv">2</span><span class="ot">,</span> beta<span class="ot">:</span> <span class="dv">5</span>)<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The signature is <code>dist_{family}_rng(int $n, int $seed, ...distribution parameters): array</code>. The family parameters and defaults are exactly those of the corresponding <a href="./distributions.html#families-and-parameterizations">probability API</a>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$normal</span> <span class="op">=</span> Phit\dist_normal_rng(n<span class="ot">:</span> <span class="dv">5</span><span class="ot">,</span> seed<span class="ot">:</span> <span class="dv">42</span>)<span class="ot">;</span> <span class="co">// Default mean 0, SD 1.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">$measurements</span> <span class="op">=</span> Phit\dist_normal_rng(n<span class="ot">:</span> <span class="dv">8</span><span class="ot">,</span> seed<span class="ot">:</span> <span class="dv">20261012</span><span class="ot">,</span> mean<span class="ot">:</span> <span class="dv">10</span><span class="ot">,</span> sd<span class="ot">:</span> <span class="op">.</span><span class="dv">5</span>)<span class="ot">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="va">$counts</span> <span class="op">=</span> Phit\dist_poisson_rng(n<span class="ot">:</span> <span class="dv">8</span><span class="ot">,</span> seed<span class="ot">:</span> <span class="dv">20261013</span><span class="ot">,</span> lambda<span class="ot">:</span> <span class="fl">3.2</span>)<span class="ot">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="va">$beta</span> <span class="op">=</span> Phit\dist_beta_rng(n<span class="ot">:</span> <span class="dv">8</span><span class="ot">,</span> seed<span class="ot">:</span> <span class="dv">17</span><span class="ot">,</span> alpha<span class="ot">:</span> <span class="dv">2</span><span class="ot">,</span> beta<span class="ot">:</span> <span class="dv">5</span>)<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -596,55 +596,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>stats_normal_rng</code></td>
+<td><code>dist_normal_rng</code></td>
 <td>mean = 0, sd = 1</td>
 </tr>
 <tr class="even">
-<td><code>stats_t_rng</code></td>
+<td><code>dist_t_rng</code></td>
 <td>df</td>
 </tr>
 <tr class="odd">
-<td><code>stats_chisquare_rng</code></td>
+<td><code>dist_chisquare_rng</code></td>
 <td>df</td>
 </tr>
 <tr class="even">
-<td><code>stats_f_rng</code></td>
+<td><code>dist_f_rng</code></td>
 <td>df1, df2</td>
 </tr>
 <tr class="odd">
-<td><code>stats_beta_rng</code></td>
+<td><code>dist_beta_rng</code></td>
 <td>alpha, beta</td>
 </tr>
 <tr class="even">
-<td><code>stats_gamma_rng</code></td>
+<td><code>dist_gamma_rng</code></td>
 <td>shape, scale = 1</td>
 </tr>
 <tr class="odd">
-<td><code>stats_exponential_rng</code></td>
+<td><code>dist_exponential_rng</code></td>
 <td>rate = 1</td>
 </tr>
 <tr class="even">
-<td><code>stats_lognormal_rng</code></td>
+<td><code>dist_lognormal_rng</code></td>
 <td>meanlog = 0, sdlog = 1</td>
 </tr>
 <tr class="odd">
-<td><code>stats_logistic_rng</code></td>
+<td><code>dist_logistic_rng</code></td>
 <td>location = 0, scale = 1</td>
 </tr>
 <tr class="even">
-<td><code>stats_binomial_rng</code></td>
+<td><code>dist_binomial_rng</code></td>
 <td>size, prob</td>
 </tr>
 <tr class="odd">
-<td><code>stats_poisson_rng</code></td>
+<td><code>dist_poisson_rng</code></td>
 <td>lambda</td>
 </tr>
 <tr class="even">
-<td><code>stats_nbinom_rng</code></td>
+<td><code>dist_nbinom_rng</code></td>
 <td>size, prob</td>
 </tr>
 <tr class="odd">
-<td><code>stats_nbinom_mu_rng</code></td>
+<td><code>dist_nbinom_mu_rng</code></td>
 <td>size, mu</td>
 </tr>
 </tbody>

@@ -6,11 +6,11 @@
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/verifications/poisson.html</loc>
-    <lastmod>2026-10-17T20:09:21.465Z</lastmod>
+    <lastmod>2026-10-17T20:21:07.399Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/verifications/logistic.html</loc>
-    <lastmod>2026-10-17T20:09:21.463Z</lastmod>
+    <lastmod>2026-10-17T20:21:07.398Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/verifications/distributions.html</loc>
@@ -18,11 +18,11 @@
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/v0.2.html</loc>
-    <lastmod>2026-10-14T22:22:20.730Z</lastmod>
+    <lastmod>2026-10-17T20:24:23.107Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/rng.html</loc>
-    <lastmod>2026-10-14T22:22:20.729Z</lastmod>
+    <lastmod>2026-10-17T20:24:23.107Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/ols-math.html</loc>
@@ -30,19 +30,19 @@
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/notebooks/probit-verification.html</loc>
-    <lastmod>2026-10-17T20:09:21.441Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.076Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/notebooks/poisson-verification.html</loc>
-    <lastmod>2026-10-17T20:09:21.441Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.075Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/notebooks/ols-verification.html</loc>
-    <lastmod>2026-10-17T20:09:21.441Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.075Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/notebooks/logistic-verification.html</loc>
-    <lastmod>2026-10-17T20:09:21.440Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.075Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/notebooks/logistic-mixed-math.html</loc>
@@ -50,7 +50,7 @@
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/notebooks/lmm-verification.html</loc>
-    <lastmod>2026-10-17T20:09:21.439Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.074Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/notebooks/lmm-math.html</loc>
@@ -66,27 +66,27 @@
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/index.html</loc>
-    <lastmod>2026-10-16T08:30:30.392Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.067Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/draw-numerics.html</loc>
-    <lastmod>2026-10-14T22:22:20.722Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.060Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/distributions.html</loc>
-    <lastmod>2026-10-17T20:09:21.429Z</lastmod>
+    <lastmod>2026-10-17T20:24:23.107Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/design-philosophy.html</loc>
-    <lastmod>2026-10-14T22:22:20.722Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.059Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/deployment.html</loc>
-    <lastmod>2026-10-17T20:09:21.428Z</lastmod>
+    <lastmod>2026-10-17T20:24:35.251Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/contracts.html</loc>
-    <lastmod>2026-10-17T20:09:21.425Z</lastmod>
+    <lastmod>2026-10-17T20:24:35.251Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/benchmarks/probit.html</loc>
@@ -130,11 +130,11 @@
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/descriptive.html</loc>
-    <lastmod>2026-10-16T02:29:45.889Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.059Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/development.html</loc>
-    <lastmod>2026-10-17T20:09:21.428Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.059Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/documentation.html</loc>
@@ -142,15 +142,15 @@
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/formulas.html</loc>
-    <lastmod>2026-10-16T15:02:41.808Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.067Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/io.html</loc>
-    <lastmod>2026-10-16T10:05:28.047Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.067Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/missing-data.html</loc>
-    <lastmod>2026-10-14T22:22:20.727Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.067Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/notebooks/lmm-general-math.html</loc>
@@ -162,7 +162,7 @@
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/notebooks/logistic-math.html</loc>
-    <lastmod>2026-10-14T22:22:20.727Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.074Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/notebooks/logistic-mixed-verification.html</loc>
@@ -182,11 +182,11 @@
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/notebooks/r-compatibility.html</loc>
-    <lastmod>2026-10-14T22:22:20.728Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.076Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/r-compatibility.html</loc>
-    <lastmod>2026-10-17T20:09:21.443Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.077Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/v0.1.html</loc>
@@ -194,18 +194,18 @@
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/verification.html</loc>
-    <lastmod>2026-10-17T20:09:21.444Z</lastmod>
+    <lastmod>2026-10-17T20:16:41.078Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/verifications/lmm.html</loc>
-    <lastmod>2026-10-17T20:09:21.459Z</lastmod>
+    <lastmod>2026-10-17T20:21:07.397Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/verifications/ols.html</loc>
-    <lastmod>2026-10-14T22:22:20.741Z</lastmod>
+    <lastmod>2026-10-17T20:21:07.399Z</lastmod>
   </url>
   <url>
     <loc>https://erikwestlund.github.io/phit/verifications/probit.html</loc>
-    <lastmod>2026-10-17T20:09:21.466Z</lastmod>
+    <lastmod>2026-10-17T20:21:07.400Z</lastmod>
   </url>
 </urlset>

@@ -610,7 +610,7 @@ window.Quarto = {
 </header>
 
 
-<p>The extension provides 182 probability-evaluation functions: 13 parameterizations, seven operations each, and scalar plus native <code>_array</code> forms, plus 13 explicitly <a href="./rng.html">seeded batch sampling functions</a>. These return ordinary PHP numbers and arrays. Distribution evaluation is separate from regression fitting; <code>stats_poisson()</code> still fits a count model, while <code>stats_poisson_pmf()</code> evaluates a specified Poisson distribution. <a href="./descriptive.html">Descriptive statistics</a> add ten functions for supplied numeric slices. <a href="./draw-numerics.html">Posterior-draw kernels</a> handle literal draw matrices.</p>
+<p>The extension provides 182 probability-evaluation functions: 13 parameterizations, seven operations each, and scalar plus native <code>_array</code> forms, plus 13 explicitly <a href="./rng.html">seeded batch sampling functions</a>. These return ordinary PHP numbers and arrays. Distribution evaluation is separate from regression fitting; <code>fit_poisson()</code> still fits a count model, while <code>dist_poisson_pmf()</code> evaluates a specified Poisson distribution. <a href="./descriptive.html">Descriptive statistics</a> add ten functions for supplied numeric slices. <a href="./draw-numerics.html">Posterior-draw kernels</a> handle literal draw matrices.</p>
 <section id="families-and-parameterizations" class="level2">
 <h2 class="anchored" data-anchor-id="families-and-parameterizations">Families and parameterizations</h2>
 <p>Replace <code>{family}</code> in the operation names below with one of these names. PHP numeric arguments accept integers or floats; binomial <code>size</code> specifically requires an integer. All parameters must be finite and satisfy their domains.</p>
@@ -715,71 +715,71 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>Density</td>
-<td><code>stats_{family}_pdf(x, ...parameters)</code></td>
+<td><code>dist_{family}_pdf(x, ...parameters)</code></td>
 <td>Continuous density f(x)</td>
 </tr>
 <tr class="even">
 <td>Log density</td>
-<td><code>stats_{family}_logpdf(x, ...parameters)</code></td>
+<td><code>dist_{family}_logpdf(x, ...parameters)</code></td>
 <td>Natural log of density</td>
 </tr>
 <tr class="odd">
 <td>Mass</td>
-<td><code>stats_{family}_pmf(k, ...parameters)</code></td>
+<td><code>dist_{family}_pmf(k, ...parameters)</code></td>
 <td>Discrete P(X = k)</td>
 </tr>
 <tr class="even">
 <td>Log mass</td>
-<td><code>stats_{family}_logpmf(k, ...parameters)</code></td>
+<td><code>dist_{family}_logpmf(k, ...parameters)</code></td>
 <td>Natural log of mass</td>
 </tr>
 <tr class="odd">
 <td>CDF</td>
-<td><code>stats_{family}_cdf(x_or_k, ...parameters)</code></td>
+<td><code>dist_{family}_cdf(x_or_k, ...parameters)</code></td>
 <td>P(X ≤ x)</td>
 </tr>
 <tr class="even">
 <td>Log CDF</td>
-<td><code>stats_{family}_logcdf(x_or_k, ...parameters)</code></td>
+<td><code>dist_{family}_logcdf(x_or_k, ...parameters)</code></td>
 <td>ln P(X ≤ x)</td>
 </tr>
 <tr class="odd">
 <td>Survival</td>
-<td><code>stats_{family}_sf(x_or_k, ...parameters)</code></td>
+<td><code>dist_{family}_sf(x_or_k, ...parameters)</code></td>
 <td>P(X &gt; x), evaluated directly</td>
 </tr>
 <tr class="even">
 <td>Log survival</td>
-<td><code>stats_{family}_logsf(x_or_k, ...parameters)</code></td>
+<td><code>dist_{family}_logsf(x_or_k, ...parameters)</code></td>
 <td>ln P(X &gt; x)</td>
 </tr>
 <tr class="odd">
 <td>Quantile</td>
-<td><code>stats_{family}_quantile(p, ...parameters)</code></td>
+<td><code>dist_{family}_quantile(p, ...parameters)</code></td>
 <td>Inverse CDF; p in <code>[0,1]</code></td>
 </tr>
 </tbody>
 </table>
 <p>Continuous families expose pdf/logpdf; discrete families expose pmf/logpmf. Every operation has an <code>_array</code> function taking a PHP array as its first argument and the same parameters/defaults, for example:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$probability</span> <span class="op">=</span> stats_normal_cdf(x<span class="ot">:</span> <span class="fl">1.96</span>)<span class="ot">;</span> <span class="co">// Approximately 0.975.</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">$tails</span> <span class="op">=</span> stats_t_sf_array(values<span class="ot">:</span> [<span class="dv">1</span><span class="ot">,</span> <span class="dv">2</span><span class="ot">,</span> <span class="dv">3</span>]<span class="ot">,</span> df<span class="ot">:</span> <span class="dv">12</span>)<span class="ot">;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="va">$logMass</span> <span class="op">=</span> stats_poisson_logpmf_array(counts<span class="ot">:</span> [<span class="dv">0</span><span class="ot">,</span> <span class="dv">2</span><span class="ot">,</span> <span class="dv">5</span>]<span class="ot">,</span> lambda<span class="ot">:</span> <span class="fl">3.2</span>)<span class="ot">;</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="va">$interval</span> <span class="op">=</span> stats_gamma_quantile_array(probabilities<span class="ot">:</span> [<span class="op">.</span><span class="bn">025</span><span class="ot">,</span> <span class="op">.</span><span class="dv">975</span>]<span class="ot">,</span> shape<span class="ot">:</span> <span class="dv">2</span><span class="ot">,</span> scale<span class="ot">:</span> <span class="dv">3</span>)<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$probability</span> <span class="op">=</span> Phit\dist_normal_cdf(x<span class="ot">:</span> <span class="fl">1.96</span>)<span class="ot">;</span> <span class="co">// Approximately 0.975.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">$tails</span> <span class="op">=</span> Phit\dist_t_sf_array(values<span class="ot">:</span> [<span class="dv">1</span><span class="ot">,</span> <span class="dv">2</span><span class="ot">,</span> <span class="dv">3</span>]<span class="ot">,</span> df<span class="ot">:</span> <span class="dv">12</span>)<span class="ot">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="va">$logMass</span> <span class="op">=</span> Phit\dist_poisson_logpmf_array(counts<span class="ot">:</span> [<span class="dv">0</span><span class="ot">,</span> <span class="dv">2</span><span class="ot">,</span> <span class="dv">5</span>]<span class="ot">,</span> lambda<span class="ot">:</span> <span class="fl">3.2</span>)<span class="ot">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="va">$interval</span> <span class="op">=</span> Phit\dist_gamma_quantile_array(probabilities<span class="ot">:</span> [<span class="op">.</span><span class="bn">025</span><span class="ot">,</span> <span class="op">.</span><span class="dv">975</span>]<span class="ot">,</span> shape<span class="ot">:</span> <span class="dv">2</span><span class="ot">,</span> scale<span class="ot">:</span> <span class="dv">3</span>)<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Scalar continuous evaluation uses argument <code>x</code>; discrete uses <code>k</code>. Batch continuous evaluation uses <code>values</code>; discrete uses <code>counts</code>; all batch quantiles use <code>probabilities</code>. Parameter names are part of the contract because PHP supports named arguments. The generated <code>stubs/phit.php</code> lists every exact signature. Loading the extension makes all functions available globally.</p>
 <p>Batch evaluation constructs the distribution once, then streams input values through the same core evaluation policy. Output is a packed list in input iteration order; keys are not retained. Empty input returns <code>[]</code>, but parameters are still validated. An invalid element rejects the entire call. No missing rows are dropped. The <a href="./benchmarks/distributions.html">benchmarks</a> quantify when batching saves PHP boundary overhead and when numerical evaluation dominates.</p>
 </section>
 <section id="tails-and-likelihoods" class="level2">
 <h2 class="anchored" data-anchor-id="tails-and-likelihoods">Tails and likelihoods</h2>
 <p>Use survival functions for upper tails rather than subtracting a rounded CDF from one. Use log functions directly rather than taking the log of a probability that may already have underflowed.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>stats_normal_sf(<span class="dv">10</span>)<span class="ot">;</span>     <span class="co">// About 7.62e-24; 1 - stats_normal_cdf(10) is zero.</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>stats_normal_logsf(<span class="dv">40</span>)<span class="ot">;</span>  <span class="co">// About -804.61, even though the ordinary SF is zero.</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="va">$logLikelihood</span> <span class="op">=</span> <span class="fu">array_sum</span>(stats_poisson_logpmf_array([<span class="dv">2</span><span class="ot">,</span> <span class="dv">5</span><span class="ot">,</span> <span class="dv">3</span><span class="ot">,</span> <span class="dv">0</span>]<span class="ot">,</span> lambda<span class="ot">:</span> <span class="fl">2.5</span>))<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Phit\dist_normal_sf(<span class="dv">10</span>)<span class="ot">;</span>     <span class="co">// About 7.62e-24; 1 - Phit\dist_normal_cdf(10) is zero.</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>Phit\dist_normal_logsf(<span class="dv">40</span>)<span class="ot">;</span>  <span class="co">// About -804.61, even though the ordinary SF is zero.</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="va">$logLikelihood</span> <span class="op">=</span> <span class="fu">array_sum</span>(Phit\dist_poisson_logpmf_array([<span class="dv">2</span><span class="ot">,</span> <span class="dv">5</span><span class="ot">,</span> <span class="dv">3</span><span class="ot">,</span> <span class="dv">0</span>]<span class="ot">,</span> lambda<span class="ot">:</span> <span class="fl">2.5</span>))<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>A density is not a probability at a point and may exceed one. Sum log densities or log masses for independent observations; likelihood underflow is avoided this way. Log probabilities at impossible events are <code>-INF</code>. PHP JSON encoding with <code>JSON_THROW_ON_ERROR</code> rejects nonfinite results; callers must choose their own serialization policy rather than silently replacing numerical values.</p>
 <p>The runnable <code>examples/distributions.php</code> demonstrates a two-sided t test, a mean confidence interval, a Poisson likelihood, a central probability, extreme upper tails and equivalent NB parameterizations. The sample data are hypothetical and the computations illustrate the API.</p>
 </section>
 <section id="boundaries-and-errors" class="level2">
 <h2 class="anchored" data-anchor-id="boundaries-and-errors">Boundaries and errors</h2>
-<p>Evaluation points may be ±INF, but NAN raises 1003. Null, numeric strings, booleans and nested array elements are not numeric inputs; malformed batch elements raise 1001. Scalar argument-type failures follow Zend’s runtime conventions. There is no distribution <code>missing</code> option. Nonfinite parameters raise 1003; invalid domains and quantile probabilities outside <code>[0,1]</code> raise 1001. Binomial size above <code>2^53</code> raises 1007. A NAN numerical result raises 1006; it is not returned as a value. Parameters so extreme that the incomplete beta or gamma cannot be evaluated also raise 1006 promptly: a beta-type sum <span class="math inline">\(a + b\)</span> beyond the double range, a beta-type parameter above <span class="math inline">\(10^{300}\)</span> evaluated within <span class="math inline">\(10^{-300}\)</span> of an end of the support, or a gamma-type shape or point above <span class="math inline">\(10^{300}\)</span> (for example <code>stats_f_cdf(2, 3, PHP_FLOAT_MAX)</code> or <code>stats_gamma_cdf(1e30, 1e30)</code>). Earlier builds could hang or panic on such input.</p>
+<p>Evaluation points may be ±INF, but NAN raises 1003. Null, numeric strings, booleans and nested array elements are not numeric inputs; malformed batch elements raise 1001. Scalar argument-type failures follow Zend’s runtime conventions. There is no distribution <code>missing</code> option. Nonfinite parameters raise 1003; invalid domains and quantile probabilities outside <code>[0,1]</code> raise 1001. Binomial size above <code>2^53</code> raises 1007. A NAN numerical result raises 1006; it is not returned as a value. Parameters so extreme that the incomplete beta or gamma cannot be evaluated also raise 1006 promptly: a beta-type sum <span class="math inline">\(a + b\)</span> beyond the double range, a beta-type parameter above <span class="math inline">\(10^{300}\)</span> evaluated within <span class="math inline">\(10^{-300}\)</span> of an end of the support, or a gamma-type shape or point above <span class="math inline">\(10^{300}\)</span> (for example <code>dist_f_cdf(2, 3, PHP_FLOAT_MAX)</code> or <code>dist_gamma_cdf(1e30, 1e30)</code>). Earlier builds could hang or panic on such input.</p>
 <p>Outside support, density/mass is zero and log density/mass is <code>-INF</code>. Boundary densities can be infinite, for example a beta shape below one at a support endpoint. Discrete PMFs at non-integer counts are zero, while CDF/SF use the floor of the evaluation point. SF always means strictly greater than that count.</p>
 <p>Continuous quantile endpoints are the support bounds, including infinities. Discrete quantiles return the smallest support value whose CDF reaches the requested probability, using a documented <code>64 * EPSILON</code> relative comparison allowance on the smaller tail to accommodate rounding at CDF steps. Endpoint p=0 follows the conventional lower support bound; p=1 follows the upper support bound for ordinary distributions. A point mass returns its actual mass location at p=1. This differs from R/SciPy in some degenerate cases. Returned count quantiles are PHP floats; precision is limited by binary64’s exact integer range.</p>
 </section>
@@ -837,7 +837,7 @@ window.Quarto = {
 <section id="reference-evidence-and-release-scope" class="level2">
 <h2 class="anchored" data-anchor-id="reference-evidence-and-release-scope">Reference evidence and release scope</h2>
 <p><a href="./verifications/distributions.html">The executed comparison</a> records R, SciPy and 60-digit mpmath references, documented boundary differences and quantity-specific tolerances. Scalar/batch identities and validation run in the offline release gate. <a href="./benchmarks/distributions.html">Performance evidence</a> covers 1,000, 100,000 and one million values, including peak process memory and regression preservation.</p>
-<p>Random sampling uses explicitly seeded <code>stats_{family}_rng(n, seed, ...parameters)</code> calls with local ChaCha20 state. The <a href="./rng.html">sampling contract</a> documents reproducibility, validation and independent reference vectors. <a href="./v0.2.html">The readiness assessment</a> records this implementation, the estimator reuse experiment and remaining publication/platform gates.</p>
+<p>Random sampling uses explicitly seeded <code>dist_{family}_rng(n, seed, ...parameters)</code> calls with local ChaCha20 state. The <a href="./rng.html">sampling contract</a> documents reproducibility, validation and independent reference vectors. <a href="./v0.2.html">The readiness assessment</a> records this implementation, the estimator reuse experiment and remaining publication/platform gates.</p>
 
 
 </section>

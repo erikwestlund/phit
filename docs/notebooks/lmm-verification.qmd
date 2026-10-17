@@ -62,7 +62,7 @@ foreach ($students as $student) {
     $y[] = $student['score'];
     $groups[] = $student['school'];
 }
-$result = stats_lmm(x: $x, y: $y, groups: $groups, intercept: false);
+$result = Phit\fit_mixed_intercept(x: $x, y: $y, groups: $groups, intercept: false);
 ```
 
 These PHP records are already numeric; `examples/lmm.php` supplies the complete

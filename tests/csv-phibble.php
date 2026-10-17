@@ -1,5 +1,5 @@
 <?php
-// Differential test: stats_read_csv() against phibble's PHP CSV reader (the
+// Differential test: Phit\read_csv() against phibble's PHP CSV reader (the
 // reference implementation). Runs only when PHIBBLE_AUTOLOAD points at
 // phibble's vendor/autoload.php; otherwise it is skipped.
 declare(strict_types=1);
@@ -64,7 +64,7 @@ function compareReaders(string $text, array $options, string $label, string $dir
     check($rustError === null, "native failed ($rustError): $context");
     check($php === $rust, "results differ: $context\nphp: ".var_export($php, true)."\nnative: ".var_export($rust, true));
     // The native reader also reports unterminated quotes; the PHP reader does not.
-    $raw = stats_read_csv($path, nativeOptions($options));
+    $raw = Phit\read_csv($path, nativeOptions($options));
     $unterminated = array_filter($raw['problems'], fn ($p) => str_contains($p, 'unterminated'));
     if ($unterminated === []) {
         check($phpWarnings === $rustWarnings, "warnings differ: $context\n".var_export([$phpWarnings, $rustWarnings], true));

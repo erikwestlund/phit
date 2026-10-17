@@ -9,26 +9,34 @@ result keys, missing-data policy, ordering, validation or statistical convention
 and accompanied by relevant tests. PHP parameter names x, y and missing matter because
 callers can use named arguments.
 
-The registered PHP module is `phit` (previously `phit`). PIE requires
-underscores in extension identifiers. Update extension identity checks and
-Composer requirements to `ext-phit`; the `stats_*` functions keep their names.
+The registered PHP module is `phit` (`extension=phit`; Composer `ext-phit`).
+Every function is in the `Phit` namespace, grouped by prefix: `fit_*` estimates
+models (`fit_lm`, `fit_glm`, `fit_lmer`, `fit_ols`, `fit_mixed`, ...), `dist_*`
+evaluates and samples distributions (`dist_normal_cdf`, `dist_binomial_rng`),
+`stat_*` computes descriptive statistics (`stat_mean`, `stat_quantile`), and
+`draws_*` transforms posterior draws. `model_matrix`, `predict` and `read_csv`
+complete the formula and I/O interface. Import what you use:
+
+```php
+use function Phit\{fit_lm, predict, dist_normal_quantile};
+```
 See [deployment](deployment.qmd) for supported packaging targets and installation.
 
 ## PHP entry points
 
 ```php
-stats_hello(): string; // "Hello from Rust!"
-stats_ols(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
-stats_logistic(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
-stats_probit(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
-stats_poisson(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+Phit\hello(): string; // "Hello from Rust!"
+Phit\fit_ols(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+Phit\fit_logistic(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+Phit\fit_probit(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+Phit\fit_poisson(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
 
 // Formula interfaces over the same cores; $data is named columns or an object with toModelData()/toColumns().
-stats_model_matrix(string $formula, array|object $data, string $missing = 'drop'): array;
-stats_lm(string $formula, array|object $data, string $missing = 'drop', array|string|null $weights = null): array;
-stats_glm(string $formula, array|object $data, string $family = 'gaussian', string $link = '', string $missing = 'drop', array|string|null $weights = null): array;
-stats_lmer(string $formula, array|object $data, bool $reml = true, string $missing = 'drop', array|string|null $weights = null, ...): array;
-stats_glmer(string $formula, array|object $data, string $family = 'binomial', string $link = '', string $missing = 'drop', array|string|null $weights = null, ...): array;
+Phit\model_matrix(string $formula, array|object $data, string $missing = 'drop'): array;
+Phit\fit_lm(string $formula, array|object $data, string $missing = 'drop', array|string|null $weights = null): array;
+Phit\fit_glm(string $formula, array|object $data, string $family = 'gaussian', string $link = '', string $missing = 'drop', array|string|null $weights = null): array;
+Phit\fit_lmer(string $formula, array|object $data, bool $reml = true, string $missing = 'drop', array|string|null $weights = null, ...): array;
+Phit\fit_glmer(string $formula, array|object $data, string $family = 'binomial', string $link = '', string $missing = 'drop', array|string|null $weights = null, ...): array;
 ```
 
 These are global native functions available when the extension is loaded.
@@ -39,18 +47,18 @@ the caller's arrays. Repeated fits are independent.
 ## Formula interfaces
 
 The formula functions parse an R model formula, build R's `model.matrix()` over
-named columns, and call the estimation cores of `stats_ols`, `stats_logistic`,
-`stats_probit`, `stats_poisson`, `stats_lmm_fit`, and `stats_logistic_mixed`.
+named columns, and call the estimation cores of `fit_ols`, `fit_logistic`,
+`fit_probit`, `fit_poisson`, `fit_mixed`, and `fit_logistic_mixed`.
 Each fit returns the complete result contract of its matrix function. It adds
 `formula`, `response`, `columns` (coefficient names in coefficient order), `terms`,
-`assign`, `intercept`, and `named` (`column => coefficient`). `stats_glm` and
-`stats_glmer` also return `family` and `link`. `stats_model_matrix` returns `y`,
+`assign`, `intercept`, and `named` (`column => coefficient`). `fit_glm` and
+`fit_glmer` also return `family` and `link`. `model_matrix` returns `y`,
 `x` (including the `(Intercept)` column), the naming keys, `offset`, `random` designs
-in the shape `stats_lmm_fit` accepts, and the deletion accounting.
+in the shape `fit_mixed` accepts, and the deletion accounting.
 
 Missing-value deletion covers only the variables a formula uses, with the same
 warning, `missing: 'raise'` behavior, and row accounting as the matrix functions.
-`stats_model_matrix` keeps unused factor levels, as `model.matrix()` does. The
+`model_matrix` keeps unused factor levels, as `model.matrix()` does. The
 fitting functions drop them, as `lm()`, `glm()`, and lme4 do. Unknown columns,
 malformed factor descriptors, referenced list-columns, and invalid formulas raise
 1001. Column-length mismatch raises 1002. Infinite transform results raise 1003.
@@ -63,8 +71,8 @@ contrasts, data shapes, verification, and every known difference from R.
 Thirteen distribution parameterizations expose seven operations, each in scalar
 and `_array` form: 182 functions in total. Continuous families use `pdf`, `logpdf`,
 `cdf`, `logcdf`, `sf`, `logsf`, `quantile`; discrete families replace pdf/logpdf with
-pmf/logpmf. Names follow `stats_{family}_{operation}` and
-`stats_{family}_{operation}_array`. The [distribution contract](distributions.qmd)
+pmf/logpmf. Names follow `dist_{family}_{operation}` and
+`dist_{family}_{operation}_array`. The [distribution contract](distributions.qmd)
 lists every family, parameter name/default, domain and support. The generated
 `stubs/phit.php` is the exact signature reference.
 
@@ -90,7 +98,7 @@ Constant-input correlation is explicitly NAN. Other nonfinite arithmetic raises
 are rejected before missing-value deletion. These policies differ from regression
 defaults and from strict literal draw kernels, and are not inferred from input shape.
 
-Each family also exposes `stats_{family}_rng(int $n, int $seed, ...parameters): array`,
+Each family also exposes `dist_{family}_rng(int $n, int $seed, ...parameters): array`,
 with the same distribution parameters/defaults. n is in `[0,1000000]`, seed is a
 nonnegative PHP integer, and every call owns local ChaCha20 state. Successful
 results are packed lists of n finite floats, including discrete counts. Repeated
@@ -107,9 +115,9 @@ implemented behavior, verified accuracy and publication/platform limits.
 ## Posterior-draw numerical kernels
 
 ```php
-stats_draw_moments(array $draws, ?array $weights = null, string $normalization = 'population'): array;
-stats_draw_covariance_map(array $source_covariance, array $target_covariance): array;
-stats_draw_affine(array $draws, array $matrix, array $shift): array;
+Phit\draws_moments(array $draws, ?array $weights = null, string $normalization = 'population'): array;
+Phit\draws_covariance_map(array $source_covariance, array $target_covariance): array;
+Phit\draws_affine(array $draws, array $matrix, array $shift): array;
 ```
 
 These synchronous, stateless functions accept ordinary PHP numeric arrays.
@@ -121,7 +129,7 @@ ignored; iteration order determines row and parameter order, and output arrays
 are packed lists. Inputs are not mutated. No rows are dropped and no intercept
 is inserted; there is no `missing` or `intercept` option.
 
-`stats_draw_moments` returns exactly `['mean' => list<float>, 'covariance' =>
+`draws_moments` returns exactly `['mean' => list<float>, 'covariance' =>
 list<list<float>>]`. Weights must be finite and nonnegative with one per draw and
 positive total weight. They are normalized internally to sum to one. The mean is
 $\sum_i w_i x_i$ and population covariance is
@@ -132,7 +140,7 @@ Zero-weight rows are still validated. One effective draw is valid for population
 moments (zero covariance); unbiased normalization must be positive in floating-point
 arithmetic. Singular covariance is valid, including when draws are fewer than parameters.
 
-`stats_draw_covariance_map` returns exactly `['matrix' => list<list<float>>,
+`draws_covariance_map` returns exactly `['matrix' => list<list<float>>,
 'log_abs_det' => float]`. Both covariances must be square, finite, symmetric and
 positive definite with equal dimensions. It returns $A=L_tL_s^{-1}$ using Cholesky
 factors and a triangular solve, so $A C_s A^T=C_t$, with the identity interpreted
@@ -141,7 +149,7 @@ but not unique. Asymmetry beyond the documented tolerance raises 1001; failed
 positive definiteness or numerical singularity raises 1005. There is no ridge,
 jitter or silent regularization.
 
-`stats_draw_affine` returns exactly `['draws' => list<list<float>>,
+`draws_affine` returns exactly `['draws' => list<list<float>>,
 'log_abs_det' => float]`. A square, numerically invertible $A$ and a shift of the
 same parameter dimension are required. Each row becomes $y_i=A x_i+b$;
 row-oriented matrix notation is $Y=X A^T+b$. The output has exactly the original
@@ -158,7 +166,7 @@ consuming CmdStan package.
 ## CSV input
 
 ```php
-stats_read_csv(string $path, array $options = []): array;
+Phit\read_csv(string $path, array $options = []): array;
 ```
 
 The reader returns `['names' => list<string>, 'columns' => list<null|array{type,
@@ -198,7 +206,7 @@ the fixed design. For a random intercept/slope, z still needs `[1, slope]` rows.
 
 
 ```php
-$result = stats_ols(
+$result = Phit\fit_ols(
     x: [[1.0], [2.0], [3.0], [4.0], [5.0]],
     y: [2.1, 4.2, 5.8, 8.1, 10.2],
 );
@@ -300,7 +308,7 @@ raw API and optional convenience layers.
 ## Binary logistic regression
 
 ```php
-$result = stats_logistic(x: $design, y: $binaryOutcomes, missing: 'drop', intercept: false);
+$result = Phit\fit_logistic(x: $design, y: $binaryOutcomes, missing: 'drop', intercept: false);
 ```
 
 Use the same plain rectangular arrays, automatic fixed intercept, ordering, numeric
@@ -368,7 +376,7 @@ field types match OlsResult, with usize for iterations and degrees of freedom.
 ## Probit regression
 
 ```php
-stats_probit(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+Phit\fit_probit(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
 ```
 
 The binomial input contract and output keys match logistic regression: binary
@@ -405,7 +413,7 @@ See the [walkthrough](notebooks/probit-math.qmd).
 ## Poisson regression
 
 ```php
-stats_poisson(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+Phit\fit_poisson(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
 ```
 
 The raw design and missing-data contracts are the same. Outcomes must be finite,
@@ -447,7 +455,7 @@ Its numeric Rust field types match LogisticResult. See the
 ## Gaussian random-intercept mixed model
 
 ```php
-stats_lmm(array $x, array $y, array $groups, string $missing = 'drop', bool $intercept = true): array;
+Phit\fit_mixed_intercept(array $x, array $y, array $groups, string $missing = 'drop', bool $intercept = true): array;
 ```
 
 This first mixed model has continuous Gaussian outcomes and **one random
@@ -535,10 +543,10 @@ The four fixed-model signatures accept optional weights/offsets and append
 the fixed-intercept option after existing positional arguments:
 
 ```php
-stats_ols(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
-stats_logistic(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
-stats_probit(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
-stats_poisson(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+Phit\fit_ols(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+Phit\fit_logistic(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+Phit\fit_probit(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
+Phit\fit_poisson(array $x, array $y, string $missing = 'drop', ?array $weights = null, ?array $offset = null, bool $intercept = true): array;
 ```
 
 Optional vectors must have one value per **original** observation. null means
@@ -572,7 +580,7 @@ Invalid values and original shapes are checked before deleting rows.
 ```php
 $exposure = [1, 2, 4, 8, 16, 3, 6, 12];
 $counts = [1, 4, 3, 12, 23, 2, 11, 14];
-$r = stats_poisson(
+$r = Phit\fit_poisson(
     x: array_fill(0, count($counts), []), // Intercept-only rate model.
     y: $counts,
     offset: array_map(fn($e) => log($e), $exposure),
@@ -592,7 +600,7 @@ The runnable repository example `examples/poisson-offset.php` adds a visitor pre
 ## General Gaussian mixed-model call
 
 ```php
-stats_lmm_fit(
+Phit\fit_mixed(
     array $x, array $y, array $random,
     string $missing = 'drop', bool $reml = false,
     ?array $weights = null, ?array $offset = null, ?array $start = null,
@@ -612,7 +620,7 @@ combination. There is no two-level limit: supply three, four or more random term
 integer 1 and string "1" remain distinct.
 
 ```php
-$r = stats_lmm_fit(
+$r = Phit\fit_mixed(
     x: $fixedPredictors, // Fixed intercept is added automatically.
     y: $outcomes,
     random: [
@@ -654,7 +662,7 @@ zero block. lme4 splits `(x || g)` into one-column terms and reports only the
 diagonal; here the term is one block, so its off-diagonal conditional covariances
 are also returned. Dense limits
 are q≤512 random coefficients and n(q+p+1)≤50,000,000 entries; exceeding them fails
-explicitly. The existing `stats_lmm` remains the faster random-intercept ML path.
+explicitly. The existing `fit_mixed_intercept` remains the faster random-intercept ML path.
 
 The result contains:
 
@@ -684,7 +692,7 @@ the exact boundary of the R/lme4 parity claim.
 ## Binomial random-intercept ML
 
 ```php
-stats_logistic_mixed(
+Phit\fit_logistic_mixed(
     array $x, array $y, array $groups, string $missing = 'drop',
     ?array $weights = null, ?array $offset = null,
     int $quadrature_points = 1, int $max_evaluations = 20000,

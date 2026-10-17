@@ -63,8 +63,8 @@ within representable arithmetic. They define a pivot-based numerical-singularity
 policy, not a guarantee of a particular condition number. Near the threshold,
 rounding and parameter order can affect acceptance. No diagonal jitter, ridge,
 eigenvalue clipping or fallback factorization is performed. Singular moment
-covariance may therefore be returned by `stats_draw_moments` and explicitly rejected
-by `stats_draw_covariance_map`.
+covariance may therefore be returned by `draws_moments` and explicitly rejected
+by `draws_covariance_map`.
 
 ## Affine transformation and determinant
 
@@ -95,9 +95,9 @@ covariances or arbitrarily ill-conditioned inputs.
 
 ```php
 $draws = [[-3, -5], [0, 1], [2, 3], [5, 8], [1, -2]];
-$source = stats_draw_moments($draws);
-$target = stats_draw_moments($draws, weights: [1, 0, 2, 4, 3]);
-$map = stats_draw_covariance_map($source['covariance'], $target['covariance']);
+$source = Phit\draws_moments($draws);
+$target = Phit\draws_moments($draws, weights: [1, 0, 2, 4, 3]);
+$map = Phit\draws_covariance_map($source['covariance'], $target['covariance']);
 $a = $map['matrix'];
 $shift = [];
 foreach ($a as $j => $row) {
@@ -105,7 +105,7 @@ foreach ($a as $j => $row) {
     foreach ($row as $k => $value) $mappedMean += $value * $source['mean'][$k];
     $shift[] = $target['mean'][$j] - $mappedMean;
 }
-$transformed = stats_draw_affine($draws, matrix: $a, shift: $shift);
+$transformed = Phit\draws_affine($draws, matrix: $a, shift: $shift);
 // The unweighted moments of transformed draws equal the target moments.
 // transformed['log_abs_det'] is the change-of-variables log Jacobian.
 ```

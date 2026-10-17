@@ -65,7 +65,7 @@ foreach ($students as $student) {
     $x[] = [1.0, $student['visitors'], $student['staff']];
     $y[] = $student['calls'];
 }
-$result = stats_poisson(x: $x, y: $y, intercept: false);
+$result = Phit\fit_poisson(x: $x, y: $y, intercept: false);
 ```
 
 Here `$students` contains already numeric records; see `examples/poisson.php`

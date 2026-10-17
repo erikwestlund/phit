@@ -1,4 +1,4 @@
-//! stats_read_csv(): the native reader behind phibble's Frame::fromCsv().
+//! read_csv(): the native reader behind phibble's Frame::fromCsv().
 use ext_php_rs::{
     boxed::ZBox,
     convert::{FromZval, StubLiteral},
@@ -41,20 +41,20 @@ impl StubLiteral for CsvOptions<'_> {
 fn bytes_of<'a>(key: &str, v: &'a Zval) -> PhpResult<&'a [u8]> {
     v.zend_str()
         .map(|s| s.as_bytes())
-        .ok_or_else(|| value_error(format!("stats_read_csv(): option '{key}' must be a string")))
+        .ok_or_else(|| value_error(format!("Phit\\read_csv(): option '{key}' must be a string")))
 }
 
 fn bool_of(key: &str, v: &Zval) -> PhpResult<bool> {
     v.bool()
         .filter(|_| v.is_bool())
-        .ok_or_else(|| value_error(format!("stats_read_csv(): option '{key}' must be a bool")))
+        .ok_or_else(|| value_error(format!("Phit\\read_csv(): option '{key}' must be a bool")))
 }
 
 fn count_of(key: &str, v: &Zval, min: i64) -> PhpResult<usize> {
     match v.long() {
         Some(n) if v.is_long() && n >= min => Ok(n as usize),
         _ => Err(value_error(format!(
-            "stats_read_csv(): option '{key}' must be an int of at least {min}"
+            "Phit\\read_csv(): option '{key}' must be an int of at least {min}"
         ))),
     }
 }
@@ -64,7 +64,7 @@ fn one_byte(key: &str, v: &Zval, allow_empty: bool) -> PhpResult<Option<u8>> {
         [b] => Ok(Some(*b)),
         [] if allow_empty => Ok(None),
         _ => Err(value_error(format!(
-            "stats_read_csv(): option '{key}' must be {} byte",
+            "Phit\\read_csv(): option '{key}' must be {} byte",
             if allow_empty {
                 "an empty string or a single"
             } else {
@@ -107,7 +107,7 @@ fn options(table: Option<&ZendHashTable>) -> PhpResult<Options> {
             }
             "na" => {
                 let list = v.array().ok_or_else(|| {
-                    value_error("stats_read_csv(): option 'na' must be a list of strings")
+                    value_error("Phit\\read_csv(): option 'na' must be a list of strings")
                 })?;
                 o.na = list
                     .values()
@@ -116,27 +116,27 @@ fn options(table: Option<&ZendHashTable>) -> PhpResult<Options> {
             }
             "types" => {
                 let list = v.array().ok_or_else(|| {
-                    value_error("stats_read_csv(): option 'types' must be an array of type codes")
+                    value_error("Phit\\read_csv(): option 'types' must be an array of type codes")
                 })?;
                 for (position, code) in list {
                     let position = match position {
                         ext_php_rs::types::ArrayKey::Long(i) if i >= 0 => i as usize,
                         _ => {
                             return Err(value_error(
-                                "stats_read_csv(): 'types' keys must be 0-based column positions",
+                                "Phit\\read_csv(): 'types' keys must be 0-based column positions",
                             ));
                         }
                     };
                     let code = TypeCode::from_code(bytes_of("types", code)?).ok_or_else(|| {
                         value_error(format!(
-                            "stats_read_csv(): unknown type code '{}' at position {position}; use ? l i d c D T or _",
+                            "Phit\\read_csv(): unknown type code '{}' at position {position}; use ? l i d c D T or _",
                             String::from_utf8_lossy(code.zend_str().map_or(&[][..], |s| s.as_bytes()))
                         ))
                     })?;
                     if o.types.len() <= position {
                         if position > 1 << 20 {
                             return Err(value_error(
-                                "stats_read_csv(): 'types' position is too large",
+                                "Phit\\read_csv(): 'types' position is too large",
                             ));
                         }
                         o.types.resize(position + 1, TypeCode::Guess);
@@ -146,7 +146,7 @@ fn options(table: Option<&ZendHashTable>) -> PhpResult<Options> {
             }
             _ => {
                 return Err(value_error(format!(
-                    "stats_read_csv(): unknown option '{key}'"
+                    "Phit\\read_csv(): unknown option '{key}'"
                 )));
             }
         }
@@ -168,8 +168,8 @@ fn list<T>(values: &[Option<T>], set: impl Fn(&mut Zval, &T)) -> ZBox<ZendHashTa
 }
 
 #[php_function]
-#[php(defaults(options = CsvOptions(None)))]
-pub fn stats_read_csv(path: Bytes, options: CsvOptions) -> PhpResult<ZBox<ZendHashTable>> {
+#[php(name = "Phit\\read_csv", defaults(options = CsvOptions(None)))]
+pub fn read_csv(path: Bytes, options: CsvOptions) -> PhpResult<ZBox<ZendHashTable>> {
     let o = self::options(options.0)?;
     let display = String::from_utf8_lossy(path.0);
     let os_path = {
@@ -178,15 +178,15 @@ pub fn stats_read_csv(path: Bytes, options: CsvOptions) -> PhpResult<ZBox<ZendHa
     };
     if !os_path.is_file() {
         return Err(value_error(format!(
-            "stats_read_csv(): cannot read CSV file '{display}'"
+            "Phit\\read_csv(): cannot read CSV file '{display}'"
         )));
     }
     let data = std::fs::read(os_path).map_err(|e| {
         value_error(format!(
-            "stats_read_csv(): cannot read CSV file '{display}': {e}"
+            "Phit\\read_csv(): cannot read CSV file '{display}': {e}"
         ))
     })?;
-    let table = csv::read(data, &o).map_err(|e| value_error(format!("stats_read_csv(): {e}")))?;
+    let table = csv::read(data, &o).map_err(|e| value_error(format!("Phit\\read_csv(): {e}")))?;
 
     let mut names = ZendHashTable::with_capacity(table.names.len() as u32);
     for name in &table.names {
@@ -238,5 +238,5 @@ pub fn stats_read_csv(path: Bytes, options: CsvOptions) -> PhpResult<ZBox<ZendHa
 }
 
 pub fn register(module: ModuleBuilder) -> ModuleBuilder {
-    module.function(wrap_function!(stats_read_csv))
+    module.function(wrap_function!(read_csv))
 }

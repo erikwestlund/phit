@@ -2,8 +2,8 @@
 title: "Installation, containers and releases"
 ---
 
-The native library installs into PHP itself. Applications call `stats_ols()`,
-`stats_poisson()` and the other functions directly after the extension is enabled.
+The native library installs into PHP itself. Applications call `fit_ols()`,
+`fit_poisson()` and the other functions directly after the extension is enabled.
 The deployed PHP process does not need Cargo, R or Python. Build tools and the
 installer live in the build environment.
 
@@ -15,10 +15,9 @@ installer live in the build environment.
 - Direct Cargo output remains `libphit.so` on Linux and `libphit.dylib`
   on macOS. They contain the same native extension, using different filenames.
 
-The registered name changed from `phit` because PIE forbids hyphens in
-extension identifiers. Update `extension_loaded()`, `get_extension_funcs()`,
-`phpversion()` and Composer extension requirements accordingly. Native `stats_*`
-function names and their statistical contracts are unaffected.
+The registered extension name is `phit`: use it with `extension_loaded()`,
+`get_extension_funcs()`, `phpversion()` and Composer (`ext-phit`). Functions are
+in the `Phit` namespace (`Phit\fit_lm`, `Phit\dist_normal_cdf`).
 
 Package metadata targets **PHP 8.3, 8.4 and 8.5**, non-thread-safe PHP, Linux and
 macOS. Windows and ZTS are excluded. Container and binary builds use Debian

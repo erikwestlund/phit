@@ -146,7 +146,7 @@ Three grouping levels plus the observation level are often called a **four-level
 model**; we count grouping terms explicitly here to avoid that ambiguity.
 
 ```php
-$result = stats_lmm_fit(
+$result = Phit\fit_mixed(
     x: $fixedDesign,
     y: $scores,
     random: [

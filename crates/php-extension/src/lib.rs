@@ -316,15 +316,15 @@ fn finish_result(
     diagnostics.insert(
         "solver",
         match function {
-            "stats_ols" | "stats_lm" => "scaled_svd",
-            "stats_glm" => match output.get("link").and_then(|v| v.str()) {
+            "Phit\\fit_ols" | "Phit\\fit_lm" => "scaled_svd",
+            "Phit\\fit_glm" => match output.get("link").and_then(|v| v.str()) {
                 Some("identity") => "scaled_svd",
                 Some("probit") => "fisher_scoring",
                 _ => "newton_irls",
             },
-            "stats_logistic" | "stats_poisson" => "newton_irls",
-            "stats_probit" => "fisher_scoring",
-            "stats_lmm" => "profile_variance_search",
+            "Phit\\fit_logistic" | "Phit\\fit_poisson" => "newton_irls",
+            "Phit\\fit_probit" => "fisher_scoring",
+            "Phit\\fit_mixed_intercept" => "profile_variance_search",
             _ => output
                 .get("optimizer")
                 .and_then(|v| v.str())
@@ -353,7 +353,7 @@ fn finish_result(
     if output.get("singular").and_then(|v| v.bool()) == Some(true) {
         warnings.push("random-effect covariance is singular or near singular".into());
     }
-    if matches!(function, "stats_logistic_mixed" | "stats_glmer")
+    if matches!(function, "Phit\\fit_logistic_mixed" | "Phit\\fit_glmer")
         && output.get("quadrature_points").and_then(|v| v.long()) == Some(1)
     {
         warnings.push("Laplace integration is approximate; assess quadrature sensitivity for rare events or small groups".into());
@@ -453,8 +453,11 @@ macro_rules! glm_output {
 mod formula;
 
 #[php_function]
-#[php(defaults(missing = "\"drop\"", intercept = true))]
-pub fn stats_ols(
+#[php(
+    name = "Phit\\fit_ols",
+    defaults(missing = "\"drop\"", intercept = true)
+)]
+pub fn fit_ols(
     x: &ZendHashTable,
     y: &ZendHashTable,
     missing: &str,
@@ -480,13 +483,16 @@ pub fn stats_ols(
         input.n_input,
         input.retained_rows,
         input.dropped_rows,
-        "stats_ols",
+        "Phit\\fit_ols",
     )
 }
 
 #[php_function]
-#[php(defaults(missing = "\"drop\"", intercept = true))]
-pub fn stats_logistic(
+#[php(
+    name = "Phit\\fit_logistic",
+    defaults(missing = "\"drop\"", intercept = true)
+)]
+pub fn fit_logistic(
     x: &ZendHashTable,
     y: &ZendHashTable,
     missing: &str,
@@ -503,13 +509,16 @@ pub fn stats_logistic(
         input.n_input,
         input.retained_rows,
         input.dropped_rows,
-        "stats_logistic",
+        "Phit\\fit_logistic",
     )
 }
 
 #[php_function]
-#[php(defaults(missing = "\"drop\"", intercept = true))]
-pub fn stats_probit(
+#[php(
+    name = "Phit\\fit_probit",
+    defaults(missing = "\"drop\"", intercept = true)
+)]
+pub fn fit_probit(
     x: &ZendHashTable,
     y: &ZendHashTable,
     missing: &str,
@@ -526,13 +535,16 @@ pub fn stats_probit(
         input.n_input,
         input.retained_rows,
         input.dropped_rows,
-        "stats_probit",
+        "Phit\\fit_probit",
     )
 }
 
 #[php_function]
-#[php(defaults(missing = "\"drop\"", intercept = true))]
-pub fn stats_poisson(
+#[php(
+    name = "Phit\\fit_poisson",
+    defaults(missing = "\"drop\"", intercept = true)
+)]
+pub fn fit_poisson(
     x: &ZendHashTable,
     y: &ZendHashTable,
     missing: &str,
@@ -549,13 +561,16 @@ pub fn stats_poisson(
         input.n_input,
         input.retained_rows,
         input.dropped_rows,
-        "stats_poisson",
+        "Phit\\fit_poisson",
     )
 }
 
 #[php_function]
-#[php(defaults(missing = "\"drop\"", intercept = true))]
-pub fn stats_lmm(
+#[php(
+    name = "Phit\\fit_mixed_intercept",
+    defaults(missing = "\"drop\"", intercept = true)
+)]
+pub fn fit_mixed_intercept(
     x: &ZendHashTable,
     y: &ZendHashTable,
     groups: &ZendHashTable,
@@ -643,7 +658,7 @@ pub fn stats_lmm(
         input.n_input,
         input.retained_rows,
         input.dropped_rows,
-        "stats_lmm",
+        "Phit\\fit_mixed_intercept",
     )
 }
 
@@ -760,18 +775,21 @@ fn logistic_mixed_output(
 }
 
 #[php_function]
-#[php(defaults(
-    missing = "\"drop\"",
-    reml = false,
-    max_evaluations = 20000,
-    tolerance = 1e-7,
-    optimizer = "\"bobyqa\"",
-    objective_tolerance = 1e-12,
-    intercept = true
-))]
+#[php(
+    name = "Phit\\fit_mixed",
+    defaults(
+        missing = "\"drop\"",
+        reml = false,
+        max_evaluations = 20000,
+        tolerance = 1e-7,
+        optimizer = "\"bobyqa\"",
+        objective_tolerance = 1e-12,
+        intercept = true
+    )
+)]
 // Preserve the procedural PHP signature and named arguments.
 #[allow(clippy::too_many_arguments)]
-pub fn stats_lmm_fit(
+pub fn fit_mixed(
     x: &ZendHashTable,
     y: &ZendHashTable,
     random: &ZendHashTable,
@@ -978,20 +996,23 @@ pub fn stats_lmm_fit(
     )
     .map_err(stats_exception)?;
     let out = lmm_output(result, reml, term_labels)?;
-    finish_result(out, n, retained, dropped, "stats_lmm_fit")
+    finish_result(out, n, retained, dropped, "Phit\\fit_mixed")
 }
 
 #[php_function]
-#[php(defaults(
-    missing = "\"drop\"",
-    quadrature_points = 1,
-    max_evaluations = 20000,
-    tolerance = 1e-7,
-    intercept = true
-))]
+#[php(
+    name = "Phit\\fit_logistic_mixed",
+    defaults(
+        missing = "\"drop\"",
+        quadrature_points = 1,
+        max_evaluations = 20000,
+        tolerance = 1e-7,
+        intercept = true
+    )
+)]
 // Preserve the procedural PHP signature and named arguments.
 #[allow(clippy::too_many_arguments)]
-pub fn stats_logistic_mixed(
+pub fn fit_logistic_mixed(
     x: &ZendHashTable,
     y: &ZendHashTable,
     groups: &ZendHashTable,
@@ -1060,12 +1081,13 @@ pub fn stats_logistic_mixed(
         input.n_input,
         input.retained_rows,
         input.dropped_rows,
-        "stats_logistic_mixed",
+        "Phit\\fit_logistic_mixed",
     )
 }
 
 #[php_function]
-pub fn stats_hello() -> String {
+#[php(name = "Phit\\hello")]
+pub fn hello() -> String {
     "Hello from Rust!".into()
 }
 
@@ -1073,14 +1095,14 @@ pub fn stats_hello() -> String {
 pub fn get_module(module: ModuleBuilder) -> ModuleBuilder {
     let module = module
         .name("phit") // Canonical PHP/PIE extension identifier: extension=phit, ext-phit.
-        .function(wrap_function!(stats_hello))
-        .function(wrap_function!(stats_ols))
-        .function(wrap_function!(stats_logistic))
-        .function(wrap_function!(stats_probit))
-        .function(wrap_function!(stats_poisson))
-        .function(wrap_function!(stats_lmm))
-        .function(wrap_function!(stats_lmm_fit))
-        .function(wrap_function!(stats_logistic_mixed));
+        .function(wrap_function!(hello))
+        .function(wrap_function!(fit_ols))
+        .function(wrap_function!(fit_logistic))
+        .function(wrap_function!(fit_probit))
+        .function(wrap_function!(fit_poisson))
+        .function(wrap_function!(fit_mixed_intercept))
+        .function(wrap_function!(fit_mixed))
+        .function(wrap_function!(fit_logistic_mixed));
     let module = formula::register(module);
     let module = distributions::register(module);
     csv::register(draws::register(descriptive::register(module)))

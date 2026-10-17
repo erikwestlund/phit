@@ -45,8 +45,11 @@ fn matrix(input: &ZendHashTable) -> PhpResult<Vec<Vec<f64>>> {
 }
 
 #[php_function]
-#[php(defaults(normalization = "\"population\""))]
-pub fn stats_draw_moments(
+#[php(
+    name = "Phit\\draws_moments",
+    defaults(normalization = "\"population\"")
+)]
+pub fn draws_moments(
     draws: &ZendHashTable,
     weights: Option<&ZendHashTable>,
     normalization: &str,
@@ -72,7 +75,8 @@ pub fn stats_draw_moments(
 }
 
 #[php_function]
-pub fn stats_draw_covariance_map(
+#[php(name = "Phit\\draws_covariance_map")]
+pub fn draws_covariance_map(
     source_covariance: &ZendHashTable,
     target_covariance: &ZendHashTable,
 ) -> PhpResult<ZBox<ZendHashTable>> {
@@ -86,7 +90,8 @@ pub fn stats_draw_covariance_map(
 }
 
 #[php_function]
-pub fn stats_draw_affine(
+#[php(name = "Phit\\draws_affine")]
+pub fn draws_affine(
     draws: &ZendHashTable,
     matrix: &ZendHashTable,
     shift: &ZendHashTable,
@@ -105,7 +110,7 @@ pub fn stats_draw_affine(
 
 pub fn register(module: ModuleBuilder) -> ModuleBuilder {
     module
-        .function(wrap_function!(stats_draw_moments))
-        .function(wrap_function!(stats_draw_covariance_map))
-        .function(wrap_function!(stats_draw_affine))
+        .function(wrap_function!(draws_moments))
+        .function(wrap_function!(draws_covariance_map))
+        .function(wrap_function!(draws_affine))
 }

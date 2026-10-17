@@ -4,10 +4,10 @@ $start = hrtime(true);
 $input = json_decode(file_get_contents($argv[1]), true, flags: JSON_THROW_ON_ERROR);
 $load = (hrtime(true) - $start) / 1e9;
 $calls = [
-    'population' => fn() => stats_draw_moments($input['draws'], $input['weights']),
-    'unbiased' => fn() => stats_draw_moments($input['draws'], $input['weights'], 'unbiased'),
-    'covariance_map' => fn() => stats_draw_covariance_map($input['source_covariance'], $input['target_covariance']),
-    'affine' => fn() => stats_draw_affine($input['draws'], $input['matrix'], $input['shift']),
+    'population' => fn() => Phit\draws_moments($input['draws'], $input['weights']),
+    'unbiased' => fn() => Phit\draws_moments($input['draws'], $input['weights'], 'unbiased'),
+    'covariance_map' => fn() => Phit\draws_covariance_map($input['source_covariance'], $input['target_covariance']),
+    'affine' => fn() => Phit\draws_affine($input['draws'], $input['matrix'], $input['shift']),
 ];
 if ($argv[2] === 'verify') {
     $results = [];

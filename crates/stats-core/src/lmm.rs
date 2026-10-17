@@ -394,7 +394,7 @@ pub fn fit_lmm(
     if q > 512 || n.checked_mul(q + p + 1).is_none_or(|s| s > 50_000_000) {
         return Err(err(
             ErrorKind::Unsupported,
-            "general mixed-model dense design limit exceeded (q <= 512, n*(q+p+1) <= 50000000); use stats_lmm for large random-intercept fits",
+            "general mixed-model dense design limit exceeded (q <= 512, n*(q+p+1) <= 50000000); use fit_mixed_intercept for large random-intercept fits",
         ));
     }
     let design = DMatrix::from_row_iterator(n, p, x.into_iter().flatten());

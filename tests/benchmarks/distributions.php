@@ -9,7 +9,7 @@ $parameters = match ($op) {
     'beta_quantile' => [2, 5], 'chisquare_cdf' => [1e6],
 };
 $utility = in_array($op, ['mean','variance'], true);
-$scalar = 'stats_'.$op;
+$scalar = $utility ? 'Phit\stat_'.($op === 'variance' ? 'var' : $op) : 'Phit\dist_'.$op;
 $batch = $scalar.'_array';
 $call = function() use ($values, $parameters, $scalar, $batch, $utility, $argv): array {
     if ($utility) return [$scalar($values)];

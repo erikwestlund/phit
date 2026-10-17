@@ -64,7 +64,7 @@ foreach ($students as $student) {
     $x[] = [1.0, $student['study_hours'], $student['practice_score']];
     $y[] = $student['passed'];
 }
-$result = stats_logistic(x: $x, y: $y, intercept: false);
+$result = Phit\fit_logistic(x: $x, y: $y, intercept: false);
 ```
 
 Here `$students` contains already numeric records; see `examples/logistic.php`

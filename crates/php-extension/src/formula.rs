@@ -1,4 +1,4 @@
-//! Formula interfaces: stats_model_matrix, stats_lm, stats_glm and stats_lmer.
+//! Formula interfaces: model_matrix, fit_lm, fit_glm and fit_lmer.
 //!
 //! Data arrive as named columns (or an object with toModelData()/toColumns()).
 //! The R-compatible formula engine lives in stats_core::formula; this module only
@@ -293,7 +293,7 @@ fn add_names(output: &mut ZendHashTable, design: &ModelDesign) -> PhpResult<()> 
     Ok(())
 }
 
-/// Factor levels and poly() coefficients that stats_predict() reuses.
+/// Factor levels and poly() coefficients that predict() reuses.
 fn predvars_table(predvars: &Predvars) -> PhpResult<ZBox<ZendHashTable>> {
     let mut levels = ZendHashTable::new();
     for (name, values) in &predvars.levels {
@@ -314,7 +314,7 @@ fn predvars_table(predvars: &Predvars) -> PhpResult<ZBox<ZendHashTable>> {
 
 fn malformed_fit(detail: &str) -> PhpException {
     invalid(&format!(
-        "fit must be a result of stats_lm, stats_glm, stats_lmer or stats_glmer: {detail}"
+        "fit must be a result of Phit\\fit_lm, Phit\\fit_glm, Phit\\fit_lmer or Phit\\fit_glmer: {detail}"
     ))
 }
 
@@ -399,7 +399,7 @@ fn fitted_effects(
         .ok_or_else(malformed)?;
     let mut out = Vec::new();
     if let Some(effects) = fit.get("random_effects").and_then(|v| v.array()) {
-        // stats_glmer: one random intercept with top-level effects and labels.
+        // fit_glmer: one random intercept with top-level effects and labels.
         let labels = fit
             .get("group_labels")
             .and_then(|v| v.array())
@@ -458,16 +458,19 @@ fn nullable(values: &[Option<f64>]) -> PhpResult<ZBox<ZendHashTable>> {
 /// Predictions for new data from a formula fit, as R's predict() for lm, glm
 /// and merMod objects.
 #[php_function]
-#[php(defaults(
-    r#type = "\"link\"",
-    se_fit = false,
-    interval = "\"none\"",
-    level = 0.95,
-    random = true,
-    allow_new_levels = false
-))]
+#[php(
+    name = "Phit\\predict",
+    defaults(
+        r#type = "\"link\"",
+        se_fit = false,
+        interval = "\"none\"",
+        level = 0.95,
+        random = true,
+        allow_new_levels = false
+    )
+)]
 #[allow(clippy::too_many_arguments)] // Named PHP arguments mirror R's predict().
-pub fn stats_predict(
+pub fn predict(
     fit: &ZendHashTable,
     newdata: &Zval,
     r#type: &str,
@@ -500,7 +503,7 @@ pub fn stats_predict(
         "confidence" | "prediction" => {
             return Err(input_exception(
                 ErrorKind::Unsupported,
-                "intervals are available for stats_lm fits; use se_fit for GLMs",
+                "intervals are available for Phit\\fit_lm fits; use se_fit for GLMs",
             ));
         }
         _ => {
@@ -659,7 +662,7 @@ pub fn stats_predict(
         {
             ext_php_rs::error::php_error(
                 &ext_php_rs::flags::ErrorType::Warning,
-                "stats_predict assumes constant prediction variance even though the model fit is weighted",
+                "Phit\\predict assumes constant prediction variance even though the model fit is weighted",
             );
         }
         let mut lower = vec![None; n];
@@ -707,7 +710,7 @@ fn reject_random(design: &ModelDesign, function: &str) -> PhpResult<()> {
         Err(input_exception(
             ErrorKind::Unsupported,
             &format!(
-                "{function} does not fit random-effect terms such as ({}); use stats_lmer, or stats_lmm_fit with stats_model_matrix()['random']",
+                "{function} does not fit random-effect terms such as ({}); use Phit\\fit_lmer, or Phit\\fit_mixed with Phit\\model_matrix()['random']",
                 design.random[0].label
             ),
         ))
@@ -726,12 +729,8 @@ fn numeric_response(design: &ModelDesign, function: &str) -> PhpResult<Vec<f64>>
 
 /// Build R's model.matrix() for a formula over named columns.
 #[php_function]
-#[php(defaults(missing = "\"drop\""))]
-pub fn stats_model_matrix(
-    formula: &str,
-    data: &Zval,
-    missing: &str,
-) -> PhpResult<ZBox<ZendHashTable>> {
+#[php(name = "Phit\\model_matrix", defaults(missing = "\"drop\""))]
+pub fn model_matrix(formula: &str, data: &Zval, missing: &str) -> PhpResult<ZBox<ZendHashTable>> {
     let prepared = prepare(formula, data, missing, None, false)?;
     let design = prepared.design;
     let mut out = ZendHashTable::new();
@@ -776,7 +775,7 @@ pub fn stats_model_matrix(
         ext_php_rs::error::php_error(
             &ext_php_rs::flags::ErrorType::Warning,
             &format!(
-                "stats_model_matrix dropped {} of {} observations with missing values (listwise deletion)",
+                "Phit\\model_matrix dropped {} of {} observations with missing values (listwise deletion)",
                 dropped.len(),
                 design.n_input
             ),
@@ -785,25 +784,25 @@ pub fn stats_model_matrix(
     Ok(out)
 }
 
-/// Linear model from a formula: the stats_ols core plus coefficient names.
+/// Linear model from a formula: the fit_ols core plus coefficient names.
 #[php_function]
-#[php(defaults(missing = "\"drop\""))]
-pub fn stats_lm(
+#[php(name = "Phit\\fit_lm", defaults(missing = "\"drop\""))]
+pub fn fit_lm(
     formula: &str,
     data: &Zval,
     missing: &str,
     weights: Option<&Zval>,
 ) -> PhpResult<ZBox<ZendHashTable>> {
     let Prepared { design, weights } = prepare(formula, data, missing, weights, true)?;
-    reject_random(&design, "stats_lm")?;
-    let y = numeric_response(&design, "stats_lm")?;
+    reject_random(&design, "Phit\\fit_lm")?;
+    let y = numeric_response(&design, "Phit\\fit_lm")?;
     let offset = design.offset.clone().unwrap_or_default();
     let result = stats_core::fit_ols_with_data(design.x.clone(), y, weights, offset)
         .map_err(stats_exception)?;
     let mut output = crate::ols_output(result)?;
     add_names(&mut output, &design)?;
     let (retained, dropped) = rows(&design);
-    finish_result(output, design.n_input, retained, dropped, "stats_lm")
+    finish_result(output, design.n_input, retained, dropped, "Phit\\fit_lm")
 }
 
 fn binomial_response(design: &ModelDesign, weights: &mut [f64]) -> PhpResult<Vec<f64>> {
@@ -829,7 +828,7 @@ fn binomial_response(design: &ModelDesign, weights: &mut [f64]) -> PhpResult<Vec
             }
             y
         }
-        None => return Err(invalid("stats_glm needs a response: 'y ~ ...'")),
+        None => return Err(invalid("Phit\\fit_glm needs a response: 'y ~ ...'")),
     };
     if y.iter().any(|v| !(0.0..=1.0).contains(v)) {
         return Err(invalid("binary/grouped-binomial y must be in [0,1]"));
@@ -850,8 +849,11 @@ fn binomial_response(design: &ModelDesign, weights: &mut [f64]) -> PhpResult<Vec
 
 /// Generalized linear model from a formula over the existing GLM cores.
 #[php_function]
-#[php(defaults(family = "\"gaussian\"", link = "\"\"", missing = "\"drop\""))]
-pub fn stats_glm(
+#[php(
+    name = "Phit\\fit_glm",
+    defaults(family = "\"gaussian\"", link = "\"\"", missing = "\"drop\"")
+)]
+pub fn fit_glm(
     formula: &str,
     data: &Zval,
     family: &str,
@@ -883,12 +885,12 @@ pub fn stats_glm(
         design,
         mut weights,
     } = prepare(formula, data, missing, weights, true)?;
-    reject_random(&design, "stats_glm")?;
+    reject_random(&design, "Phit\\fit_glm")?;
     let offset = design.offset.clone().unwrap_or_default();
     let x = design.x.clone();
     let mut output = match link {
         "identity" => {
-            let y = numeric_response(&design, "stats_glm")?;
+            let y = numeric_response(&design, "Phit\\fit_glm")?;
             let n = y.len();
             let off = if offset.is_empty() {
                 vec![0.0; n]
@@ -938,7 +940,7 @@ pub fn stats_glm(
             }
         }
         _ => {
-            let y = numeric_response(&design, "stats_glm")?;
+            let y = numeric_response(&design, "Phit\\fit_glm")?;
             if y.iter().any(|v| *v < 0.0 || v.fract() != 0.0) {
                 return Err(invalid("Poisson y must contain nonnegative integer counts"));
             }
@@ -952,11 +954,11 @@ pub fn stats_glm(
     output.insert("link", link)?;
     add_names(&mut output, &design)?;
     let (retained, dropped) = rows(&design);
-    finish_result(output, design.n_input, retained, dropped, "stats_glm")
+    finish_result(output, design.n_input, retained, dropped, "Phit\\fit_glm")
 }
 
 fn group_indices(groups: &[GroupLabel]) -> (Vec<usize>, Vec<crate::GroupLabel>) {
-    // First-appearance order after deletion, as stats_lmm_fit/stats_logistic_mixed use.
+    // First-appearance order after deletion, as fit_mixed/fit_logistic_mixed use.
     let mut labels = Vec::new();
     let mut map = std::collections::HashMap::new();
     let indices = groups
@@ -977,7 +979,7 @@ fn group_indices(groups: &[GroupLabel]) -> (Vec<usize>, Vec<crate::GroupLabel>) 
 fn require_random(design: &ModelDesign, function: &str) -> PhpResult<()> {
     if design.random.is_empty() {
         return Err(invalid(&format!(
-            "{function} needs at least one random-effect term such as (1 | g); use stats_lm or stats_glm for fixed effects only"
+            "{function} needs at least one random-effect term such as (1 | g); use Phit\\fit_lm or Phit\\fit_glm for fixed effects only"
         )));
     }
     Ok(())
@@ -987,18 +989,21 @@ fn positive_count(value: i64, what: &str, kind: ErrorKind) -> PhpResult<usize> {
     usize::try_from(value).map_err(|_| input_exception(kind, &format!("{what} must be positive")))
 }
 
-/// Gaussian mixed model from an lme4-style formula over the stats_lmm_fit core.
+/// Gaussian mixed model from an lme4-style formula over the fit_mixed core.
 #[php_function]
-#[php(defaults(
-    reml = true,
-    missing = "\"drop\"",
-    max_evaluations = 20000,
-    tolerance = 1e-7,
-    optimizer = "\"bobyqa\"",
-    objective_tolerance = 1e-12
-))]
-#[allow(clippy::too_many_arguments)] // Named PHP arguments mirror stats_lmm_fit.
-pub fn stats_lmer(
+#[php(
+    name = "Phit\\fit_lmer",
+    defaults(
+        reml = true,
+        missing = "\"drop\"",
+        max_evaluations = 20000,
+        tolerance = 1e-7,
+        optimizer = "\"bobyqa\"",
+        objective_tolerance = 1e-12
+    )
+)]
+#[allow(clippy::too_many_arguments)] // Named PHP arguments mirror fit_mixed.
+pub fn fit_lmer(
     formula: &str,
     data: &Zval,
     reml: bool,
@@ -1030,8 +1035,8 @@ pub fn stats_lmer(
         })
         .transpose()?;
     let Prepared { design, weights } = prepare(formula, data, missing, weights, true)?;
-    require_random(&design, "stats_lmer")?;
-    let y = numeric_response(&design, "stats_lmer")?;
+    require_random(&design, "Phit\\fit_lmer")?;
+    let y = numeric_response(&design, "Phit\\fit_lmer")?;
     let mut term_labels = Vec::new();
     let terms = design
         .random
@@ -1075,21 +1080,24 @@ pub fn stats_lmer(
     }
     add_names(&mut output, &design)?;
     let (retained, dropped) = rows(&design);
-    finish_result(output, design.n_input, retained, dropped, "stats_lmer")
+    finish_result(output, design.n_input, retained, dropped, "Phit\\fit_lmer")
 }
 
-/// Binomial random-intercept model from a formula over the stats_logistic_mixed core.
+/// Binomial random-intercept model from a formula over the fit_logistic_mixed core.
 #[php_function]
-#[php(defaults(
-    family = "\"binomial\"",
-    link = "\"\"",
-    missing = "\"drop\"",
-    quadrature_points = 1,
-    max_evaluations = 20000,
-    tolerance = 1e-7
-))]
-#[allow(clippy::too_many_arguments)] // Named PHP arguments mirror stats_logistic_mixed.
-pub fn stats_glmer(
+#[php(
+    name = "Phit\\fit_glmer",
+    defaults(
+        family = "\"binomial\"",
+        link = "\"\"",
+        missing = "\"drop\"",
+        quadrature_points = 1,
+        max_evaluations = 20000,
+        tolerance = 1e-7
+    )
+)]
+#[allow(clippy::too_many_arguments)] // Named PHP arguments mirror fit_logistic_mixed.
+pub fn fit_glmer(
     formula: &str,
     data: &Zval,
     family: &str,
@@ -1104,7 +1112,7 @@ pub fn stats_glmer(
         return Err(input_exception(
             ErrorKind::Unsupported,
             &format!(
-                "stats_glmer supports family 'binomial' with the logit link only (got '{family}'/'{link}')"
+                "Phit\\fit_glmer supports family 'binomial' with the logit link only (got '{family}'/'{link}')"
             ),
         ));
     }
@@ -1112,11 +1120,11 @@ pub fn stats_glmer(
         design,
         mut weights,
     } = prepare(formula, data, missing, weights, true)?;
-    require_random(&design, "stats_glmer")?;
+    require_random(&design, "Phit\\fit_glmer")?;
     if design.random.len() != 1 || design.random[0].columns != ["(Intercept)"] {
         return Err(input_exception(
             ErrorKind::Unsupported,
-            "stats_glmer supports exactly one random intercept, (1 | g); random slopes and several terms are not implemented",
+            "Phit\\fit_glmer supports exactly one random intercept, (1 | g); random slopes and several terms are not implemented",
         ));
     }
     let y = binomial_response(&design, &mut weights)?;
@@ -1148,15 +1156,15 @@ pub fn stats_glmer(
     output.insert("random", random)?;
     add_names(&mut output, &design)?;
     let (retained, dropped) = rows(&design);
-    finish_result(output, design.n_input, retained, dropped, "stats_glmer")
+    finish_result(output, design.n_input, retained, dropped, "Phit\\fit_glmer")
 }
 
 pub fn register(module: ModuleBuilder) -> ModuleBuilder {
     module
-        .function(wrap_function!(stats_model_matrix))
-        .function(wrap_function!(stats_lm))
-        .function(wrap_function!(stats_glm))
-        .function(wrap_function!(stats_lmer))
-        .function(wrap_function!(stats_glmer))
-        .function(wrap_function!(stats_predict))
+        .function(wrap_function!(model_matrix))
+        .function(wrap_function!(fit_lm))
+        .function(wrap_function!(fit_glm))
+        .function(wrap_function!(fit_lmer))
+        .function(wrap_function!(fit_glmer))
+        .function(wrap_function!(predict))
 }

@@ -22034,7 +22034,7 @@
       "path": "tests/fixtures/formula-r.json",
       "sha256": "3f07aabe52e2e8989cee0a694060daa0d4466ba239e822a26a016845ce3791e1",
       "generator": "tests/generate-formula-fixtures.R",
-      "generator_sha256": "ff6f750452a4b72941e3ee6e55b7a9b643b82042120e40e5aa3388157e8fe8f5",
+      "generator_sha256": "cbaf18e052cc73fbddf128651c1567df98e818873ef87f75900ff11cf72762cd",
       "software_recorded_in_fixture": {
         "reference": "R version 4.6.1 (2026-06-24)",
         "collation": "C"
@@ -23350,7 +23350,7 @@
       "path": "tests/fixtures/formula-lme4-r.json",
       "sha256": "8175ff0c9582953cd0b6aa04c5da696494ef5eae7b43f6d85e39cdbd74cc9a5a",
       "generator": "tests/generate-formula-lme4-fixtures.R",
-      "generator_sha256": "a34ca7c46151d65b9d48f256e5d19ae32db2fd1d5e5fe0c4304f13d884d56577",
+      "generator_sha256": "5e63dbcb397f4ac9bcb53fbee8b05ee070b75bd48259863c690edee22424e513",
       "software_recorded_in_fixture": {
         "reference": "R version 4.6.1 (2026-06-24)",
         "lme4": "2.0.6",
@@ -23649,7 +23649,7 @@
       "path": "tests/fixtures/predict-r.json",
       "sha256": "1da19ae09a1e669ccf91eb752de3a6d943f82b589313d0e6031a32b20092a6e1",
       "generator": "tests/generate-predict-fixtures.R",
-      "generator_sha256": "56bbb312c2f0bc5b3d494282e156f4c737b3d18dc0f84e2e6bdf925a3bed428f",
+      "generator_sha256": "e870f8f7de629b90efb010b669977b010c82f450d2731b9b66aa7c034b5e49e5",
       "software_recorded_in_fixture": {
         "generator": "tests/generate-predict-fixtures.R",
         "r_version": "R version 4.6.1 (2026-06-24)",

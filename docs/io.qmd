@@ -2,14 +2,14 @@
 title: "Reading CSV files"
 ---
 
-`stats_read_csv()` reads a delimited text file into typed columns. It is the
+`read_csv()` reads a delimited text file into typed columns. It is the
 native reader behind phibble's `Frame::fromCsv()`. Its records, names, guessed
 types, values, and problem messages match phibble's PHP reader, which follows
 readr 2 (`readr::read_delim()`). phibble keeps name repair, `col_select`, factor
 and `parse_number()` columns, and the problems warning in PHP.
 
 ```php
-stats_read_csv(string $path, array $options = []): array;
+Phit\read_csv(string $path, array $options = []): array;
 ```
 
 ## Options

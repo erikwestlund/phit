@@ -47,7 +47,7 @@ fit.params, fit.bse, fit.tvalues, fit.pvalues, fit.conf_int(), fit.llf
 PHP (after loading the extension):
 
 ```php
-$result = stats_ols(x: $x, y: $y, intercept: false); // missing defaults to 'drop'
+$result = Phit\fit_ols(x: $x, y: $y, intercept: false); // missing defaults to 'drop'
 ```
 
 The executable harness uses `y ~ . - 1` in R with the explicit design columns to avoid inserting a second intercept. It calculates centered/uncentered R-squared explicitly because that formula is syntactically no-intercept even when the supplied matrix contains ones. All other quantities come from R's fitted model. This makes the same runner work for multiple and no-intercept designs.

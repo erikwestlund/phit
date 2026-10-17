@@ -3,25 +3,25 @@ declare(strict_types=1);
 // Hypothetical laboratory readings (mg/L); hand-checkable data for API examples.
 $readings = [9.7, 10.1, 10.4, 9.9, 10.6, 10.2, 9.8, 10.3];
 $n = count($readings);
-$mean = stats_mean($readings);
-$se = stats_sd($readings) / sqrt($n);
+$mean = Phit\stat_mean($readings);
+$se = Phit\stat_sd($readings) / sqrt($n);
 // Two-sided one-sample t test against 10 mg/L, using the survival function.
 $t = ($mean - 10.0) / $se;
-$p = 2 * stats_t_sf(abs($t), df: $n - 1);
-$critical = stats_t_quantile(.975, df: $n - 1);
+$p = 2 * Phit\dist_t_sf(abs($t), df: $n - 1);
+$critical = Phit\dist_t_quantile(.975, df: $n - 1);
 $interval = [$mean - $critical*$se, $mean + $critical*$se];
 // Hypothetical count observations; sum log-PMFs instead of multiplying tiny PMFs.
 $counts = [2, 5, 3, 0, 4, 1];
-$lambda = stats_mean($counts);
-$logLikelihood = array_sum(stats_poisson_logpmf_array($counts, lambda: $lambda));
+$lambda = Phit\stat_mean($counts);
+$logLikelihood = array_sum(Phit\dist_poisson_logpmf_array($counts, lambda: $lambda));
 // A standard normal exceeds 10 with a probability that 1 - CDF rounds to zero.
-$tail = stats_normal_sf(10);
-$logTail = stats_normal_logsf(40); // Finite even when SF underflows to zero.
-$centralProbability = stats_normal_cdf(1.96) - stats_normal_cdf(-1.96);
+$tail = Phit\dist_normal_sf(10);
+$logTail = Phit\dist_normal_logsf(40); // Finite even when SF underflows to zero.
+$centralProbability = Phit\dist_normal_cdf(1.96) - Phit\dist_normal_cdf(-1.96);
 // Negative-binomial forms are equivalent; size is dispersion, not a trial count.
 $size = 3.0; $mu = 6.0;
-$nbProbability = stats_nbinom_mu_pmf(4, size: $size, mu: $mu);
-$nbEquivalent = stats_nbinom_pmf(4, size: $size, prob: $size/($size+$mu));
+$nbProbability = Phit\dist_nbinom_mu_pmf(4, size: $size, mu: $mu);
+$nbEquivalent = Phit\dist_nbinom_pmf(4, size: $size, prob: $size/($size+$mu));
 if (abs($nbProbability-$nbEquivalent) > 1e-14 || !($p>0 && $p<1) || !($tail>0) || !is_finite($logTail)) {
     throw new RuntimeException('Distribution example identities failed');
 }

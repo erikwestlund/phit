@@ -11,13 +11,13 @@ foreach ($fixture['cases'] as $case) {
     $input = array_map($decode, $case['input']);
     $params = $case['params'];
     if ($case['distribution'] === 'binomial') $params['size'] = (int) $params['size'];
-    $function = 'stats_' . $case['distribution'] . '_' . $case['operation'] . '_array';
+    $function = 'Phit\dist_' . $case['distribution'] . '_' . $case['operation'] . '_array';
     try {
         $values = array_map($encode, $function($input, ...$params));
         $error = null;
     } catch (Throwable $e) {
         // One invalid element rejects the whole batch; evaluate one by one to locate it.
-        $scalar = 'stats_' . $case['distribution'] . '_' . $case['operation'];
+        $scalar = 'Phit\dist_' . $case['distribution'] . '_' . $case['operation'];
         $values = [];
         foreach ($input as $x) {
             try { $values[] = $encode($scalar($x, ...$params)); }

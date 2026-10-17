@@ -1,5 +1,5 @@
 <?php
-// stats_read_csv(): records, names, types, values and problems, following
+// Phit\read_csv(): records, names, types, values and problems, following
 // phibble's PHP reader (tests/csv-phibble.php compares the two directly).
 declare(strict_types=1);
 
@@ -15,11 +15,11 @@ function csv(string $text, array $options = []): array {
     global $dir;
     $path = "$dir/input.csv";
     file_put_contents($path, $text);
-    return stats_read_csv($path, $options);
+    return Phit\read_csv($path, $options);
 }
 
 function fixture(string $name, array $options = []): array {
-    return stats_read_csv(__DIR__."/fixtures/csv/$name", $options);
+    return Phit\read_csv(__DIR__."/fixtures/csv/$name", $options);
 }
 
 /** Compare a column with ===, floats by bit pattern (NAN, -0.0). */
@@ -248,8 +248,8 @@ $r = csv("a\n1\n", ['types' => [0 => '?', 5 => 'c']]);
 column($r, 0, 'int', [1], label: 'positions past the end');
 
 // --- Errors ------------------------------------------------------------------------
-valueError(fn () => stats_read_csv("$dir/missing.csv"), 'cannot read CSV file');
-valueError(fn () => stats_read_csv($dir), 'cannot read CSV file');
+valueError(fn () => Phit\read_csv("$dir/missing.csv"), 'cannot read CSV file');
+valueError(fn () => Phit\read_csv($dir), 'cannot read CSV file');
 valueError(fn () => csv("a\n", ['delimiter' => '::']), "'delimiter' must be a single byte");
 valueError(fn () => csv("a\n", ['delimiter' => '']), "'delimiter' must be a single byte");
 valueError(fn () => csv("a\n", ['quote' => '""']), "'quote' must be an empty string or a single byte");

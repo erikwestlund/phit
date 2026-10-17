@@ -59,7 +59,7 @@ points from the established probit calculation. This task also requires preservi
 regression behavior, so neither path is replaced in this release. A future refactor
 can use this evidence to make an explicit model compatibility decision.
 
-Random sampling is implemented with `stats_{family}_rng(n, seed, ...parameters)`.
+Random sampling is implemented with `dist_{family}_rng(n, seed, ...parameters)`.
 Each call owns a pinned ChaCha20 stream and transforms open-interval uniforms
 through the existing inverse CDF. The [sampling contract](rng.qmd) defines seed
 ownership, count/type/range policies and reproducibility limits. Independent

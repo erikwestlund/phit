@@ -1,5 +1,5 @@
 # Run from the repository root: Rscript tests/generate-formula-lme4-fixtures.R
-# lme4 references for stats_lmer/stats_glmer formulas. Runtime tests read the saved JSON only.
+# lme4 references for fit_lmer/fit_glmer formulas. Runtime tests read the saved JSON only.
 suppressPackageStartupMessages(library(lme4))
 invisible(Sys.setlocale("LC_COLLATE", "C"))
 RNGkind("Mersenne-Twister", "Inversion", "Rejection")

@@ -2,7 +2,7 @@
 title: "Seeded batch sampling"
 ---
 
-Every supported distribution has a `stats_{family}_rng()` function that returns
+Every supported distribution has a `dist_{family}_rng()` function that returns
 ordinary PHP numeric arrays. Sampling uses mature Rust RNG libraries already in
 the dependency graph: pinned `rand 0.9.5` and `rand_chacha 0.9.0`, now explicit
 stats-core dependencies. No package versions were upgraded. Each call owns and
@@ -10,32 +10,32 @@ restarts its own ChaCha20 state from the supplied seed.
 
 ## API and state ownership
 
-The signature is `stats_{family}_rng(int $n, int $seed, ...distribution parameters): array`.
+The signature is `dist_{family}_rng(int $n, int $seed, ...distribution parameters): array`.
 The family parameters and defaults are exactly those of the corresponding
 [probability API](distributions.qmd#families-and-parameterizations).
 
 ```php
-$normal = stats_normal_rng(n: 5, seed: 42); // Default mean 0, SD 1.
-$measurements = stats_normal_rng(n: 8, seed: 20261012, mean: 10, sd: .5);
-$counts = stats_poisson_rng(n: 8, seed: 20261013, lambda: 3.2);
-$beta = stats_beta_rng(n: 8, seed: 17, alpha: 2, beta: 5);
+$normal = Phit\dist_normal_rng(n: 5, seed: 42); // Default mean 0, SD 1.
+$measurements = Phit\dist_normal_rng(n: 8, seed: 20261012, mean: 10, sd: .5);
+$counts = Phit\dist_poisson_rng(n: 8, seed: 20261013, lambda: 3.2);
+$beta = Phit\dist_beta_rng(n: 8, seed: 17, alpha: 2, beta: 5);
 ```
 
 | Function | Parameters after n and seed |
 | --- | --- |
-| `stats_normal_rng` | mean = 0, sd = 1 |
-| `stats_t_rng` | df |
-| `stats_chisquare_rng` | df |
-| `stats_f_rng` | df1, df2 |
-| `stats_beta_rng` | alpha, beta |
-| `stats_gamma_rng` | shape, scale = 1 |
-| `stats_exponential_rng` | rate = 1 |
-| `stats_lognormal_rng` | meanlog = 0, sdlog = 1 |
-| `stats_logistic_rng` | location = 0, scale = 1 |
-| `stats_binomial_rng` | size, prob |
-| `stats_poisson_rng` | lambda |
-| `stats_nbinom_rng` | size, prob |
-| `stats_nbinom_mu_rng` | size, mu |
+| `dist_normal_rng` | mean = 0, sd = 1 |
+| `dist_t_rng` | df |
+| `dist_chisquare_rng` | df |
+| `dist_f_rng` | df1, df2 |
+| `dist_beta_rng` | alpha, beta |
+| `dist_gamma_rng` | shape, scale = 1 |
+| `dist_exponential_rng` | rate = 1 |
+| `dist_lognormal_rng` | meanlog = 0, sdlog = 1 |
+| `dist_logistic_rng` | location = 0, scale = 1 |
+| `dist_binomial_rng` | size, prob |
+| `dist_poisson_rng` | lambda |
+| `dist_nbinom_rng` | size, prob |
+| `dist_nbinom_mu_rng` | size, mu |
 
 `n` is an integer in `[0,1000000]`; `seed` is a nonnegative PHP integer, including
 zero, up to PHP_INT_MAX (2^63−1 on the supported 64-bit platforms). Both arguments

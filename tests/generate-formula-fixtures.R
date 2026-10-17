@@ -1,5 +1,5 @@
 # Run from the repository root: Rscript tests/generate-formula-fixtures.R
-# Base R reference for stats_model_matrix/stats_lm/stats_glm. Runtime tests read the saved JSON only.
+# Base R reference for model_matrix/fit_lm/fit_glm. Runtime tests read the saved JSON only.
 # Character columns sort in the C locale, which the extension documents as its level order.
 invisible(Sys.setlocale("LC_COLLATE", "C"))
 RNGkind("Mersenne-Twister", "Inversion", "Rejection")
@@ -109,7 +109,7 @@ cases <- list(
   case("mm_dates", "synthetic", "model_matrix", "y ~ day + I(day - 19723)"),
   case("mm_dot_mixed", "small", "model_matrix", "y ~ ."),
   case("mm_factor_response", "synthetic", "model_matrix", "ans ~ x1"),
-  # lm(): stats_ols contract plus names.
+  # lm(): fit_ols contract plus names.
   case("lm_housing", "housing", "lm", "monthly_rent ~ area_m2"),
   case("lm_housing_log", "housing", "lm", "log(monthly_rent) ~ log(area_m2) + bedrooms"),
   case("lm_housing_poly", "housing", "lm", "monthly_rent ~ poly(area_m2, 2)"),

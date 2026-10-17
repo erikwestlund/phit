@@ -1,5 +1,5 @@
 # Run from the repository root: Rscript tests/generate-predict-fixtures.R
-# predict() references for stats_predict. Runtime tests read the saved JSON only.
+# predict() references for predict. Runtime tests read the saved JSON only.
 suppressPackageStartupMessages(library(lme4))
 invisible(Sys.setlocale("LC_COLLATE", "C"))
 RNGkind("Mersenne-Twister", "Inversion", "Rejection")

@@ -9,8 +9,10 @@ values, and model statistics.
 [Verification](https://erikwestlund.github.io/phit/verification.html)
 
 ```php
+use function Phit\fit_ols;
+
 // Simulated apartments: floor area (m²) predicts monthly rent.
-$result = stats_ols(
+$result = fit_ols(
     x: [[74.4], [57.4], [66.4], [49.1], [45.7], [92.4], [37.0], [93.9]],
     y: [1879.25, 1805.03, 2022.29, 1267.85, 1509.24, 2240.10, 959.51, 2386.54],
 );
@@ -23,24 +25,26 @@ $result['r_squared'];    // Approximately 0.876
 
 Supply one row per observation and one column per predictor. **The fixed intercept
 is added automatically** and returned first. Use `intercept: false` for a model
-through the origin, or to supply a complete design matrix yourself. Loading the
-extension makes its functions available; application code needs no imports or
-model classes.
+through the origin, or to supply a complete design matrix yourself. Every
+function lives in the `Phit` namespace: import it with `use function Phit\fit_ols;`
+or call it as `Phit\fit_ols()`. Names are grouped by prefix: `fit_*` for models,
+`dist_*` for distributions, `stat_*` for descriptive statistics and `draws_*` for
+posterior draws.
 
 ## Models
 
 | Function | Model |
 | --- | --- |
-| `stats_ols()` | Continuous outcome; ordinary or weighted least squares |
-| `stats_logistic()` | Binary/grouped-binomial outcome; logit link |
-| `stats_probit()` | Binary/grouped-binomial outcome; probit link |
-| `stats_poisson()` | Counts; log link, weights and offsets |
-| `stats_lmm()` | Gaussian random intercept; optimized ML fit |
-| `stats_lmm_fit()` | Gaussian mixed model; ML/REML, random slopes, multiple grouping terms |
-| `stats_logistic_mixed()` | Binomial random intercept; Laplace or adaptive quadrature |
-| `stats_lm()`, `stats_glm()` | R formulas over named columns; OLS, logit, probit and Poisson cores |
-| `stats_lmer()`, `stats_glmer()` | lme4-style formulas over the mixed-model cores |
-| `stats_model_matrix()` | R-compatible `model.matrix()` with names, contrasts and random-effect designs |
+| `fit_ols()` | Continuous outcome; ordinary or weighted least squares |
+| `fit_logistic()` | Binary/grouped-binomial outcome; logit link |
+| `fit_probit()` | Binary/grouped-binomial outcome; probit link |
+| `fit_poisson()` | Counts; log link, weights and offsets |
+| `fit_mixed_intercept()` | Gaussian random intercept; optimized ML fit |
+| `fit_mixed()` | Gaussian mixed model; ML/REML, random slopes, multiple grouping terms |
+| `fit_logistic_mixed()` | Binomial random intercept; Laplace or adaptive quadrature |
+| `fit_lm()`, `fit_glm()` | R formulas over named columns; OLS, logit, probit and Poisson cores |
+| `fit_lmer()`, `fit_glmer()` | lme4-style formulas over the mixed-model cores |
+| `model_matrix()` | R-compatible `model.matrix()` with names, contrasts and random-effect designs |
 
 The formula functions accept R syntax such as `'log(rent) ~ log(area) + district'`
 and return coefficient names with the matrix function's results. See the
@@ -58,25 +62,25 @@ binomial, Poisson and negative-binomial distributions. Each has scalar and nativ
 batch density/mass, CDF, survival, log-tail and quantile functions. For example:
 
 ```php
-$upperTail = stats_normal_sf(10); // About 7.62e-24.
-$logLikelihood = array_sum(stats_poisson_logpmf_array([2, 5, 3, 0], lambda: 2.5));
-$quartiles = stats_quantile_array([2.5, 3.1, 4.7, 1.2, 9.8], [.25, .5, .75]);
+$upperTail = Phit\dist_normal_sf(10); // About 7.62e-24.
+$logLikelihood = array_sum(Phit\dist_poisson_logpmf_array([2, 5, 3, 0], lambda: 2.5));
+$quartiles = Phit\stat_quantile_array([2.5, 3.1, 4.7, 1.2, 9.8], [.25, .5, .75]);
 ```
 
 Ten descriptive utilities provide mean, variance, SD, covariance/correlation,
 type-7 quantiles, median and weighted moments. These utilities reject missing
 values by default; dropping is explicit. Read the [distribution API](docs/distributions.qmd),
 [descriptive conventions](docs/descriptive.qmd) and [v0.2 verification/readiness](docs/v0.2.qmd).
-Seeded batch sampling uses `stats_{family}_rng()`, for example
-`stats_normal_rng(n: 5, seed: 42)`. Every call owns its stream; see the
+Seeded batch sampling uses `dist_{family}_rng()`, for example
+`dist_normal_rng(n: 5, seed: 42)`. Every call owns its stream; see the
 [sampling contract](docs/rng.qmd) for reproducibility and limits.
 
 ## Posterior draws
 
 Three numerical kernels accept ordinary row-oriented PHP arrays:
-`stats_draw_moments()` returns a weighted mean and covariance,
-`stats_draw_covariance_map()` returns a Cholesky covariance transformation, and
-`stats_draw_affine()` applies a matrix and shift while preserving draw order.
+`draws_moments()` returns a weighted mean and covariance,
+`draws_covariance_map()` returns a Cholesky covariance transformation, and
+`draws_affine()` applies a matrix and shift while preserving draw order.
 Maps and affine transformations return `log_abs_det`. Draw inputs always reject
 null/NAN/INF, with no row deletion or intercept insertion. Unbiased covariance
 uses reliability weights. See the [numerical notes](docs/draw-numerics.qmd) for
@@ -85,7 +89,7 @@ and moment-matching control belong to the consuming CmdStan interface.
 
 ## Reading CSV files
 
-`stats_read_csv($path, $options)` reads delimited text into typed columns with
+`read_csv($path, $options)` reads delimited text into typed columns with
 readr's options, type guessing, and problem reports. It is the native reader
 behind phibble's `Frame::fromCsv()` and matches phibble's PHP reader exactly.
 A 1,000,000-row file reads in about 0.1 seconds. See the
@@ -100,7 +104,7 @@ $visitors = [82, 104, 96, 131, 87, 115, 142, 98];
 $days = [1, 2, 1, 3, 2, 1, 2, 3];
 $calls = [5, 12, 4, 22, 8, 8, 19, 16];
 
-$result = stats_poisson(
+$result = Phit\fit_poisson(
     x: array_map(fn($v) => [$v], $visitors),
     y: $calls,
     offset: array_map(fn($d) => log($d), $days),
@@ -134,7 +138,7 @@ php -n -d "extension=$STATS_EXTENSION" examples/poisson-offset.php
 For a real application, install the compiled library and enable it in the
 application runtime's PHP configuration as described in
 [installation and deployment](https://erikwestlund.github.io/phit/development.html#running-in-an-application).
-Then call `stats_ols()`, `stats_poisson()`, etc. normally. The
+Then call `fit_ols()`, `fit_poisson()`, etc. normally. The
 [PHP stubs](stubs/phit.php) support IDEs and static analysis; do not include
 them at runtime.
 

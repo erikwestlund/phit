@@ -126,14 +126,17 @@ fn result(value: Result<f64, StatsError>) -> PhpResult<f64> {
 }
 
 #[php_function]
-#[php(defaults(missing = "\"raise\""))]
-pub fn stats_mean(values: &ZendHashTable, missing: &str) -> PhpResult<f64> {
+#[php(name = "Phit\\stat_mean", defaults(missing = "\"raise\""))]
+pub fn stat_mean(values: &ZendHashTable, missing: &str) -> PhpResult<f64> {
     result(desc::mean(&self::values(values, missing)?))
 }
 
 #[php_function]
-#[php(defaults(r#type = "\"sample\"", missing = "\"raise\""))]
-pub fn stats_var(values: &ZendHashTable, r#type: &str, missing: &str) -> PhpResult<f64> {
+#[php(
+    name = "Phit\\stat_var",
+    defaults(r#type = "\"sample\"", missing = "\"raise\"")
+)]
+pub fn stat_var(values: &ZendHashTable, r#type: &str, missing: &str) -> PhpResult<f64> {
     result(desc::variance(
         &self::values(values, missing)?,
         population(r#type)?,
@@ -141,8 +144,11 @@ pub fn stats_var(values: &ZendHashTable, r#type: &str, missing: &str) -> PhpResu
 }
 
 #[php_function]
-#[php(defaults(r#type = "\"sample\"", missing = "\"raise\""))]
-pub fn stats_sd(values: &ZendHashTable, r#type: &str, missing: &str) -> PhpResult<f64> {
+#[php(
+    name = "Phit\\stat_sd",
+    defaults(r#type = "\"sample\"", missing = "\"raise\"")
+)]
+pub fn stat_sd(values: &ZendHashTable, r#type: &str, missing: &str) -> PhpResult<f64> {
     result(desc::sd(
         &self::values(values, missing)?,
         population(r#type)?,
@@ -150,8 +156,11 @@ pub fn stats_sd(values: &ZendHashTable, r#type: &str, missing: &str) -> PhpResul
 }
 
 #[php_function]
-#[php(defaults(r#type = "\"sample\"", missing = "\"raise\""))]
-pub fn stats_cov(
+#[php(
+    name = "Phit\\stat_cov",
+    defaults(r#type = "\"sample\"", missing = "\"raise\"")
+)]
+pub fn stat_cov(
     x: &ZendHashTable,
     y: &ZendHashTable,
     r#type: &str,
@@ -162,21 +171,21 @@ pub fn stats_cov(
 }
 
 #[php_function]
-#[php(defaults(missing = "\"raise\""))]
-pub fn stats_cor(x: &ZendHashTable, y: &ZendHashTable, missing: &str) -> PhpResult<f64> {
+#[php(name = "Phit\\stat_cor", defaults(missing = "\"raise\""))]
+pub fn stat_cor(x: &ZendHashTable, y: &ZendHashTable, missing: &str) -> PhpResult<f64> {
     let (x, y) = pairs(x, y, missing)?;
     result(desc::correlation(&x, &y))
 }
 
 #[php_function]
-#[php(defaults(missing = "\"raise\""))]
-pub fn stats_quantile(values: &ZendHashTable, p: Real, missing: &str) -> PhpResult<f64> {
+#[php(name = "Phit\\stat_quantile", defaults(missing = "\"raise\""))]
+pub fn stat_quantile(values: &ZendHashTable, p: Real, missing: &str) -> PhpResult<f64> {
     result(desc::quantile(&self::values(values, missing)?, p.0))
 }
 
 #[php_function]
-#[php(defaults(missing = "\"raise\""))]
-pub fn stats_quantile_array(
+#[php(name = "Phit\\stat_quantile_array", defaults(missing = "\"raise\""))]
+pub fn stat_quantile_array(
     values: &ZendHashTable,
     probabilities: &ZendHashTable,
     missing: &str,
@@ -199,14 +208,14 @@ pub fn stats_quantile_array(
 }
 
 #[php_function]
-#[php(defaults(missing = "\"raise\""))]
-pub fn stats_median(values: &ZendHashTable, missing: &str) -> PhpResult<f64> {
+#[php(name = "Phit\\stat_median", defaults(missing = "\"raise\""))]
+pub fn stat_median(values: &ZendHashTable, missing: &str) -> PhpResult<f64> {
     result(desc::median(&self::values(values, missing)?))
 }
 
 #[php_function]
-#[php(defaults(missing = "\"raise\""))]
-pub fn stats_weighted_mean(
+#[php(name = "Phit\\stat_weighted_mean", defaults(missing = "\"raise\""))]
+pub fn stat_weighted_mean(
     values: &ZendHashTable,
     weights: &ZendHashTable,
     missing: &str,
@@ -216,8 +225,11 @@ pub fn stats_weighted_mean(
 }
 
 #[php_function]
-#[php(defaults(r#type = "\"frequency\"", missing = "\"raise\""))]
-pub fn stats_weighted_var(
+#[php(
+    name = "Phit\\stat_weighted_var",
+    defaults(r#type = "\"frequency\"", missing = "\"raise\"")
+)]
+pub fn stat_weighted_var(
     values: &ZendHashTable,
     weights: &ZendHashTable,
     r#type: &str,
@@ -240,14 +252,14 @@ pub fn stats_weighted_var(
 
 pub fn register(module: ModuleBuilder) -> ModuleBuilder {
     module
-        .function(wrap_function!(stats_mean))
-        .function(wrap_function!(stats_var))
-        .function(wrap_function!(stats_sd))
-        .function(wrap_function!(stats_cov))
-        .function(wrap_function!(stats_cor))
-        .function(wrap_function!(stats_quantile))
-        .function(wrap_function!(stats_quantile_array))
-        .function(wrap_function!(stats_median))
-        .function(wrap_function!(stats_weighted_mean))
-        .function(wrap_function!(stats_weighted_var))
+        .function(wrap_function!(stat_mean))
+        .function(wrap_function!(stat_var))
+        .function(wrap_function!(stat_sd))
+        .function(wrap_function!(stat_cov))
+        .function(wrap_function!(stat_cor))
+        .function(wrap_function!(stat_quantile))
+        .function(wrap_function!(stat_quantile_array))
+        .function(wrap_function!(stat_median))
+        .function(wrap_function!(stat_weighted_mean))
+        .function(wrap_function!(stat_weighted_var))
 }

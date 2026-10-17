@@ -643,7 +643,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="publish-github-pages" class="level2">
 <h2 class="anchored" data-anchor-id="publish-github-pages">Publish GitHub Pages</h2>
-<p>The repository serves <a href="https://erikwestlund.github.io/phit/">the documentation website</a> from the main branch’s <code>/docs</code> directory. After editing .qmd sources or refreshing frozen results, run:</p>
+<p>The repository serves <a href="https://phpstats.github.io/phit/">the documentation website</a> from the main branch’s <code>/docs</code> directory. After editing .qmd sources or refreshing frozen results, run:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/render-docs</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Commit the regenerated HTML/assets with their sources and push to main. <code>docs/.nojekyll</code> lets GitHub Pages serve the static Quarto website directly, including asset directories containing underscores. <code>quarto render docs</code> alone updates the workspace preview; the publication script also refreshes <code>/docs/index.html</code>.</p>
 
@@ -724,7 +724,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/erikwestlund\.github\.io\/phit\/");
+        var filterRegex = new RegExp("https:\/\/phpstats\.github\.io\/phit\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

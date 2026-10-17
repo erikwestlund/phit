@@ -1,0 +1,172 @@
+{
+ "title": "Poisson regression: fit time",
+ "description": "Median wall time to fit poisson regression models on the same simulated data in R, Python and phit. Data loading is timed separately and excluded.",
+ "measure": "median fit wall time",
+ "unit": "ms",
+ "environment": {
+  "cpu": "Apple M5 Ultra",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "php": "8.5.10",
+  "date": "2026-10-16T07:51:11.086697+00:00",
+  "repeats": 5
+ },
+ "source": "docs/benchmarks/poisson-results.json",
+ "rows": [
+  {
+   "case": "n = 1,000, p = 3",
+   "implementation": "R",
+   "value": 2.0,
+   "reps": [
+    2.0,
+    1.0,
+    1.0,
+    2.0,
+    2.0
+   ],
+   "load_ms": 1.0
+  },
+  {
+   "case": "n = 1,000, p = 3",
+   "implementation": "statsmodels",
+   "value": 0.767,
+   "reps": [
+    0.848,
+    0.81,
+    0.767,
+    0.748,
+    0.743
+   ],
+   "load_ms": 0.316
+  },
+  {
+   "case": "n = 1,000, p = 3",
+   "implementation": "phit",
+   "value": 0.245,
+   "reps": [
+    0.262,
+    0.246,
+    0.243,
+    0.245,
+    0.241
+   ],
+   "load_ms": 0.613
+  },
+  {
+   "case": "n = 100,000, p = 3",
+   "implementation": "phit",
+   "value": 26.229,
+   "reps": [
+    26.801,
+    26.229,
+    25.832,
+    26.307,
+    25.544
+   ],
+   "load_ms": 56.039
+  },
+  {
+   "case": "n = 100,000, p = 3",
+   "implementation": "statsmodels",
+   "value": 31.078,
+   "reps": [
+    31.134,
+    31.078,
+    30.589,
+    30.921,
+    31.888
+   ],
+   "load_ms": 14.608
+  },
+  {
+   "case": "n = 100,000, p = 3",
+   "implementation": "R",
+   "value": 135.0,
+   "reps": [
+    132.0,
+    135.0,
+    136.0,
+    141.0,
+    130.0
+   ],
+   "load_ms": 47.0
+  },
+  {
+   "case": "n = 1,000,000, p = 3",
+   "implementation": "R",
+   "value": 1437.0,
+   "reps": [
+    1437.0,
+    1523.0,
+    1451.0,
+    1380.0,
+    1322.0
+   ],
+   "load_ms": 759.0
+  },
+  {
+   "case": "n = 1,000,000, p = 3",
+   "implementation": "statsmodels",
+   "value": 328.983,
+   "reps": [
+    328.616,
+    327.916,
+    328.983,
+    331.949,
+    332.196
+   ],
+   "load_ms": 142.587
+  },
+  {
+   "case": "n = 1,000,000, p = 3",
+   "implementation": "phit",
+   "value": 277.84,
+   "reps": [
+    289.487,
+    277.84,
+    269.708,
+    268.568,
+    280.263
+   ],
+   "load_ms": 580.065
+  },
+  {
+   "case": "n = 100,000, p = 11",
+   "implementation": "phit",
+   "value": 69.536,
+   "reps": [
+    70.908,
+    69.538,
+    69.001,
+    67.548,
+    69.536
+   ],
+   "load_ms": 276.801
+  },
+  {
+   "case": "n = 100,000, p = 11",
+   "implementation": "statsmodels",
+   "value": 68.416,
+   "reps": [
+    68.416,
+    68.288,
+    68.416,
+    69.138,
+    67.695
+   ],
+   "load_ms": 104.589
+  },
+  {
+   "case": "n = 100,000, p = 11",
+   "implementation": "R",
+   "value": 283.0,
+   "reps": [
+    293.0,
+    279.0,
+    274.0,
+    283.0,
+    286.0
+   ],
+   "load_ms": 482.0
+  }
+ ]
+}

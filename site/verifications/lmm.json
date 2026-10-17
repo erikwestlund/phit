@@ -1,0 +1,1143 @@
+{
+ "title": "Gaussian random intercept: agreement with R",
+ "description": "Largest absolute difference from R for every reported quantity, alongside statsmodels. Every case also passes the release gate (scripts/check).",
+ "reference": "R R version 4.6.1 (2026-06-24), lme4 2.0.6, statsmodels 0.15.0, PHP 8.5.10, Python 3.14.7",
+ "tolerance": "release gate: 1e-9 + 1e-7*|reference| (fixed models), 1e-7 + 1e-6*|reference| (mixed models)",
+ "source": "docs/verifications/lmm-results.json",
+ "cases": [
+  {
+   "name": "simulated_schools",
+   "quantity": "coefficients",
+   "max_abs_error": 2.5297168804172543e-09,
+   "peers": {
+    "Python": 2.527016818021366e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "covariance",
+   "max_abs_error": 3.605482312707409e-08,
+   "peers": {
+    "Python": 3.601606834990889e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "std_errors",
+   "max_abs_error": 8.17915690731752e-09,
+   "peers": {
+    "Python": 8.170364829140908e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "z_statistics",
+   "max_abs_error": 7.740452545590415e-08,
+   "peers": {
+    "Python": 7.73213102434056e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "p_values",
+   "max_abs_error": 5.290681856756831e-17,
+   "peers": {
+    "Python": 5.275152202500638e-17
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "conf_int",
+   "max_abs_error": 1.8560569969849894e-08,
+   "peers": {
+    "Python": 1.8540639246111823e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "fixed_fitted",
+   "max_abs_error": 1.3834124956701999e-09,
+   "peers": {
+    "Python": 1.3819416722071765e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "fitted",
+   "max_abs_error": 2.0514491438916593e-08,
+   "peers": {
+    "Python": 2.04924361923986e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "residuals",
+   "max_abs_error": 2.0514491438916593e-08,
+   "peers": {
+    "Python": 2.04924361923986e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "marginal_residuals",
+   "max_abs_error": 1.3834124956701999e-09,
+   "peers": {
+    "Python": 1.3819416722071765e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "random_effects",
+   "max_abs_error": 1.9539809770208194e-08,
+   "peers": {
+    "Python": 1.951879191608441e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "residual_variance",
+   "max_abs_error": 3.1495503094447486e-08,
+   "peers": {
+    "Python": 3.146163862766116e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "random_intercept_variance",
+   "max_abs_error": 4.78382734314664e-07,
+   "peers": {
+    "Python": 4.778685109840808e-07
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "sigma",
+   "max_abs_error": 3.12739700802922e-09,
+   "peers": {
+    "Python": 3.1240343645322355e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "icc",
+   "max_abs_error": 6.7236811673865304e-09,
+   "peers": {
+    "Python": 6.716453671007372e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "log_likelihood",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 1.1368683772161603e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "aic",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 2.2737367544323206e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_schools",
+   "quantity": "df_residual",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "coefficients",
+   "max_abs_error": 1.947839223248593e-09,
+   "peers": {
+    "Python": 1.9297701214782137e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "covariance",
+   "max_abs_error": 1.219947960429124e-07,
+   "peers": {
+    "Python": 1.2086681033807167e-07
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "std_errors",
+   "max_abs_error": 4.097557404492136e-08,
+   "peers": {
+    "Python": 4.059670666300974e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "z_statistics",
+   "max_abs_error": 1.0432445805008683e-06,
+   "peers": {
+    "Python": 1.0335986004861297e-06
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "p_values",
+   "max_abs_error": 2.6404126482489567e-109,
+   "peers": {
+    "Python": 2.6162506617388735e-109
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "conf_int",
+   "max_abs_error": 8.225848802112523e-08,
+   "peers": {
+    "Python": 8.149785202249404e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "fixed_fitted",
+   "max_abs_error": 1.6567014426982496e-09,
+   "peers": {
+    "Python": 1.641325297896401e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "fitted",
+   "max_abs_error": 6.216562553618132e-08,
+   "peers": {
+    "Python": 6.159083909551555e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "residuals",
+   "max_abs_error": 6.216562553618132e-08,
+   "peers": {
+    "Python": 6.159083909551555e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "marginal_residuals",
+   "max_abs_error": 1.6567014426982496e-09,
+   "peers": {
+    "Python": 1.641325297896401e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "random_effects",
+   "max_abs_error": 6.061084079078682e-08,
+   "peers": {
+    "Python": 6.005048014401382e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "residual_variance",
+   "max_abs_error": 1.0616863121981623e-07,
+   "peers": {
+    "Python": 1.0518698445594055e-07
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "random_intercept_variance",
+   "max_abs_error": 1.490080698829388e-06,
+   "peers": {
+    "Python": 1.4763031650488756e-06
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "sigma",
+   "max_abs_error": 9.862180405662002e-09,
+   "peers": {
+    "Python": 9.77099379184665e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "icc",
+   "max_abs_error": 1.9633582037936748e-08,
+   "peers": {
+    "Python": 1.9452046695622727e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "log_likelihood",
+   "max_abs_error": 1.1368683772161603e-13,
+   "peers": {
+    "Python": 2.2737367544323206e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "aic",
+   "max_abs_error": 2.2737367544323206e-13,
+   "peers": {
+    "Python": 4.547473508864641e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "df_residual",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "coefficients",
+   "max_abs_error": 2.8121027728644776e-09,
+   "peers": {
+    "Python": 2.8797579876282953e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "covariance",
+   "max_abs_error": 8.904529544273565e-11,
+   "peers": {
+    "Python": 9.118761301607492e-11
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "std_errors",
+   "max_abs_error": 2.7793498058592547e-10,
+   "peers": {
+    "Python": 2.8462174284094033e-10
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "z_statistics",
+   "max_abs_error": 3.467149944924586e-08,
+   "peers": {
+    "Python": 3.5505649975675624e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "p_values",
+   "max_abs_error": 4.729512070535987e-17,
+   "peers": {
+    "Python": 4.8440078363259206e-17
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "conf_int",
+   "max_abs_error": 3.3568454682608717e-09,
+   "peers": {
+    "Python": 3.4376066437857844e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "fixed_fitted",
+   "max_abs_error": 9.68456603800405e-08,
+   "peers": {
+    "Python": 9.917567211914502e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "fitted",
+   "max_abs_error": 4.0753775465418585e-08,
+   "peers": {
+    "Python": 4.173427470277602e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "residuals",
+   "max_abs_error": 4.0753775465418585e-08,
+   "peers": {
+    "Python": 4.173427470277602e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "marginal_residuals",
+   "max_abs_error": 9.68456603800405e-08,
+   "peers": {
+    "Python": 9.917567211914502e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "random_effects",
+   "max_abs_error": 7.27878415318628e-08,
+   "peers": {
+    "Python": 7.453904515841714e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "residual_variance",
+   "max_abs_error": 9.640497111718105e-08,
+   "peers": {
+    "Python": 9.872439221680906e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "random_intercept_variance",
+   "max_abs_error": 0.00016025775266825804,
+   "peers": {
+    "Python": 0.0001641136273065058
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "sigma",
+   "max_abs_error": 9.568712933116785e-09,
+   "peers": {
+    "Python": 9.798927891324638e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "icc",
+   "max_abs_error": 9.232498099365216e-10,
+   "peers": {
+    "Python": 9.454635963024316e-10
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "log_likelihood",
+   "max_abs_error": 1.1368683772161603e-13,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "aic",
+   "max_abs_error": 2.2737367544323206e-13,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "df_residual",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "coefficients",
+   "max_abs_error": 6.600942015211331e-11,
+   "peers": {
+    "Python": 6.586731160496129e-11
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "covariance",
+   "max_abs_error": 3.4264757253765765e-08,
+   "peers": {
+    "Python": 3.422340189018769e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "std_errors",
+   "max_abs_error": 1.175001140829579e-08,
+   "peers": {
+    "Python": 1.1735829863468439e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "z_statistics",
+   "max_abs_error": 3.9769320636651173e-07,
+   "peers": {
+    "Python": 3.9721317079965957e-07
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "p_values",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "conf_int",
+   "max_abs_error": 2.3095608980838733e-08,
+   "peers": {
+    "Python": 2.3067670440468646e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "fixed_fitted",
+   "max_abs_error": 6.600942015211331e-11,
+   "peers": {
+    "Python": 6.586731160496129e-11
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "fitted",
+   "max_abs_error": 3.335262022119423e-08,
+   "peers": {
+    "Python": 3.331237508064078e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "residuals",
+   "max_abs_error": 3.335262022119423e-08,
+   "peers": {
+    "Python": 3.331237508064078e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "marginal_residuals",
+   "max_abs_error": 6.600942015211331e-11,
+   "peers": {
+    "Python": 6.586731160496129e-11
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "random_effects",
+   "max_abs_error": 3.34186278649895e-08,
+   "peers": {
+    "Python": 3.337824239224574e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "residual_variance",
+   "max_abs_error": 6.921271733517642e-08,
+   "peers": {
+    "Python": 6.912914329859632e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "random_intercept_variance",
+   "max_abs_error": 4.14238488843921e-07,
+   "peers": {
+    "Python": 4.137385474223265e-07
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "sigma",
+   "max_abs_error": 3.748260368752199e-09,
+   "peers": {
+    "Python": 3.743734211525407e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "icc",
+   "max_abs_error": 3.239377877051197e-09,
+   "peers": {
+    "Python": 3.235468198914404e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "log_likelihood",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 1.1368683772161603e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "aic",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 2.2737367544323206e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "df_residual",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "coefficients",
+   "max_abs_error": 1.5586891777275014e-09,
+   "peers": {
+    "Python": 1.5597052538396383e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "covariance",
+   "max_abs_error": 4.1436599040878264e-08,
+   "peers": {
+    "Python": 4.145725363002839e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "std_errors",
+   "max_abs_error": 9.438205328393678e-09,
+   "peers": {
+    "Python": 9.44290956539362e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "z_statistics",
+   "max_abs_error": 9.170132031499634e-08,
+   "peers": {
+    "Python": 9.174713611059815e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "p_values",
+   "max_abs_error": 7.510129283940833e-17,
+   "peers": {
+    "Python": 7.524396826018393e-17
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "conf_int",
+   "max_abs_error": 2.005722876674554e-08,
+   "peers": {
+    "Python": 2.006746768756784e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "fixed_fitted",
+   "max_abs_error": 4.7763677457624e-09,
+   "peers": {
+    "Python": 4.77882622362813e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "fitted",
+   "max_abs_error": 5.047751017173141e-08,
+   "peers": {
+    "Python": 5.0502762860560324e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "residuals",
+   "max_abs_error": 5.047751017173141e-08,
+   "peers": {
+    "Python": 5.0502762860560324e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "marginal_residuals",
+   "max_abs_error": 4.7763677457624e-09,
+   "peers": {
+    "Python": 4.77882622362813e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "random_effects",
+   "max_abs_error": 4.675140141685574e-08,
+   "peers": {
+    "Python": 4.677465303970507e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "residual_variance",
+   "max_abs_error": 3.9594485912175514e-08,
+   "peers": {
+    "Python": 3.961422123666125e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "random_intercept_variance",
+   "max_abs_error": 5.787857517702832e-07,
+   "peers": {
+    "Python": 5.790742889644207e-07
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "sigma",
+   "max_abs_error": 3.937688397570582e-09,
+   "peers": {
+    "Python": 3.93965127187812e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "icc",
+   "max_abs_error": 8.177847121704218e-09,
+   "peers": {
+    "Python": 8.181923916161793e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "log_likelihood",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 1.1368683772161603e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "aic",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 2.2737367544323206e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "singleton_groups",
+   "quantity": "df_residual",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "coefficients",
+   "max_abs_error": 6.409875621278547e-17,
+   "peers": {
+    "Python": 7.137232641435784e-19
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "covariance",
+   "max_abs_error": 6.938893903907228e-18,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "std_errors",
+   "max_abs_error": 2.7755575615628914e-17,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "z_statistics",
+   "max_abs_error": 2.719479911021037e-16,
+   "peers": {
+    "Python": 3.02807135979913e-18
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "p_values",
+   "max_abs_error": 2.220446049250313e-16,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "conf_int",
+   "max_abs_error": 1.1102230246251565e-16,
+   "peers": {
+    "Python": 1.6653345369377348e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "fixed_fitted",
+   "max_abs_error": 6.409875621278547e-17,
+   "peers": {
+    "Python": 7.137232641435784e-19
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "fitted",
+   "max_abs_error": 6.409875621278547e-17,
+   "peers": {
+    "Python": 7.137232641435784e-19
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "residuals",
+   "max_abs_error": 1.1102230246251565e-16,
+   "peers": {
+    "Python": 7.137232641435784e-19
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "marginal_residuals",
+   "max_abs_error": 1.1102230246251565e-16,
+   "peers": {
+    "Python": 7.137232641435784e-19
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "random_effects",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "residual_variance",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "random_intercept_variance",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "sigma",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "icc",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "log_likelihood",
+   "max_abs_error": 3.552713678800501e-15,
+   "peers": {
+    "Python": 1.7763568394002505e-15
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "aic",
+   "max_abs_error": 7.105427357601002e-15,
+   "peers": {
+    "Python": 7.105427357601002e-15
+   },
+   "passed": true
+  },
+  {
+   "name": "boundary",
+   "quantity": "df_residual",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "coefficients",
+   "max_abs_error": 6.26160812089438e-09,
+   "peers": {
+    "Python": 6.264315288717626e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "covariance",
+   "max_abs_error": 8.478141211298862e-08,
+   "peers": {
+    "Python": 8.481738245080805e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "std_errors",
+   "max_abs_error": 1.9181688237779326e-08,
+   "peers": {
+    "Python": 1.918982661663904e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "z_statistics",
+   "max_abs_error": 1.8073603413881756e-07,
+   "peers": {
+    "Python": 1.8081269459457872e-07
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "p_values",
+   "max_abs_error": 1.614549733599205e-16,
+   "peers": {
+    "Python": 1.6165611390639134e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "conf_int",
+   "max_abs_error": 4.3857028231286677e-08,
+   "peers": {
+    "Python": 4.387568708352774e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "fixed_fitted",
+   "max_abs_error": 3.4358151879132492e-09,
+   "peers": {
+    "Python": 3.437314433085703e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "fitted",
+   "max_abs_error": 4.8211845182777324e-08,
+   "peers": {
+    "Python": 4.8232308813567215e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "residuals",
+   "max_abs_error": 4.8211845182777324e-08,
+   "peers": {
+    "Python": 4.8232308813567215e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "marginal_residuals",
+   "max_abs_error": 3.4358151879132492e-09,
+   "peers": {
+    "Python": 3.437314433085703e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "random_effects",
+   "max_abs_error": 4.5764158684846734e-08,
+   "peers": {
+    "Python": 4.5783529856180394e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "residual_variance",
+   "max_abs_error": 7.499378540387625e-08,
+   "peers": {
+    "Python": 7.50255999548699e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "random_intercept_variance",
+   "max_abs_error": 1.125766054599353e-06,
+   "peers": {
+    "Python": 1.1262436885317584e-06
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "sigma",
+   "max_abs_error": 7.437428450884909e-09,
+   "peers": {
+    "Python": 7.440584148810103e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "icc",
+   "max_abs_error": 1.5796543850754574e-08,
+   "peers": {
+    "Python": 1.5803245878576178e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "log_likelihood",
+   "max_abs_error": 2.2737367544323206e-13,
+   "peers": {
+    "Python": 3.410605131648481e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "aic",
+   "max_abs_error": 4.547473508864641e-13,
+   "peers": {
+    "Python": 6.821210263296962e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "df_residual",
+   "max_abs_error": 0.0,
+   "peers": {
+    "Python": 0.0
+   },
+   "passed": true
+  }
+ ]
+}

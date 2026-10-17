@@ -1,0 +1,115 @@
+{
+ "title": "Binomial random intercept: fit time",
+ "description": "Median wall time to fit binomial random intercept models on the same simulated data in R, Python and phit. Data loading is timed separately and excluded.",
+ "measure": "median fit wall time",
+ "unit": "ms",
+ "environment": {
+  "cpu": "Apple M5 Ultra",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "php": "8.5.10",
+  "date": "2026-10-11T22:59:04.029494+00:00",
+  "repeats": 3
+ },
+ "source": "docs/benchmarks/logistic-mixed-results.json",
+ "rows": [
+  {
+   "case": "n = 1,000, p = 3",
+   "implementation": "R",
+   "value": 88.0,
+   "reps": [
+    89.0,
+    87.0,
+    88.0
+   ],
+   "load_ms": 0
+  },
+  {
+   "case": "n = 1,000, p = 3",
+   "implementation": "SciPy",
+   "value": 409.742,
+   "reps": [
+    409.742,
+    404.24,
+    419.35
+   ],
+   "load_ms": 0.413
+  },
+  {
+   "case": "n = 1,000, p = 3",
+   "implementation": "phit",
+   "value": 6.289,
+   "reps": [
+    6.354,
+    6.289,
+    6.262
+   ],
+   "load_ms": 0.952
+  },
+  {
+   "case": "n = 10,000, p = 3",
+   "implementation": "R",
+   "value": 554.0,
+   "reps": [
+    554.0,
+    567.0,
+    554.0
+   ],
+   "load_ms": 7.0
+  },
+  {
+   "case": "n = 10,000, p = 3",
+   "implementation": "SciPy",
+   "value": 664.116,
+   "reps": [
+    688.461,
+    664.116,
+    653.544
+   ],
+   "load_ms": 2.729
+  },
+  {
+   "case": "n = 10,000, p = 3",
+   "implementation": "phit",
+   "value": 68.2,
+   "reps": [
+    68.481,
+    68.2,
+    67.866
+   ],
+   "load_ms": 8.335
+  },
+  {
+   "case": "n = 100,000, p = 3",
+   "implementation": "R",
+   "value": 7698.0,
+   "reps": [
+    7698.0,
+    7672.0,
+    7762.0
+   ],
+   "load_ms": 68.0
+  },
+  {
+   "case": "n = 100,000, p = 3",
+   "implementation": "SciPy",
+   "value": 2764.936,
+   "reps": [
+    2728.239,
+    2884.724,
+    2764.936
+   ],
+   "load_ms": 26.616
+  },
+  {
+   "case": "n = 100,000, p = 3",
+   "implementation": "phit",
+   "value": 785.687,
+   "reps": [
+    782.356,
+    785.687,
+    792.288
+   ],
+   "load_ms": 82.69
+  }
+ ]
+}

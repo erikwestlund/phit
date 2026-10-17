@@ -1,0 +1,172 @@
+{
+ "title": "Gaussian random intercept: fit time",
+ "description": "Median wall time to fit gaussian random intercept models on the same simulated data in R, Python and phit. Data loading is timed separately and excluded.",
+ "measure": "median fit wall time",
+ "unit": "ms",
+ "environment": {
+  "cpu": "Apple M5 Ultra",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "php": "8.5.10",
+  "date": "2026-10-11T20:47:02.703831+00:00",
+  "repeats": 5
+ },
+ "source": "docs/benchmarks/lmm-results.json",
+ "rows": [
+  {
+   "case": "n = 1,000, p = 3",
+   "implementation": "R",
+   "value": 6.0,
+   "reps": [
+    6.0,
+    6.0,
+    6.0,
+    6.0,
+    6.0
+   ],
+   "load_ms": 1.0
+  },
+  {
+   "case": "n = 1,000, p = 3",
+   "implementation": "statsmodels",
+   "value": 13.778,
+   "reps": [
+    13.857,
+    13.806,
+    13.778,
+    13.604,
+    13.577
+   ],
+   "load_ms": 0.505
+  },
+  {
+   "case": "n = 1,000, p = 3",
+   "implementation": "phit",
+   "value": 0.289,
+   "reps": [
+    0.297,
+    0.294,
+    0.289,
+    0.285,
+    0.285
+   ],
+   "load_ms": 1.109
+  },
+  {
+   "case": "n = 100,000, p = 3",
+   "implementation": "phit",
+   "value": 13.142,
+   "reps": [
+    13.142,
+    13.371,
+    12.75,
+    13.28,
+    12.807
+   ],
+   "load_ms": 104.874
+  },
+  {
+   "case": "n = 100,000, p = 3",
+   "implementation": "statsmodels",
+   "value": 129.333,
+   "reps": [
+    129.333,
+    128.907,
+    129.536,
+    128.91,
+    129.707
+   ],
+   "load_ms": 33.943
+  },
+  {
+   "case": "n = 100,000, p = 3",
+   "implementation": "R",
+   "value": 229.0,
+   "reps": [
+    229.0,
+    226.0,
+    227.0,
+    265.0,
+    233.0
+   ],
+   "load_ms": 99.0
+  },
+  {
+   "case": "n = 1,000,000, p = 3",
+   "implementation": "R",
+   "value": 2541.0,
+   "reps": [
+    2681.0,
+    2621.0,
+    2384.0,
+    2541.0,
+    2500.0
+   ],
+   "load_ms": 2974.0
+  },
+  {
+   "case": "n = 1,000,000, p = 3",
+   "implementation": "statsmodels",
+   "value": 1733.58,
+   "reps": [
+    1724.422,
+    1774.422,
+    1760.087,
+    1730.276,
+    1733.58
+   ],
+   "load_ms": 339.861
+  },
+  {
+   "case": "n = 1,000,000, p = 3",
+   "implementation": "phit",
+   "value": 137.512,
+   "reps": [
+    149.861,
+    156.498,
+    137.512,
+    134.344,
+    133.711
+   ],
+   "load_ms": 1045.982
+  },
+  {
+   "case": "n = 100,000, p = 11",
+   "implementation": "phit",
+   "value": 34.291,
+   "reps": [
+    36.281,
+    36.345,
+    34.291,
+    33.827,
+    33.607
+   ],
+   "load_ms": 326.796
+  },
+  {
+   "case": "n = 100,000, p = 11",
+   "implementation": "statsmodels",
+   "value": 244.483,
+   "reps": [
+    244.985,
+    244.108,
+    245.071,
+    244.483,
+    244.024
+   ],
+   "load_ms": 123.66
+  },
+  {
+   "case": "n = 100,000, p = 11",
+   "implementation": "R",
+   "value": 406.0,
+   "reps": [
+    427.0,
+    379.0,
+    414.0,
+    389.0,
+    406.0
+   ],
+   "load_ms": 857.0
+  }
+ ]
+}

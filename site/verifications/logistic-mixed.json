@@ -1,0 +1,177 @@
+{
+ "title": "Binomial random intercept: agreement with lme4",
+ "description": "Largest coefficient difference from lme4::glmer for Laplace and adaptive quadrature fits.",
+ "reference": "R R version 4.6.1 (2026-06-24), lme4 2.0.6, PHP 8.5.10, python 3.14.7, numpy 2.5.4, scipy 1.18.1, statsmodels 0.15.0",
+ "tolerance": "2e-05 + 0.0002*|reference|",
+ "source": "docs/verifications/logistic-mixed-results.json",
+ "cases": [
+  {
+   "name": "binary_1",
+   "quantity": "coefficients",
+   "max_abs_error": 3.149782110689614e-07,
+   "passed": true
+  },
+  {
+   "name": "binary_9",
+   "quantity": "coefficients",
+   "max_abs_error": 8.375430748941426e-08,
+   "passed": true
+  },
+  {
+   "name": "binary_25",
+   "quantity": "coefficients",
+   "max_abs_error": 1.2611851918364891e-07,
+   "passed": true
+  },
+  {
+   "name": "binary_61",
+   "quantity": "coefficients",
+   "max_abs_error": 4.001991138480321e-08,
+   "passed": true
+  },
+  {
+   "name": "no_intercept_1",
+   "quantity": "coefficients",
+   "max_abs_error": 2.9770630710634904e-08,
+   "passed": true
+  },
+  {
+   "name": "no_intercept_9",
+   "quantity": "coefficients",
+   "max_abs_error": 7.561876069761553e-09,
+   "passed": true
+  },
+  {
+   "name": "no_intercept_25",
+   "quantity": "coefficients",
+   "max_abs_error": 2.6787826928886815e-08,
+   "passed": true
+  },
+  {
+   "name": "no_intercept_61",
+   "quantity": "coefficients",
+   "max_abs_error": 2.2359309487240964e-08,
+   "passed": true
+  },
+  {
+   "name": "grouped_offset_1",
+   "quantity": "coefficients",
+   "max_abs_error": 1.7695984486643113e-06,
+   "passed": true
+  },
+  {
+   "name": "grouped_offset_9",
+   "quantity": "coefficients",
+   "max_abs_error": 1.3504184246393436e-06,
+   "passed": true
+  },
+  {
+   "name": "grouped_offset_25",
+   "quantity": "coefficients",
+   "max_abs_error": 7.443580991584042e-07,
+   "passed": true
+  },
+  {
+   "name": "grouped_offset_61",
+   "quantity": "coefficients",
+   "max_abs_error": 8.173894450180796e-08,
+   "passed": true
+  },
+  {
+   "name": "rare_events_1",
+   "quantity": "coefficients",
+   "max_abs_error": 1.152076363197807e-06,
+   "passed": true
+  },
+  {
+   "name": "rare_events_9",
+   "quantity": "coefficients",
+   "max_abs_error": 4.137237130663607e-08,
+   "passed": true
+  },
+  {
+   "name": "rare_events_25",
+   "quantity": "coefficients",
+   "max_abs_error": 1.3161967249430973e-07,
+   "passed": true
+  },
+  {
+   "name": "rare_events_61",
+   "quantity": "coefficients",
+   "max_abs_error": 2.8137828955721034e-08,
+   "passed": true
+  },
+  {
+   "name": "large_group_variation_1",
+   "quantity": "coefficients",
+   "max_abs_error": 1.523663873848058e-06,
+   "passed": true
+  },
+  {
+   "name": "large_group_variation_9",
+   "quantity": "coefficients",
+   "max_abs_error": 5.192793328667733e-08,
+   "passed": true
+  },
+  {
+   "name": "large_group_variation_25",
+   "quantity": "coefficients",
+   "max_abs_error": 4.205289294567649e-08,
+   "passed": true
+  },
+  {
+   "name": "large_group_variation_61",
+   "quantity": "coefficients",
+   "max_abs_error": 4.59502720318028e-08,
+   "passed": true
+  },
+  {
+   "name": "boundary_1",
+   "quantity": "coefficients",
+   "max_abs_error": 8.247378057705831e-09,
+   "passed": true
+  },
+  {
+   "name": "boundary_9",
+   "quantity": "coefficients",
+   "max_abs_error": 4.8328846245999426e-09,
+   "passed": true
+  },
+  {
+   "name": "boundary_25",
+   "quantity": "coefficients",
+   "max_abs_error": 4.836543553310035e-09,
+   "passed": true
+  },
+  {
+   "name": "boundary_61",
+   "quantity": "coefficients",
+   "max_abs_error": 4.842138259129848e-09,
+   "passed": true
+  },
+  {
+   "name": "cbpp_1",
+   "quantity": "coefficients",
+   "max_abs_error": 7.570788196353817e-08,
+   "passed": true
+  },
+  {
+   "name": "cbpp_9",
+   "quantity": "coefficients",
+   "max_abs_error": 5.221274779199092e-08,
+   "passed": true
+  },
+  {
+   "name": "cbpp_25",
+   "quantity": "coefficients",
+   "max_abs_error": 7.137462265660588e-08,
+   "passed": true
+  },
+  {
+   "name": "cbpp_61",
+   "quantity": "coefficients",
+   "max_abs_error": 8.575105581165587e-08,
+   "passed": true
+  }
+ ]
+}

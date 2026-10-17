@@ -1,0 +1,828 @@
+{
+ "title": "Logistic regression: agreement with R",
+ "description": "Largest absolute difference from R for every reported quantity, alongside statsmodels. Every case also passes the release gate (scripts/check).",
+ "reference": "R R version 4.6.1 (2026-06-24), statsmodels 0.15.0, numpy 2.5.4, Python 3.14.7, PHP 8.5.10",
+ "tolerance": "release gate: 1e-9 + 1e-7*|reference| (fixed models), 1e-7 + 1e-6*|reference| (mixed models)",
+ "source": "docs/verifications/logistic-results.json",
+ "cases": [
+  {
+   "name": "simulated_learning",
+   "quantity": "coefficients",
+   "max_abs_error": 1.0658141036401503e-14,
+   "peers": {
+    "statsmodels": 2.498001805406602e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_learning",
+   "quantity": "covariance",
+   "max_abs_error": 8.593126210598712e-13,
+   "peers": {
+    "statsmodels": 9.001688283660769e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_learning",
+   "quantity": "std_errors",
+   "max_abs_error": 2.9043434324194095e-13,
+   "peers": {
+    "statsmodels": 3.042011087472929e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_learning",
+   "quantity": "z_statistics",
+   "max_abs_error": 4.1389114358025836e-13,
+   "peers": {
+    "statsmodels": 4.409805853811122e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_learning",
+   "quantity": "p_values",
+   "max_abs_error": 1.1346618089547178e-11,
+   "peers": {
+    "statsmodels": 6.686318165805005e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_learning",
+   "quantity": "conf_int",
+   "max_abs_error": 5.808686864838819e-13,
+   "peers": {
+    "statsmodels": 5.977440764581843e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_learning",
+   "quantity": "fitted",
+   "max_abs_error": 9.992007221626409e-16,
+   "peers": {
+    "statsmodels": 7.771561172376096e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_learning",
+   "quantity": "residuals",
+   "max_abs_error": 9.992007221626409e-16,
+   "peers": {
+    "statsmodels": 7.771561172376096e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_learning",
+   "quantity": "log_likelihood",
+   "max_abs_error": 1.4210854715202004e-14,
+   "peers": {
+    "statsmodels": 2.1316282072803006e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_learning",
+   "quantity": "deviance",
+   "max_abs_error": 2.842170943040401e-14,
+   "peers": {
+    "statsmodels": 4.263256414560601e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_learning",
+   "quantity": "null_deviance",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 1.2789769243681803e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_learning",
+   "quantity": "aic",
+   "max_abs_error": 2.842170943040401e-14,
+   "peers": {
+    "statsmodels": 4.263256414560601e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "simulated_learning",
+   "quantity": "df_residual",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "coefficients",
+   "max_abs_error": 6.661338147750939e-16,
+   "peers": {
+    "statsmodels": 2.220446049250313e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "covariance",
+   "max_abs_error": 3.2068792066297647e-13,
+   "peers": {
+    "statsmodels": 3.21020987570364e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "std_errors",
+   "max_abs_error": 2.8388402739665253e-13,
+   "peers": {
+    "statsmodels": 2.8410607200157756e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "z_statistics",
+   "max_abs_error": 1.404654170755748e-12,
+   "peers": {
+    "statsmodels": 1.4050982599655981e-12
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "p_values",
+   "max_abs_error": 1.7672183161288046e-12,
+   "peers": {
+    "statsmodels": 6.905587213168474e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "conf_int",
+   "max_abs_error": 5.573319583618286e-13,
+   "peers": {
+    "statsmodels": 5.573319583618286e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "fitted",
+   "max_abs_error": 1.6653345369377348e-16,
+   "peers": {
+    "statsmodels": 1.1102230246251565e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "residuals",
+   "max_abs_error": 2.220446049250313e-16,
+   "peers": {
+    "statsmodels": 1.1102230246251565e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "log_likelihood",
+   "max_abs_error": 7.105427357601002e-15,
+   "peers": {
+    "statsmodels": 1.4210854715202004e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "deviance",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 4.263256414560601e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "null_deviance",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 1.2789769243681803e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "aic",
+   "max_abs_error": 1.4210854715202004e-14,
+   "peers": {
+    "statsmodels": 2.842170943040401e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "simple",
+   "quantity": "df_residual",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "coefficients",
+   "max_abs_error": 8.326672684688674e-17,
+   "peers": {
+    "statsmodels": 3.469446951953614e-18
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "covariance",
+   "max_abs_error": 3.0340313594834356e-15,
+   "peers": {
+    "statsmodels": 3.0236230186275748e-15
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "std_errors",
+   "max_abs_error": 1.5001888620247428e-14,
+   "peers": {
+    "statsmodels": 1.494637746901617e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "z_statistics",
+   "max_abs_error": 4.3565151486291143e-13,
+   "peers": {
+    "statsmodels": 4.347633364432113e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "p_values",
+   "max_abs_error": 3.753844457499156e-12,
+   "peers": {
+    "statsmodels": 4.7128967395337895e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "conf_int",
+   "max_abs_error": 2.9531932455029164e-14,
+   "peers": {
+    "statsmodels": 2.942091015256665e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "fitted",
+   "max_abs_error": 2.220446049250313e-16,
+   "peers": {
+    "statsmodels": 1.6653345369377348e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "residuals",
+   "max_abs_error": 2.220446049250313e-16,
+   "peers": {
+    "statsmodels": 2.220446049250313e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "log_likelihood",
+   "max_abs_error": 1.4210854715202004e-14,
+   "peers": {
+    "statsmodels": 7.105427357601002e-15
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "deviance",
+   "max_abs_error": 2.842170943040401e-14,
+   "peers": {
+    "statsmodels": 1.4210854715202004e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "null_deviance",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "aic",
+   "max_abs_error": 2.842170943040401e-14,
+   "peers": {
+    "statsmodels": 1.4210854715202004e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "no_intercept",
+   "quantity": "df_residual",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "coefficients",
+   "max_abs_error": 1.1102230246251565e-16,
+   "peers": {
+    "statsmodels": 1.1102230246251565e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "covariance",
+   "max_abs_error": 2.983724378680108e-16,
+   "peers": {
+    "statsmodels": 3.2612801348363973e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "std_errors",
+   "max_abs_error": 6.38378239159465e-16,
+   "peers": {
+    "statsmodels": 6.938893903907228e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "z_statistics",
+   "max_abs_error": 6.217248937900877e-15,
+   "peers": {
+    "statsmodels": 7.105427357601002e-15
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "p_values",
+   "max_abs_error": 6.50273238034238e-13,
+   "peers": {
+    "statsmodels": 2.983724378680108e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "conf_int",
+   "max_abs_error": 1.5543122344752192e-15,
+   "peers": {
+    "statsmodels": 1.5543122344752192e-15
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "fitted",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "residuals",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "log_likelihood",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 6.394884621840902e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "deviance",
+   "max_abs_error": 4.263256414560601e-14,
+   "peers": {
+    "statsmodels": 1.7053025658242404e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "null_deviance",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 1.2789769243681803e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "aic",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 1.2789769243681803e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "intercept_only",
+   "quantity": "df_residual",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "correlated",
+   "quantity": "coefficients",
+   "max_abs_error": 2.0650148258027912e-14,
+   "peers": {
+    "statsmodels": 3.7969627442180354e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "correlated",
+   "quantity": "covariance",
+   "max_abs_error": 9.592326932761353e-13,
+   "peers": {
+    "statsmodels": 1.2847500840962311e-12
+   },
+   "passed": true
+  },
+  {
+   "name": "correlated",
+   "quantity": "std_errors",
+   "max_abs_error": 2.83550960489265e-13,
+   "peers": {
+    "statsmodels": 3.816946758661288e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "correlated",
+   "quantity": "z_statistics",
+   "max_abs_error": 1.0476064460362977e-12,
+   "peers": {
+    "statsmodels": 1.0684786388992507e-12
+   },
+   "passed": true
+  },
+  {
+   "name": "correlated",
+   "quantity": "p_values",
+   "max_abs_error": 1.921726666687107e-13,
+   "peers": {
+    "statsmodels": 7.80486786311485e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "correlated",
+   "quantity": "conf_int",
+   "max_abs_error": 5.768718835952313e-13,
+   "peers": {
+    "statsmodels": 7.842615445952106e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "correlated",
+   "quantity": "fitted",
+   "max_abs_error": 2.1094237467877974e-15,
+   "peers": {
+    "statsmodels": 2.1094237467877974e-15
+   },
+   "passed": true
+  },
+  {
+   "name": "correlated",
+   "quantity": "residuals",
+   "max_abs_error": 2.1094237467877974e-15,
+   "peers": {
+    "statsmodels": 2.1094237467877974e-15
+   },
+   "passed": true
+  },
+  {
+   "name": "correlated",
+   "quantity": "log_likelihood",
+   "max_abs_error": 7.105427357601002e-15,
+   "peers": {
+    "statsmodels": 7.105427357601002e-15
+   },
+   "passed": true
+  },
+  {
+   "name": "correlated",
+   "quantity": "deviance",
+   "max_abs_error": 1.4210854715202004e-14,
+   "peers": {
+    "statsmodels": 1.4210854715202004e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "correlated",
+   "quantity": "null_deviance",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 1.2789769243681803e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "correlated",
+   "quantity": "aic",
+   "max_abs_error": 1.4210854715202004e-14,
+   "peers": {
+    "statsmodels": 1.4210854715202004e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "correlated",
+   "quantity": "df_residual",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "imbalanced",
+   "quantity": "coefficients",
+   "max_abs_error": 1.1102230246251565e-16,
+   "peers": {
+    "statsmodels": 1.7763568394002505e-15
+   },
+   "passed": true
+  },
+  {
+   "name": "imbalanced",
+   "quantity": "covariance",
+   "max_abs_error": 3.5273647114308915e-08,
+   "peers": {
+    "statsmodels": 3.527378389378555e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "imbalanced",
+   "quantity": "std_errors",
+   "max_abs_error": 5.317213336297755e-09,
+   "peers": {
+    "statsmodels": 5.317233764401408e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "imbalanced",
+   "quantity": "z_statistics",
+   "max_abs_error": 2.7348820985650946e-09,
+   "peers": {
+    "statsmodels": 2.7348934228399457e-09
+   },
+   "passed": true
+  },
+  {
+   "name": "imbalanced",
+   "quantity": "p_values",
+   "max_abs_error": 7.498297538433008e-10,
+   "peers": {
+    "statsmodels": 7.435837501290621e-10
+   },
+   "passed": true
+  },
+  {
+   "name": "imbalanced",
+   "quantity": "conf_int",
+   "max_abs_error": 1.0421548068961783e-08,
+   "peers": {
+    "statsmodels": 1.0421590701525929e-08
+   },
+   "passed": true
+  },
+  {
+   "name": "imbalanced",
+   "quantity": "fitted",
+   "max_abs_error": 1.3877787807814457e-16,
+   "peers": {
+    "statsmodels": 3.3306690738754696e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "imbalanced",
+   "quantity": "residuals",
+   "max_abs_error": 1.3877787807814457e-16,
+   "peers": {
+    "statsmodels": 3.3306690738754696e-16
+   },
+   "passed": true
+  },
+  {
+   "name": "imbalanced",
+   "quantity": "log_likelihood",
+   "max_abs_error": 3.552713678800501e-15,
+   "peers": {
+    "statsmodels": 7.105427357601002e-15
+   },
+   "passed": true
+  },
+  {
+   "name": "imbalanced",
+   "quantity": "deviance",
+   "max_abs_error": 7.105427357601002e-15,
+   "peers": {
+    "statsmodels": 1.4210854715202004e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "imbalanced",
+   "quantity": "null_deviance",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 4.618527782440651e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "imbalanced",
+   "quantity": "aic",
+   "max_abs_error": 7.105427357601002e-15,
+   "peers": {
+    "statsmodels": 1.4210854715202004e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "imbalanced",
+   "quantity": "df_residual",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 0.0
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "coefficients",
+   "max_abs_error": 1.3322676295501878e-15,
+   "peers": {
+    "statsmodels": 1.6431300764452317e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "covariance",
+   "max_abs_error": 1.1355361095866101e-12,
+   "peers": {
+    "statsmodels": 1.2043699371133698e-12
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "std_errors",
+   "max_abs_error": 3.83026943495679e-13,
+   "peers": {
+    "statsmodels": 4.0611958240788226e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "z_statistics",
+   "max_abs_error": 5.17808018685173e-13,
+   "peers": {
+    "statsmodels": 5.591083152012288e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "p_values",
+   "max_abs_error": 1.3699985590420738e-11,
+   "peers": {
+    "statsmodels": 9.314771176605063e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "conf_int",
+   "max_abs_error": 7.527312106958561e-13,
+   "peers": {
+    "statsmodels": 8.135714324453147e-13
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "fitted",
+   "max_abs_error": 3.3306690738754696e-16,
+   "peers": {
+    "statsmodels": 2.4424906541753444e-15
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "residuals",
+   "max_abs_error": 3.3306690738754696e-16,
+   "peers": {
+    "statsmodels": 2.4424906541753444e-15
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "log_likelihood",
+   "max_abs_error": 7.105427357601002e-15,
+   "peers": {
+    "statsmodels": 1.4210854715202004e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "deviance",
+   "max_abs_error": 1.4210854715202004e-14,
+   "peers": {
+    "statsmodels": 2.842170943040401e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "null_deviance",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 2.842170943040401e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "aic",
+   "max_abs_error": 1.4210854715202004e-14,
+   "peers": {
+    "statsmodels": 2.842170943040401e-14
+   },
+   "passed": true
+  },
+  {
+   "name": "listwise_missing",
+   "quantity": "df_residual",
+   "max_abs_error": 0.0,
+   "peers": {
+    "statsmodels": 0.0
+   },
+   "passed": true
+  }
+ ]
+}

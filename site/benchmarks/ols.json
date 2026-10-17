@@ -1,0 +1,172 @@
+{
+ "title": "OLS: fit time",
+ "description": "Median wall time to fit ols models on the same simulated data in R, Python and phit. Data loading is timed separately and excluded.",
+ "measure": "median fit wall time",
+ "unit": "ms",
+ "environment": {
+  "cpu": "Apple M5 Ultra",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "php": "8.5.10",
+  "date": "2026-10-16T07:49:59.210984+00:00",
+  "repeats": 5
+ },
+ "source": "docs/benchmarks/ols-results.json",
+ "rows": [
+  {
+   "case": "n = 1,000, p = 3",
+   "implementation": "R",
+   "value": 0,
+   "reps": [
+    1.0,
+    0,
+    0,
+    1.0,
+    0
+   ],
+   "load_ms": 0
+  },
+  {
+   "case": "n = 1,000, p = 3",
+   "implementation": "statsmodels",
+   "value": 0.212,
+   "reps": [
+    0.275,
+    0.23,
+    0.212,
+    0.211,
+    0.202
+   ],
+   "load_ms": 0.437
+  },
+  {
+   "case": "n = 1,000, p = 3",
+   "implementation": "phit",
+   "value": 0.13,
+   "reps": [
+    0.135,
+    0.132,
+    0.13,
+    0.128,
+    0.127
+   ],
+   "load_ms": 0.876
+  },
+  {
+   "case": "n = 100,000, p = 3",
+   "implementation": "phit",
+   "value": 10.627,
+   "reps": [
+    10.444,
+    10.329,
+    11.381,
+    10.627,
+    10.934
+   ],
+   "load_ms": 82.46
+  },
+  {
+   "case": "n = 100,000, p = 3",
+   "implementation": "statsmodels",
+   "value": 4.944,
+   "reps": [
+    5.226,
+    4.971,
+    4.864,
+    4.893,
+    4.944
+   ],
+   "load_ms": 23.818
+  },
+  {
+   "case": "n = 100,000, p = 3",
+   "implementation": "R",
+   "value": 15.0,
+   "reps": [
+    15.0,
+    15.0,
+    15.0,
+    15.0,
+    15.0
+   ],
+   "load_ms": 61.0
+  },
+  {
+   "case": "n = 1,000,000, p = 3",
+   "implementation": "R",
+   "value": 183.0,
+   "reps": [
+    183.0,
+    171.0,
+    169.0,
+    183.0,
+    200.0
+   ],
+   "load_ms": 1549.0
+  },
+  {
+   "case": "n = 1,000,000, p = 3",
+   "implementation": "statsmodels",
+   "value": 90.1,
+   "reps": [
+    94.252,
+    90.414,
+    89.789,
+    90.1,
+    89.97
+   ],
+   "load_ms": 247.228
+  },
+  {
+   "case": "n = 1,000,000, p = 3",
+   "implementation": "phit",
+   "value": 113.402,
+   "reps": [
+    123.193,
+    116.671,
+    113.402,
+    112.95,
+    113.148
+   ],
+   "load_ms": 809.957
+  },
+  {
+   "case": "n = 100,000, p = 11",
+   "implementation": "phit",
+   "value": 27.378,
+   "reps": [
+    28.644,
+    28.583,
+    25.713,
+    27.378,
+    27.113
+   ],
+   "load_ms": 304.886
+  },
+  {
+   "case": "n = 100,000, p = 11",
+   "implementation": "statsmodels",
+   "value": 11.21,
+   "reps": [
+    12.116,
+    11.116,
+    11.416,
+    11.11,
+    11.21
+   ],
+   "load_ms": 119.881
+  },
+  {
+   "case": "n = 100,000, p = 11",
+   "implementation": "R",
+   "value": 20.0,
+   "reps": [
+    20.0,
+    20.0,
+    20.0,
+    21.0,
+    22.0
+   ],
+   "load_ms": 700.0
+  }
+ ]
+}
